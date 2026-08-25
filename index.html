@@ -1452,14 +1452,47 @@
       
       .top-bar {
         padding: 8px 12px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
       }
 
       .top-bar-right {
         width: 100%;
+        display: flex;
         justify-content: space-between;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 6px;
+      }
+
+      .lang-switcher-group {
+        padding: 2px;
+        border-radius: 20px;
+        gap: 2px;
+      }
+
+      .lang-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+        border-radius: 14px;
+        gap: 3px;
+      }
+
+      .social-contact-pills {
+        gap: 4px;
+        flex-wrap: nowrap;
+      }
+
+      .social-pill {
+        padding: 4px 8px;
+        font-size: 11px;
+        border-radius: 14px;
+        gap: 4px;
+      }
+
+      .social-pill.phone-pill .phone-num {
+        font-size: 10.5px;
       }
 
       header {
@@ -1616,29 +1649,13 @@
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- ULTRA-PREMIUM LUXURY TOP BAR (APPLE/TESLA STYLE) -->
+  <!-- ULTRA-PREMIUM LUXURY TOP BAR (MOBILE & TELEGRAM MINI APP OPTIMIZED) -->
   <div class="top-bar-wrapper">
     <div class="top-bar-accent-line"></div>
     <div class="top-bar">
       
-      <div class="top-bar-left">
-        <div class="info-pill hq-pill" data-i18n="topHq">
-          <span class="pill-dot gold-glow"></span>
-          <span>📍</span>
-          <span class="pill-label">Bosh qarorgoh:</span>
-          <strong class="pill-val">Shenchjen, Xitoy</strong>
-        </div>
-
-        <div class="info-pill hub-pill" data-i18n="topHub">
-          <span class="pill-dot cyan-glow"></span>
-          <span>🇺🇿</span>
-          <span class="pill-label">Mintaqaviy markaz:</span>
-          <strong class="pill-val">Qo'qon Shaxri, O'zbekiston</strong>
-        </div>
-      </div>
-      
       <div class="top-bar-right">
-        <!-- Luxury Flag Language Pill Switcher -->
+        <!-- Luxury Flag Language Switcher -->
         <div class="lang-switcher-group">
           <button class="lang-btn active" id="langBtnUz" onclick="changeLanguage('uz')">
             <span class="flag-icon">🇺🇿</span> UZ
