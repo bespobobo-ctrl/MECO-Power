@@ -26,12 +26,12 @@ export interface TelegramBotConfig {
 export class SettingsService {
   private static botSettings: TelegramBotConfig = {
     miniAppBot: {
-      botToken: '7123456789:AAFxX_ExampleMiniAppBotToken_Uzbekistan',
-      webAppUrl: 'https://t.me/MecoPowerUzBot/shop',
+      botToken: '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA',
+      webAppUrl: 'http://localhost:5000',
       status: 'ACTIVE',
     },
     notificationBot: {
-      botToken: '7987654321:AAHyY_ExampleNotificationBotToken_Uzbekistan',
+      botToken: '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA',
       adminChatId: '987654321',
       notifyNewOrders: true,
       notifyTrafficAlerts: true,

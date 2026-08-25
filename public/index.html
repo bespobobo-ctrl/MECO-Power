@@ -2,10 +2,21 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MECO POWER: Yangi Energiya va Quyosh Energiyasini Saqlash Yechimlari</title>
   <meta name="description" content="MECO Power quyosh energiyasini saqlash mahsulotlarini R&D, ishlab chiqarish va yetkazib berishga ixtisoslashgan integratsiyalashgan energiya saqlash yechimlari brendi.">
   
+  <!-- Telegram WebApp JS SDK Integration -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+      }
+    });
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
@@ -458,6 +469,8 @@
     .category-tabs {
       display: flex;
       gap: 32px;
+      overflow-x: auto;
+      white-space: nowrap;
     }
 
     .category-tab-btn {
@@ -1259,6 +1272,14 @@
       .product-detail-grid {
         grid-template-columns: 1fr;
       }
+      .admin-modal {
+        flex-direction: column;
+      }
+      .admin-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
     }
   </style>
 </head>
@@ -1332,7 +1353,7 @@
     </div>
   </header>
 
-  <!-- DYNAMIC HERO IMAGE SLIDER CAROUSEL -->
+  <!-- DYNAMIC HERO SLIDER CAROUSEL -->
   <section class="hero-slider-container" id="heroContainer">
     <!-- Dynamic Slides Rendered via JavaScript -->
   </section>
@@ -1733,7 +1754,7 @@
                 <form onsubmit="saveMiniAppBot(event)">
                   <div class="form-group">
                     <label>Telegram Bot API Token (BotFather'dan olingan):</label>
-                    <input type="text" id="miniAppToken" class="form-input" placeholder="Masalan: 7123456789:AAFxX_YourBotToken" required />
+                    <input type="text" id="miniAppToken" class="form-input" value="8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA" required />
                   </div>
                   
                   <div class="form-group">
@@ -2496,7 +2517,7 @@
         const data = await res.json();
         if (data.success && data.data) {
           if (data.data.miniAppBot) {
-            document.getElementById('miniAppToken').value = data.data.miniAppBot.botToken || '';
+            document.getElementById('miniAppToken').value = data.data.miniAppBot.botToken || '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA';
             document.getElementById('miniAppWebUrl').value = data.data.miniAppBot.webAppUrl || 'http://localhost:5000';
           }
           document.getElementById('userCountNum').innerText = data.data.totalBotUsers || 0;
