@@ -3,7 +3,7 @@ import { env } from './env';
 import { logger } from './logger';
 
 const url = env.supabaseUrl || 'https://udknramozyniwkcnhvik.supabase.co';
-const key = env.supabaseServiceRoleKey || env.supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVka25yYW1venluaXdrY25odmlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2MzQ0NjQsImV4cCI6MjEwMzIxMDQ2NH0.Na3QdNL4UqdcizBgkDDWNNphFXz3wQDhg0i02iKEfrE';
+const key = env.supabaseServiceRoleKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVka25yYW1venluaXdrY25odmlrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzYzNDQ2NCwiZXhwIjoyMTAzMjEwNDY0fQ.Vxq0LGwh0mSi_XCWPBBig4nlU8365J_Pgoqv-RBSHjs';
 
 export const supabase = createClient(
   url,

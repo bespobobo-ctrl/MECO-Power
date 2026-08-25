@@ -255,9 +255,43 @@ export class ProductsService {
 
   private static products: Product[] = [];
 
-  private static initPersistence() {
+  private static async initPersistence() {
     if (this.isInitialized && this.products.length > 0) return;
 
+    // 1. Try loading from Supabase PostgreSQL Database first!
+    try {
+      const { data: dbProducts, error: dbErr } = await supabase.from('products').select('*');
+      if (!dbErr && Array.isArray(dbProducts) && dbProducts.length > 0) {
+        this.products = dbProducts.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          capacity: p.capacity,
+          powerOutput: p.power_output,
+          descriptionUz: p.description_uz,
+          descriptionRu: p.description_ru,
+          descriptionEn: p.description_en,
+          specsUz: p.specs_uz,
+          specsRu: p.specs_ru,
+          specsEn: p.specs_en,
+          priceUzS: Number(p.price_uzs),
+          imageUrl: p.image_url,
+          protectionBadgeUz: p.protection_badge_uz,
+          protectionBadgeRu: p.protection_badge_ru,
+          protectionBadgeEn: p.protection_badge_en,
+          inStockUzbekistan: Boolean(p.in_stock_uzbekistan),
+          urlPath: p.url_path
+        }));
+        this.isInitialized = true;
+        this.saveToDisk();
+        logger.info(`📦 Loaded ${dbProducts.length} products from Supabase PostgreSQL Database!`);
+        return;
+      }
+    } catch (sbErr: any) {
+      logger.warn(`Supabase products load note: ${sbErr.message}`);
+    }
+
+    // 2. Try loading from local disk file (data/products.json)
     try {
       if (!fs.existsSync(DATA_DIR)) {
         fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -283,7 +317,7 @@ export class ProductsService {
     this.isInitialized = true;
   }
 
-  private static saveToDisk() {
+  private static async saveToDisk() {
     try {
       if (!fs.existsSync(DATA_DIR)) {
         fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -294,28 +328,52 @@ export class ProductsService {
       logger.warn(`File persistence save note: ${err.message}`);
     }
 
-    // Async save to Supabase system_config
+    // Async save/upsert to Supabase PostgreSQL Database
     try {
-      supabase.from('system_config').upsert({
-        key: 'products_catalog',
-        value: this.products,
-        updated_at: new Date().toISOString()
-      }).then(() => {});
-    } catch (e) {}
+      const supabaseRows = this.products.map(p => ({
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        capacity: p.capacity,
+        power_output: p.powerOutput,
+        description_uz: p.descriptionUz,
+        description_ru: p.descriptionRu,
+        description_en: p.descriptionEn,
+        specs_uz: p.specsUz,
+        specs_ru: p.specsRu,
+        specs_en: p.specsEn,
+        price_uzs: p.priceUzS,
+        image_url: p.imageUrl,
+        protection_badge_uz: p.protectionBadgeUz,
+        protection_badge_ru: p.protectionBadgeRu,
+        protection_badge_en: p.protectionBadgeEn,
+        in_stock_uzbekistan: p.inStockUzbekistan,
+        url_path: p.urlPath
+      }));
+
+      const { error: upsertErr } = await supabase.from('products').upsert(supabaseRows);
+      if (!upsertErr) {
+        logger.info('✅ Successfully synced products catalog to Supabase PostgreSQL database!');
+      } else {
+        logger.warn(`Supabase products upsert note: ${upsertErr.message}`);
+      }
+    } catch (e: any) {
+      logger.warn(`Supabase products save note: ${e.message}`);
+    }
   }
 
   async getAllProducts() {
-    ProductsService.initPersistence();
+    await ProductsService.initPersistence();
     return ProductsService.products;
   }
 
   async getProductById(id: string) {
-    ProductsService.initPersistence();
+    await ProductsService.initPersistence();
     return ProductsService.products.find((p) => p.id === id) || null;
   }
 
   async updateProductsBatch(updatedList: Partial<Product>[]) {
-    ProductsService.initPersistence();
+    await ProductsService.initPersistence();
 
     updatedList.forEach((item) => {
       if (!item.id) return;
@@ -328,7 +386,7 @@ export class ProductsService {
       }
     });
 
-    ProductsService.saveToDisk();
+    await ProductsService.saveToDisk();
     return ProductsService.products;
   }
 }
