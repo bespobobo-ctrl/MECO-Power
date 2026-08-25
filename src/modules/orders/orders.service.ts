@@ -29,40 +29,7 @@ export interface Order {
 export class OrdersService {
   private static isInitialized = false;
 
-  private static defaultOrders: Order[] = [
-    {
-      id: 'ORD-984201',
-      customerName: 'Abdurahmon Karimov',
-      customerPhone: '+998 90 123 45 67',
-      addressNotes: 'Qo\'qon Sh., Navoiy Mfyi 14-uy',
-      latitude: 40.528,
-      longitude: 70.942,
-      mapUrl: 'https://maps.google.com/?q=40.528,70.942',
-      productId: 'prod-1kwh',
-      productName: 'Meco 1kWh Solar Generator',
-      priceUzS: 8900000,
-      quantity: 1,
-      totalAmountUzS: 8900000,
-      status: 'Yangi',
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: 'ORD-984202',
-      customerName: 'Sardorbek Alimov',
-      customerPhone: '+998 94 399 39 97',
-      addressNotes: 'Farg\'ona Sh., Al-Farg\'oniy ko\'chasi 5-uy',
-      latitude: 40.386,
-      longitude: 71.786,
-      mapUrl: 'https://maps.google.com/?q=40.386,71.786',
-      productId: 'prod-3k6wh',
-      productName: 'Meco 3.6kWh Solar Generator',
-      priceUzS: 21000000,
-      quantity: 1,
-      totalAmountUzS: 21000000,
-      status: 'Jarayonda',
-      createdAt: new Date(Date.now() - 3600000 * 2).toISOString()
-    }
-  ];
+  private static defaultOrders: Order[] = [];
 
   private static orders: Order[] = [];
 

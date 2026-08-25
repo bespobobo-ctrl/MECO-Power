@@ -2344,8 +2344,8 @@
                   <div class="stat-label">Bugungi Sotuvlar (Daily)</div>
                   <div class="stat-card-icon">💰</div>
                 </div>
-                <div class="stat-value" id="dailySales">27,700,000 UZS</div>
-                <div class="stat-badge">↑ +14.2% kechagiga nisbatan</div>
+                <div class="stat-value" id="dailySales">0 UZS</div>
+                <div class="stat-badge" id="dailySalesBadge">● Real-vaqtda hisoblanmoqda</div>
               </div>
 
               <div class="stat-card">
@@ -2353,8 +2353,8 @@
                   <div class="stat-label">Haftalik Sotuvlar (Weekly)</div>
                   <div class="stat-card-icon">📈</div>
                 </div>
-                <div class="stat-value" id="weeklySales">184,500,000 UZS</div>
-                <div class="stat-badge">↑ +22.8% o'tgan haftaga nisbatan</div>
+                <div class="stat-value" id="weeklySales">0 UZS</div>
+                <div class="stat-badge" id="weeklySalesBadge">● Real-vaqtda hisoblanmoqda</div>
               </div>
 
               <div class="stat-card">
@@ -2362,8 +2362,8 @@
                   <div class="stat-label">Oylik Sotuvlar (Monthly)</div>
                   <div class="stat-card-icon">🏆</div>
                 </div>
-                <div class="stat-value" id="monthlySales">642,000,000 UZS</div>
-                <div class="stat-badge">↑ Oylik kutilma bajarilmoqda</div>
+                <div class="stat-value" id="monthlySales">0 UZS</div>
+                <div class="stat-badge" id="monthlySalesBadge">● Real-vaqtda hisoblanmoqda</div>
               </div>
 
               <div class="stat-card">
@@ -2371,7 +2371,7 @@
                   <div class="stat-label">Real-Vaqtdagi Faol Tashrifchilar</div>
                   <div class="stat-card-icon" style="background: rgba(6, 182, 212, 0.15); color: #06b6d4;">👁️</div>
                 </div>
-                <div class="stat-value" style="color: #06b6d4;" id="activeVisitors">● 7 kishi</div>
+                <div class="stat-value" style="color: #06b6d4;" id="activeVisitors">● 1 kishi</div>
                 <div class="stat-badge" style="background: rgba(6,182,212,0.2); color: #06b6d4;">LIVE ONLINE STREAM</div>
               </div>
             </div>
@@ -3752,9 +3752,22 @@
         if (data.success && data.data) {
           const stats = data.data;
           document.getElementById('activeVisitors').innerText = `● ${stats.activeVisitorsCount} kishi`;
-          document.getElementById('dailySales').innerText = `${stats.sales.dailySalesUzS.toLocaleString()} UZS`;
-          document.getElementById('weeklySales').innerText = `${stats.sales.weeklySalesUzS.toLocaleString()} UZS`;
-          document.getElementById('monthlySales').innerText = `${stats.sales.monthlySalesUzS.toLocaleString()} UZS`;
+          
+          const dVal = stats.sales?.dailySalesUzS || 0;
+          const wVal = stats.sales?.weeklySalesUzS || 0;
+          const mVal = stats.sales?.monthlySalesUzS || 0;
+
+          document.getElementById('dailySales').innerText = `${dVal.toLocaleString('uz-UZ')} UZS`;
+          document.getElementById('weeklySales').innerText = `${wVal.toLocaleString('uz-UZ')} UZS`;
+          document.getElementById('monthlySales').innerText = `${mVal.toLocaleString('uz-UZ')} UZS`;
+
+          const dBadge = document.getElementById('dailySalesBadge');
+          const wBadge = document.getElementById('weeklySalesBadge');
+          const mBadge = document.getElementById('monthlySalesBadge');
+
+          if (dBadge) dBadge.innerText = dVal > 0 ? `↑ ${dVal.toLocaleString('uz-UZ')} UZS bugun` : `● Hozircha buyurtma yo'q`;
+          if (wBadge) wBadge.innerText = wVal > 0 ? `↑ ${wVal.toLocaleString('uz-UZ')} UZS bu hafta` : `● Hozircha buyurtma yo'q`;
+          if (mBadge) mBadge.innerText = mVal > 0 ? `↑ ${mVal.toLocaleString('uz-UZ')} UZS bu oy` : `● Hozircha buyurtma yo'q`;
         }
       } catch (err) {
         console.error('Stats loading error:', err);

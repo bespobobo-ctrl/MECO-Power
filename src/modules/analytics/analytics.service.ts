@@ -1,3 +1,7 @@
+import { OrdersService } from '../orders/orders.service';
+
+const ordersService = new OrdersService();
+
 export interface VisitLog {
   timestamp: string;
   source: string;
@@ -6,22 +10,14 @@ export interface VisitLog {
 
 export class AnalyticsService {
   private static activeVisitors: Set<string> = new Set();
-  private static totalVisits: number = 1480;
+  private static totalVisits: number = 0;
   private static linkReferrals: Record<string, number> = {
-    'Telegram Bot/Channel': 620,
-    'Instagram Ads': 410,
-    'Google Search': 290,
-    'Tog\'ridan-tog\'ri (Direct)': 160,
+    'Telegram Bot/Channel': 0,
+    'Instagram Ads': 0,
+    'Google Search': 0,
+    'Tog\'ridan-tog\'ri (Direct)': 0,
   };
   private static visitLogs: VisitLog[] = [];
-
-  // Sales metrics (UZS)
-  private static salesData = {
-    dailySalesUzS: 27700000,   // Bugungi sotuvlar (27.7 mln UZS)
-    weeklySalesUzS: 184500000, // Haftalik sotuvlar (184.5 mln UZS)
-    monthlySalesUzS: 642000000,// Oylik sotuvlar (642 mln UZS)
-    totalOrdersCount: 48,
-  };
 
   public static recordVisit(ref: string | undefined, ip: string) {
     this.totalVisits += 1;
@@ -46,10 +42,45 @@ export class AnalyticsService {
   }
 
   async getDashboardStats() {
+    const orders = await ordersService.getAllOrders();
+
+    const now = Date.now();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    const sevenDaysMs = 7 * oneDayMs;
+    const thirtyDaysMs = 30 * oneDayMs;
+
+    let dailySalesUzS = 0;
+    let weeklySalesUzS = 0;
+    let monthlySalesUzS = 0;
+
+    orders.forEach(o => {
+      // Exclude cancelled orders from revenue calculation
+      if (o.status === 'Bekor qilindi') return;
+
+      const orderTime = new Date(o.createdAt).getTime();
+      const amount = Number(o.totalAmountUzS || o.priceUzS) || 0;
+      const diff = now - orderTime;
+
+      if (diff <= oneDayMs) {
+        dailySalesUzS += amount;
+      }
+      if (diff <= sevenDaysMs) {
+        weeklySalesUzS += amount;
+      }
+      if (diff <= thirtyDaysMs) {
+        monthlySalesUzS += amount;
+      }
+    });
+
     return {
-      activeVisitorsCount: Math.max(3, AnalyticsService.activeVisitors.size + Math.floor(Math.random() * 5)),
+      activeVisitorsCount: Math.max(1, AnalyticsService.activeVisitors.size),
       totalVisitsCount: AnalyticsService.totalVisits,
-      sales: AnalyticsService.salesData,
+      sales: {
+        dailySalesUzS,
+        weeklySalesUzS,
+        monthlySalesUzS,
+        totalOrdersCount: orders.length,
+      },
       referralSources: AnalyticsService.linkReferrals,
       recentVisits: AnalyticsService.visitLogs.slice(0, 10),
     };
