@@ -32,8 +32,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// Serve static frontend UI
-const publicPath = path.join(__dirname, '../public');
+// Serve static frontend UI safely using process.cwd() for Vercel compatibility
+const publicPath = path.join(process.cwd(), 'public');
 app.use(express.static(publicPath));
 
 // Health Check
