@@ -2,6 +2,7 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import path from 'path';
+import fs from 'fs';
 import { env } from './config/env';
 import { errorHandler } from './middlewares/error.middleware';
 
@@ -32,9 +33,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// Serve static frontend UI safely using process.cwd() for Vercel compatibility
+// Serve static frontend UI safely
 const publicPath = path.join(process.cwd(), 'public');
 app.use(express.static(publicPath));
+app.use(express.static(process.cwd()));
 
 // Health Check
 app.get('/health', (req: Request, res: Response) => {
@@ -55,9 +57,17 @@ app.use('/api/v1/service', ticketsRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1/settings', settingsRoutes);
 
-// Fallback to index.html for root navigation
-app.get('/', (req: Request, res: Response) => {
-  res.sendFile(path.join(publicPath, 'index.html'));
+// Catch-all route to serve index.html for Web App Portal
+app.get('*', (req: Request, res: Response) => {
+  const rootIndex = path.join(process.cwd(), 'index.html');
+  const publicIndex = path.join(publicPath, 'index.html');
+  if (fs.existsSync(rootIndex)) {
+    return res.sendFile(rootIndex);
+  }
+  if (fs.existsSync(publicIndex)) {
+    return res.sendFile(publicIndex);
+  }
+  res.status(404).send('MECO Power Uzbekistan Portal index.html not found');
 });
 
 // Global Error Handler
