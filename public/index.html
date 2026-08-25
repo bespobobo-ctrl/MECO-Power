@@ -1441,13 +1441,13 @@
     }
 
     /* NATIVE TELEGRAM MINI APP MOBILE RESPONSIVE STYLING */
-    .mobile-bottom-nav {
+    .mobile-bottom-nav-wrapper {
       display: none;
     }
 
     @media (max-width: 768px) {
       body {
-        padding-bottom: 70px;
+        padding-bottom: 85px;
       }
       
       .top-bar {
@@ -1602,44 +1602,75 @@
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       }
 
-      /* Native Mobile Bottom Nav Bar for Telegram WebApp */
-      .mobile-bottom-nav {
-        display: flex !important;
+      /* Native Mobile Floating Dock for Telegram WebApp */
+      .mobile-bottom-nav-wrapper {
+        display: block !important;
         position: fixed;
-        bottom: 0;
+        bottom: 12px;
         left: 0;
         width: 100%;
-        height: 64px;
-        background: rgba(11, 19, 32, 0.98);
-        backdrop-filter: blur(16px);
-        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 0 14px;
         z-index: 9999;
+        pointer-events: none;
+      }
+
+      .mobile-bottom-nav {
+        pointer-events: auto;
+        display: flex !important;
         justify-content: space-around;
         align-items: center;
-        padding: 0 8px;
+        height: 64px;
+        background: rgba(11, 19, 32, 0.92);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 32px;
+        padding: 4px 8px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
       }
 
       .mobile-nav-item {
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
         gap: 3px;
         color: #94a3b8;
         text-decoration: none;
         font-size: 11px;
         font-weight: 700;
         background: transparent;
-        border: none;
+        border: 1px solid transparent;
+        border-radius: 20px;
+        padding: 6px 14px;
         cursor: pointer;
-        transition: color 0.2s;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        flex: 1;
+        max-width: 90px;
       }
 
-      .mobile-nav-item.active, .mobile-nav-item:hover {
+      .mobile-nav-icon-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.25s ease;
+      }
+
+      .mobile-nav-item.active {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.12));
+        border-color: rgba(16, 185, 129, 0.4);
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
+      }
+
+      .mobile-nav-item.active .mobile-nav-icon-box {
+        transform: translateY(-1px) scale(1.1);
         color: #34d399;
+        filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.8));
       }
 
-      .mobile-nav-icon {
-        font-size: 20px;
+      .mobile-nav-item:active {
+        transform: scale(0.95);
       }
     }
   </style>
@@ -1818,27 +1849,37 @@
     </div>
   </footer>
 
-  <!-- NATIVE MOBILE BOTTOM NAVIGATION BAR FOR TELEGRAM MINI APP -->
-  <div class="mobile-bottom-nav">
-    <button onclick="scrollToSection('heroContainer')" class="mobile-nav-item active">
-      <span class="mobile-nav-icon">🏠</span>
-      <span>Bosh sahifa</span>
-    </button>
+  <!-- NATIVE MOBILE BOTTOM NAVIGATION BAR FOR TELEGRAM MINI APP (ULTRA-PREMIUM FLOATING DOCK) -->
+  <div class="mobile-bottom-nav-wrapper">
+    <nav class="mobile-bottom-nav">
+      <button onclick="scrollToSection('heroContainer'); setActiveMobileNav(this)" class="mobile-nav-item active" id="mobNavHome">
+        <div class="mobile-nav-icon-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </div>
+        <span data-i18n="navHome">Bosh sahifa</span>
+      </button>
 
-    <button onclick="scrollToSection('products')" class="mobile-nav-item">
-      <span class="mobile-nav-icon">📦</span>
-      <span>Mahsulotlar</span>
-    </button>
+      <button onclick="scrollToSection('products'); setActiveMobileNav(this)" class="mobile-nav-item" id="mobNavProducts">
+        <div class="mobile-nav-icon-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        </div>
+        <span data-i18n="navProducts">Mahsulotlar</span>
+      </button>
 
-    <button onclick="scrollToSection('about')" class="mobile-nav-item">
-      <span class="mobile-nav-icon">⚡</span>
-      <span>Afzalliklar</span>
-    </button>
+      <button onclick="scrollToSection('about'); setActiveMobileNav(this)" class="mobile-nav-item" id="mobNavAbout">
+        <div class="mobile-nav-icon-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        </div>
+        <span data-i18n="whyUsTitle">Afzalliklar</span>
+      </button>
 
-    <button onclick="openLoginModal()" class="mobile-nav-item">
-      <span class="mobile-nav-icon">🔑</span>
-      <span>Admin</span>
-    </button>
+      <button onclick="openLoginModal(); setActiveMobileNav(this)" class="mobile-nav-item" id="mobNavAdmin">
+        <div class="mobile-nav-icon-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </div>
+        <span>Admin</span>
+      </button>
+    </nav>
   </div>
 
   <!-- LOGIN MODAL -->
@@ -2276,6 +2317,11 @@
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });
       }
+    }
+
+    function setActiveMobileNav(btn) {
+      document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+      if (btn) btn.classList.add('active');
     }
 
     // SLEEK TOAST NOTIFICATION SYSTEM
