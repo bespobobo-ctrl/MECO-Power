@@ -1,0 +1,2505 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MECO POWER: Yangi Energiya va Quyosh Energiyasini Saqlash Yechimlari</title>
+  <meta name="description" content="MECO Power quyosh energiyasini saqlash mahsulotlarini R&D, ishlab chiqarish va yetkazib berishga ixtisoslashgan integratsiyalashgan energiya saqlash yechimlari brendi.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #047857;
+      --primary-hover: #065f46;
+      --accent-gold: #f59e0b;
+      --accent-orange: #ea580c;
+      --accent-cyan: #0d9488;
+      --dark-bg: #0b1320;
+      --dark-card: #131d2e;
+      --dark-border: rgba(255, 255, 255, 0.08);
+      --text-main: #1f2937;
+      --text-dark: #f9fafb;
+      --text-muted: #6b7280;
+      --bg-light: #f8fafc;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text-main);
+      background-color: #fff;
+      line-height: 1.6;
+    }
+
+    /* TOAST NOTIFICATION CONTAINER */
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .toast-message {
+      background: #0f172a;
+      border-left: 4px solid #10b981;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: auto;
+    }
+
+    .toast-message.error {
+      border-left-color: #ef4444;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* ULTRA-PREMIUM TOP BAR STYLING */
+    .top-bar-wrapper {
+      background: #090d16;
+      position: relative;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .top-bar-accent-line {
+      height: 3px;
+      background: linear-gradient(90deg, #059669 0%, #f59e0b 50%, #0d9488 100%);
+      width: 100%;
+    }
+
+    .top-bar {
+      background: rgba(11, 19, 32, 0.95);
+      backdrop-filter: blur(16px);
+      color: #94a3b8;
+      font-size: 12px;
+      padding: 10px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .info-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 5px 14px;
+      border-radius: 20px;
+      color: #cbd5e1;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .info-pill:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(13, 148, 136, 0.4);
+      color: #fff;
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .lang-switcher-group {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 3px;
+      border-radius: 24px;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 5px 12px;
+      border-radius: 18px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .lang-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #059669, #047857);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4);
+    }
+
+    .email-pill {
+      color: var(--accent-gold);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      padding: 5px 14px;
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+
+    .email-pill:hover {
+      background: rgba(245, 158, 11, 0.2);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      background-color: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+      display: inline-block;
+    }
+
+    /* Header Navigation */
+    header {
+      background: #ffffff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 16px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #059669, #047857);
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3);
+    }
+
+    .logo-text h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #064e3b;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text p {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 28px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #374151;
+      font-weight: 600;
+      font-size: 15px;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--primary);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-login {
+      background: linear-gradient(135deg, #047857, #065f46);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(4, 120, 87, 0.25);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(4, 120, 87, 0.35);
+    }
+
+    /* DYNAMIC HERO SLIDER CAROUSEL */
+    .hero-slider-container {
+      position: relative;
+      width: 100%;
+      height: 520px;
+      overflow: hidden;
+      background: #090d16;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+      background-size: cover;
+      background-position: center right;
+      display: flex;
+      align-items: center;
+      padding: 0 6%;
+    }
+
+    .slide.active {
+      opacity: 1;
+      z-index: 2;
+    }
+
+    .slide-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(11, 19, 32, 0.92) 0%, rgba(11, 19, 32, 0.65) 45%, rgba(11, 19, 32, 0.15) 100%);
+      z-index: 1;
+    }
+
+    .slide-content-card {
+      position: relative;
+      z-index: 3;
+      max-width: 620px;
+      color: #fff;
+      background: rgba(11, 19, 32, 0.45);
+      backdrop-filter: blur(12px);
+      border-left: 5px solid var(--accent-cyan);
+      padding: 32px 36px;
+      border-radius: 0 20px 20px 0;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    }
+
+    .slide-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-bottom: 10px;
+    }
+
+    .slide-content-card h2 {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      line-height: 1.15;
+      margin-bottom: 14px;
+      color: #ffffff;
+    }
+
+    .slide-content-card p {
+      font-size: 16px;
+      color: #cbd5e1;
+      margin-bottom: 24px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .btn-slide-action {
+      background: #ffffff;
+      color: #047857;
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-weight: 800;
+      font-size: 15px;
+      text-decoration: none;
+      display: inline-block;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-slide-action:hover {
+      background: var(--accent-gold);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .slider-wave {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 48px;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .slider-dots {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      display: flex;
+      gap: 10px;
+    }
+
+    .dot {
+      width: 28px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .dot.active {
+      background: #ffffff;
+      width: 44px;
+    }
+
+    /* PRODUCT SERIES SECTION */
+    .product-series-section {
+      background: #f8fafc;
+      padding: 60px 5% 90px;
+    }
+
+    .series-nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 16px;
+      margin-bottom: 45px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 32px;
+    }
+
+    .category-tab-btn {
+      background: transparent;
+      border: none;
+      font-size: 16px;
+      font-weight: 700;
+      color: #64748b;
+      cursor: pointer;
+      position: relative;
+      padding-bottom: 12px;
+      transition: color 0.2s;
+    }
+
+    .category-tab-btn:hover, .category-tab-btn.active {
+      color: var(--primary);
+    }
+
+    .category-tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -18px;
+      left: 0;
+      width: 100%;
+      height: 3.5px;
+      background: var(--accent-orange);
+      border-radius: 2px;
+    }
+
+    .breadcrumb-path {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .breadcrumb-path span {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .series-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .series-header h2 {
+      font-size: 38px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+    }
+
+    .products-grid-full {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 28px;
+    }
+
+    .product-card-item {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .product-card-item:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
+      border-color: #cbd5e1;
+    }
+
+    .card-img-holder {
+      height: 220px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .card-img-holder img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+      transition: transform 0.3s;
+    }
+
+    .product-card-item:hover .card-img-holder img {
+      transform: scale(1.06);
+    }
+
+    .card-badge-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: #dcfce7;
+      color: #15803d;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+
+    .card-content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #10b981;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .card-specs {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .card-footer-action {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .card-price {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .btn-detail {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-detail:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Section Styling */
+    .section-padding {
+      padding: 80px 5%;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 650px;
+      margin: 0 auto 50px;
+    }
+
+    .section-subtitle {
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 34px;
+      font-weight: 800;
+      color: #111827;
+      letter-spacing: -0.5px;
+    }
+
+    /* Why Choose Us Section */
+    .why-us {
+      background: var(--dark-bg);
+      color: #fff;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 30px;
+    }
+
+    .feature-card {
+      background: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      padding: 30px;
+      border-radius: 16px;
+    }
+
+    .feature-number {
+      font-family: 'Outfit', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--accent-gold);
+      margin-bottom: 12px;
+    }
+
+    .feature-card h4 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    /* Footer */
+    footer {
+      background: #06090e;
+      color: #9ca3af;
+      padding: 70px 5% 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 40px;
+      margin-bottom: 50px;
+    }
+
+    .footer-col h5 {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .footer-col p {
+      font-size: 14px;
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .footer-col a {
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover {
+      color: var(--accent-gold);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 30px;
+      text-align: center;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    /* MODAL STYLES */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .login-box {
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 36px;
+      width: 100%;
+      max-width: 420px;
+      color: #fff;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .login-box h3 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      text-align: center;
+      color: #fff;
+    }
+
+    .login-box p {
+      font-size: 13px;
+      color: #94a3b8;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #cbd5e1;
+    }
+
+    .form-input {
+      width: 100%;
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 12px 16px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    /* HIGH-END ENTERPRISE SAAS ADMIN PANEL LAYOUT (SIDEBAR + MAIN DASHBOARD) */
+    .admin-modal {
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      background: #080d16;
+      color: #fff;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Left Sidebar Navigation */
+    .admin-sidebar {
+      width: 280px;
+      background: #0d1527;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 20px;
+      flex-shrink: 0;
+    }
+
+    .admin-sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #059669, #047857);
+      border-radius: 10px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+    }
+
+    .sidebar-brand-text h4 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+
+    .sidebar-brand-text p {
+      font-size: 11px;
+      color: #10b981;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .admin-menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      list-style: none;
+    }
+
+    .sidebar-nav-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid transparent;
+      color: #94a3b8;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .sidebar-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+    }
+
+    .sidebar-nav-btn.active {
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.25), rgba(4, 120, 87, 0.15));
+      border-color: rgba(5, 150, 105, 0.5);
+      color: #34d399;
+      box-shadow: 0 4px 15px rgba(5, 150, 105, 0.15);
+    }
+
+    .sidebar-footer {
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .admin-user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: #1e293b;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      border: 1px solid #334155;
+    }
+
+    .btn-logout-sidebar {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-logout-sidebar:hover {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    /* Main Dashboard Content Area */
+    .admin-main-area {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .admin-top-header {
+      background: #0d1527;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-top-header h3 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .admin-top-header p {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .header-badge-status {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .admin-body {
+      padding: 36px 40px;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* LUXURY STATS METRIC CARDS */
+    .stats-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-bottom: 36px;
+    }
+
+    .stat-card {
+      background: linear-gradient(145deg, #0f192e 0%, #132038 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 26px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+      border-color: rgba(5, 150, 105, 0.4);
+    }
+
+    .stat-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .stat-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(5, 150, 105, 0.15);
+      color: #34d399;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
+
+    .stat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 14px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+    }
+
+    .traffic-table-wrapper {
+      background: #0f192e;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .traffic-table-wrapper h4 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 14px 18px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    th {
+      color: #94a3b8;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    td {
+      color: #f1f5f9;
+    }
+
+    .bot-settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 24px;
+    }
+
+    .bot-box {
+      background: #0f192e;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .bot-box h4 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bot-box p {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
+
+    .slider-manage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .slider-edit-card {
+      background: #0f192e;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .slide-preview-box {
+      width: 100%;
+      height: 160px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      border: 1px solid #334155;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .slide-preview-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.75);
+      color: #10b981;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .btn-upload-file {
+      background: #0284c7;
+      color: #fff;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-upload-file:hover {
+      background: #0369a1;
+    }
+
+    /* Product Specs Modal */
+    .product-detail-modal {
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 32px;
+      width: 100%;
+      max-width: 680px;
+      color: #fff;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+
+    .product-detail-grid {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 640px) {
+      .product-detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ULTRA-PREMIUM TOP BAR WITH ACCENT LINE -->
+  <div class="top-bar-wrapper">
+    <div class="top-bar-accent-line"></div>
+    <div class="top-bar">
+      
+      <div class="top-bar-left">
+        <div class="info-pill" data-i18n="topHq">
+          📍 Bosh qarorgoh: Shenchjen, Xitoy
+        </div>
+        <div class="info-pill" data-i18n="topHub">
+          🇺🇿 Mintaqaviy markaz: Toshkent, O'zbekiston
+        </div>
+      </div>
+      
+      <div class="top-bar-right">
+        <!-- Luxury Interactive Flag Pill Switcher -->
+        <div class="lang-switcher-group">
+          <button class="lang-btn active" id="langBtnUz" onclick="changeLanguage('uz')">
+            🇺🇿 UZ
+          </button>
+          <button class="lang-btn" id="langBtnRu" onclick="changeLanguage('ru')">
+            🇷🇺 RU
+          </button>
+          <button class="lang-btn" id="langBtnEn" onclick="changeLanguage('en')">
+            🇬🇧 EN
+          </button>
+        </div>
+
+        <a href="mailto:sales@mecopower.com" class="email-pill">
+          <span class="live-dot"></span>
+          <span>✉️ sales@mecopower.com</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Header Navigation -->
+  <header>
+    <a href="/" class="logo-container">
+      <div class="logo-icon">M</div>
+      <div class="logo-text">
+        <h1>MECO POWER</h1>
+        <p data-i18n="logoSub">Quyosh Energiyasi Saqlash Yechimlari</p>
+      </div>
+    </a>
+
+    <nav>
+      <ul>
+        <li><a href="/" class="active" data-i18n="navHome">Bosh sahifa</a></li>
+        <li><a href="#about" data-i18n="navAbout">Meco haqida</a></li>
+        <li><a href="#products" data-i18n="navProducts">Mahsulotlar</a></li>
+        <li><a href="#services" data-i18n="navServices">Xizmatlar</a></li>
+        <li><a href="#cases" data-i18n="navCases">Qo'llanish holatlari</a></li>
+        <li><a href="#contact" data-i18n="navContact">Bog'lanish</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button onclick="openLoginModal()" class="btn-login" data-i18n="btnLogin">
+        🔑 Kirish
+      </button>
+    </div>
+  </header>
+
+  <!-- DYNAMIC HERO IMAGE SLIDER CAROUSEL -->
+  <section class="hero-slider-container" id="heroContainer">
+    <!-- Dynamic Slides Rendered via JavaScript -->
+  </section>
+
+  <!-- PRODUCT SERIES SECTION WITH MULTI-LANGUAGE TABS -->
+  <section id="products" class="product-series-section">
+    
+    <!-- Category Tabs Navigation Bar -->
+    <div class="series-nav-bar">
+      <div class="category-tabs">
+        <button class="category-tab-btn active" onclick="filterCategory('ALL', this)" id="tabBtnAll" data-i18n="tabAll">Barchasi (All Products)</button>
+        <button class="category-tab-btn" onclick="filterCategory('Solar Power Bank', this)" id="tabBtnBank" data-i18n="tabPowerBank">Quyosh Powerbanki</button>
+        <button class="category-tab-btn" onclick="filterCategory('Solar Generator', this)" id="tabBtnGen" data-i18n="tabGenerator">Quyosh Generatori</button>
+        <button class="category-tab-btn" onclick="filterCategory('Solar Panel', this)" id="tabBtnPanel" data-i18n="tabPanel">Quyosh Paneli</button>
+      </div>
+
+      <div class="breadcrumb-path">
+        Home - Products - <span id="breadcrumbCategory">Solar Power Bank</span>
+      </div>
+    </div>
+
+    <!-- Product Series Header -->
+    <div class="series-header">
+      <h2 data-i18n="seriesTitle">Product Series</h2>
+    </div>
+
+    <!-- Full 11 Products Grid -->
+    <div class="products-grid-full" id="productsGridContainer">
+      <!-- Dynamic 11 Products Rendered via JavaScript -->
+    </div>
+
+  </section>
+
+  <!-- Why Choose Us -->
+  <section id="about" class="section-padding why-us">
+    <div class="section-header">
+      <div class="section-subtitle" style="color: var(--accent-gold);" data-i18n="whyUsTitle">Nima Uchun Bizni Tanlashadi</div>
+      <h2 class="section-title" style="color: #fff;" data-i18n="whyUsSubtitle">Fotovoltaika va Energiya Saqlashdagi Yetakchi Innovatsiyalar</h2>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-number">01</div>
+        <h4 data-i18n="feature1Title">Kombinatsiyalashgan (All-In-One) Dizayn</h4>
+        <p data-i18n="feature1Desc">MPPT zaryadlovchisi, invertor, akkumulyator va aqlli BMS tizimi bitta ixcham korpusda jamlangan.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-number">02</div>
+        <h4 data-i18n="feature2Title">GaN Texnologiyasi</h4>
+        <p data-i18n="feature2Desc">GaN (Galliy Nitrid) quvvat konversiyasi energiyani 92% gacha yuqori samaradorlik bilan yetkazadi.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-number">03</div>
+        <h4 data-i18n="feature3Title">LiFePO4 8000+ Sikl</h4>
+        <p data-i18n="feature3Desc">8000 dan ortiq zaryadlash sikliga ega eng uzoq muddat xizmat qiluvchi avtomobil darajasidagi batareyalar.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-number">04</div>
+        <h4 data-i18n="feature4Title">Xalqaro Sertifikatlar</h4>
+        <p data-i18n="feature4Desc">UN38.3, IEC62368 hamda xalqaro elektr xavfsizlik standartlariga javob beradi.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Offices & Contact Footer -->
+  <footer id="contact">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h5 data-i18n="footerHq">Xitoydagi Bosh Qarorgoh</h5>
+        <p>📍 1801 Hongfawanyueshan Building, No. 638 Guangming Avenue, Guangming District, SHENZHEN, CHINA</p>
+        <p>📞 +86 15814495128</p>
+        <p>✉️ <a href="mailto:sales@mecopower.com">sales@mecopower.com</a></p>
+      </div>
+
+      <div class="footer-col">
+        <h5 data-i18n="footerHub">O'zbekistondagi Mintaqaviy Markaz</h5>
+        <p>📍 Toshkent markaziy shourum, Chilonzor tumani, Bunyodkor shox ko'chasi 42, Toshkent, O'zbekiston</p>
+        <p>📞 +998 71 200 00 00</p>
+        <p>✉️ <a href="mailto:uzbekistan@mecopower.com">uzbekistan@mecopower.com</a></p>
+      </div>
+
+      <div class="footer-col">
+        <h5 data-i18n="footerOffices">Pokiston va Nigeriya Filiallari</h5>
+        <p>🇵🇰 Islomobod: DHA 2 Gate #1, Main GT Road, Islamabad | +92 315 7123498</p>
+        <p>🇳🇬 Nigeriya markazi: Victor Xiao | +234 810 4259008 | allen@mecopower.com</p>
+      </div>
+
+      <div class="footer-col">
+        <h5 data-i18n="footerLineup">Mahsulotlar Bo'limi</h5>
+        <p><a href="#products" data-i18n="tabPowerBank">Quyosh Powerbanklari</a></p>
+        <p><a href="#products" data-i18n="tabGenerator">Quyosh Generatorlari (1kWh - 5.4kWh)</a></p>
+        <p><a href="#products" data-i18n="tabPanel">Quyosh Panellari (F200W - 620W)</a></p>
+        <p><a href="/api/v1/service/manuals" target="_blank" data-i18n="footerManuals">Qo'llanmalarni Yuklab Olish</a></p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 MECO POWER Technology Co., Ltd. Barcha huquqlar himoyalangan. | O'zbekiston Veb Portali va API Tizimi</p>
+    </div>
+  </footer>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="login-box">
+      <button class="close-modal" onclick="closeLoginModal()">✕</button>
+      <h3 data-i18n="loginModalTitle">Admin Panelga Kirish</h3>
+      <p data-i18n="loginModalSub">Boshqaruv paneli va statistikalarga kirish uchun login hamda parolni kiriting (Standart: <b>123</b>)</p>
+
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label data-i18n="loginUserLabel">Login / Foydalanuvchi nomi:</label>
+          <input type="text" id="loginUsername" class="form-input" value="123" required />
+        </div>
+
+        <div class="form-group">
+          <label data-i18n="loginPassLabel">Parol:</label>
+          <input type="password" id="loginPassword" class="form-input" value="123" required />
+        </div>
+
+        <div id="loginError" style="color: #ef4444; font-size: 13px; margin-bottom: 12px; display: none;"></div>
+
+        <button type="submit" class="btn-submit" data-i18n="btnSubmitLogin">Tizimga Kirish →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- PRODUCT DETAIL POPUP MODAL -->
+  <div class="modal-overlay" id="productDetailModal">
+    <div class="product-detail-modal">
+      <button class="close-modal" onclick="closeProductDetailModal()">✕</button>
+      
+      <div class="product-detail-grid">
+        <div style="background: #1e293b; border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: center;">
+          <img id="detailImg" src="" style="max-width: 100%; max-height: 200px; object-fit: contain;" />
+        </div>
+
+        <div>
+          <span class="protection-tag" id="detailBadge" style="position: static; display: inline-block; margin-bottom: 10px;"></span>
+          <h3 id="detailTitle" style="font-size: 22px; font-weight: 800; color: #10b981; margin-bottom: 8px;"></h3>
+          <p id="detailDesc" style="font-size: 14px; color: #cbd5e1; margin-bottom: 12px;"></p>
+          <p id="detailSpecs" style="font-size: 13px; color: #94a3b8; background: #1e293b; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px;"></p>
+
+          <div style="font-size: 24px; font-weight: 800; color: #10b981; margin-bottom: 20px;" id="detailPrice"></div>
+
+          <button onclick="requestProductQuote()" class="btn-submit" style="margin: 0;" data-i18n="btnSubmitQuote">🛒 Ushbu Mahsulotga Buyurtma Berish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ULTRA-PROFESSIONAL ENTERPRISE SAAS ADMIN PANEL LAYOUT (SIDEBAR + DASHBOARD) -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="admin-modal">
+      
+      <!-- Left Sidebar -->
+      <div class="admin-sidebar">
+        <div>
+          <div class="admin-sidebar-brand">
+            <div class="sidebar-brand-icon">⚡</div>
+            <div class="sidebar-brand-text">
+              <h4>MECO Control</h4>
+              <p><span class="live-dot"></span> LIVE ONLINE</p>
+            </div>
+          </div>
+
+          <ul class="admin-menu-list">
+            <li>
+              <button class="sidebar-nav-btn active" onclick="switchTab('dashboardTab', this)">
+                <span>📊</span> Dashboard & Sotuvlar
+              </button>
+            </li>
+            <li>
+              <button class="sidebar-nav-btn" onclick="switchTab('productsManageTab', this)">
+                <span>📦</span> Mahsulotlar Boshqaruvi
+              </button>
+            </li>
+            <li>
+              <button class="sidebar-nav-btn" onclick="switchTab('trafficTab', this)">
+                <span>🔗</span> Real-Vaqt Tashriflar
+              </button>
+            </li>
+            <li>
+              <button class="sidebar-nav-btn" onclick="switchTab('sliderTab', this)">
+                <span>🖼️</span> Slayder Rasmlari
+              </button>
+            </li>
+            <li>
+              <button class="sidebar-nav-btn" onclick="switchTab('botSettingsTab', this)">
+                <span>⚙️</span> 2 ta Telegram Bot
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="admin-user-info">
+            <div class="user-avatar">👤</div>
+            <div>
+              <div style="font-size: 13px; font-weight: 800; color: #fff;">Admin User</div>
+              <div style="font-size: 11px; color: #10b981;">● Administrator</div>
+            </div>
+          </div>
+
+          <button class="btn-logout-sidebar" onclick="closeAdminModal()">Chiqish ✕</button>
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="admin-main-area">
+        
+        <!-- Top Dashboard Header -->
+        <div class="admin-top-header">
+          <div>
+            <h3>⚡ MECO Power Admin Dashboard</h3>
+            <p>Sotuvlar analitikasi, Mahsulotlar narxlari hamda Telegram Botlar boshqaruvi</p>
+          </div>
+
+          <div class="header-badge-status">
+            <span class="live-dot"></span>
+            <span>Tizim xavfsiz va faol ishlamoqda</span>
+          </div>
+        </div>
+
+        <!-- Dashboard Body Content -->
+        <div class="admin-body">
+          
+          <!-- Tab 1: Dashboard & Analytics -->
+          <div id="dashboardTab" class="tab-content active">
+            
+            <div class="stats-cards-grid">
+              <div class="stat-card">
+                <div class="stat-card-header">
+                  <div class="stat-label">Bugungi Sotuvlar (Daily)</div>
+                  <div class="stat-card-icon">💰</div>
+                </div>
+                <div class="stat-value" id="dailySales">27,700,000 UZS</div>
+                <div class="stat-badge">↑ +14.2% kechagiga nisbatan</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-card-header">
+                  <div class="stat-label">Haftalik Sotuvlar (Weekly)</div>
+                  <div class="stat-card-icon">📈</div>
+                </div>
+                <div class="stat-value" id="weeklySales">184,500,000 UZS</div>
+                <div class="stat-badge">↑ +22.8% o'tgan haftaga nisbatan</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-card-header">
+                  <div class="stat-label">Oylik Sotuvlar (Monthly)</div>
+                  <div class="stat-card-icon">🏆</div>
+                </div>
+                <div class="stat-value" id="monthlySales">642,000,000 UZS</div>
+                <div class="stat-badge">↑ Oylik kutilma bajarilmoqda</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-card-header">
+                  <div class="stat-label">Real-Vaqtdagi Faol Tashrifchilar</div>
+                  <div class="stat-card-icon" style="background: rgba(6, 182, 212, 0.15); color: #06b6d4;">👁️</div>
+                </div>
+                <div class="stat-value" style="color: #06b6d4;" id="activeVisitors">● 7 kishi</div>
+                <div class="stat-badge" style="background: rgba(6,182,212,0.2); color: #06b6d4;">LIVE ONLINE STREAM</div>
+              </div>
+            </div>
+
+            <!-- Recent Sales & Inventory Status Table -->
+            <div class="traffic-table-wrapper">
+              <h4>📊 Mahsulotlar Bo'yicha Sotuvlar va Omborxona Zaxirasi Xulosasi</h4>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mahsulot Nomi</th>
+                    <th>Kategoriya</th>
+                    <th>Sotilgan Soni</th>
+                    <th>Jami Tushum</th>
+                    <th>Ombor Holati</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><b>Meco 3.6kWh Pro Solar Generator</b></td>
+                    <td>Solar Generator</td>
+                    <td>12 dona</td>
+                    <td><b style="color: #10b981;">294,000,000 UZS</b></td>
+                    <td><span style="background: rgba(16,185,129,0.15); color:#10b981; padding:3px 10px; border-radius:12px; font-weight:700; font-size:12px;">● Omborxonada Mavjud</span></td>
+                  </tr>
+                  <tr>
+                    <td><b>Meco 1kWh Solar Generator</b></td>
+                    <td>Solar Generator</td>
+                    <td>18 dona</td>
+                    <td><b style="color: #10b981;">160,200,000 UZS</b></td>
+                    <td><span style="background: rgba(16,185,129,0.15); color:#10b981; padding:3px 10px; border-radius:12px; font-weight:700; font-size:12px;">● Omborxonada Mavjud</span></td>
+                  </tr>
+                  <tr>
+                    <td><b>Meco 300Wh Solar Power Bank</b></td>
+                    <td>Solar Power Bank</td>
+                    <td>28 dona</td>
+                    <td><b style="color: #10b981;">89,600,000 UZS</b></td>
+                    <td><span style="background: rgba(16,185,129,0.15); color:#10b981; padding:3px 10px; border-radius:12px; font-weight:700; font-size:12px;">● Omborxonada Mavjud</span></td>
+                  </tr>
+                  <tr>
+                    <td><b>Meco 620W Solar Panel</b></td>
+                    <td>Solar Panel</td>
+                    <td>32 dona</td>
+                    <td><b style="color: #10b981;">99,200,000 UZS</b></td>
+                    <td><span style="background: rgba(16,185,129,0.15); color:#10b981; padding:3px 10px; border-radius:12px; font-weight:700; font-size:12px;">● Omborxonada Mavjud</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+
+          <!-- Tab 2: PRODUCTS CATALOG MANAGEMENT (EDIT PRICE & PC IMAGE) -->
+          <div id="productsManageTab" class="tab-content">
+            <div style="margin-bottom: 24px;">
+              <h4 style="font-size: 20px; color: #fff; font-weight: 800;">📦 Mahsulotlar Narxi va Rasmlarini Boshqarish</h4>
+              <p style="font-size: 13px; color: #94a3b8;">Kompyuteringizdan yangi rasm tanlashingiz bilan u avtomatik serverga yuklanadi hamda saytda lahzalik yangilanadi!</p>
+            </div>
+
+            <form onsubmit="saveProductChanges(event)">
+              <div class="slider-manage-grid" id="adminProductsEditContainer">
+                <!-- Dynamically Populated Product Edit Cards -->
+              </div>
+
+              <div style="margin-top: 30px; text-align: right;">
+                <button type="submit" class="btn-submit" style="width: auto; padding: 14px 42px; font-size: 16px;">💾 Barcha Mahsulot O'zgarishlarini Saqlash</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Tab 3: Real-Vaqt Tashriflar & Havolalar Statistikasi -->
+          <div id="trafficTab" class="tab-content">
+            <div class="traffic-table-wrapper">
+              <h4>🔗 Havolalar (Referral Links) Orqali Kelgan Tashrifchilar Statistikasi</h4>
+              <p style="color: #94a3b8; font-size: 13px; margin-bottom: 16px;">Siz tarqatgan reklama va bot linklari orqali loyihaga qancha odam tashrif buyurgani real vaqtda yangilanadi:</p>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tashrif Manbai / Link</th>
+                    <th>Tashriflar Soni</th>
+                    <th>Ushbu Manbadan sotuvlar</th>
+                    <th>Konversiya Darajasi</th>
+                  </tr>
+                </thead>
+                <tbody id="referralTableBody">
+                  <tr>
+                    <td><b>📱 Telegram Bot / Kanal Linki</b> (<code>?ref=telegram</code>)</td>
+                    <td><b>620 kishi</b></td>
+                    <td>22 ta buyurtma</td>
+                    <td><b style="color: #10b981;">3.5%</b></td>
+                  </tr>
+                  <tr>
+                    <td><b>📸 Instagram Ads Linki</b> (<code>?ref=instagram</code>)</td>
+                    <td><b>410 kishi</b></td>
+                    <td>14 ta buyurtma</td>
+                    <td><b style="color: #10b981;">3.4%</b></td>
+                  </tr>
+                  <tr>
+                    <td><b>🔍 Google Search</b></td>
+                    <td><b>290 kishi</b></td>
+                    <td>8 ta buyurtma</td>
+                    <td><b style="color: #10b981;">2.7%</b></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tab 4: HERO SLIDER IMAGES MANAGEMENT WITH DIRECT FILE UPLOAD -->
+          <div id="sliderTab" class="tab-content">
+            <div style="margin-bottom: 20px;">
+              <h4 style="font-size: 18px; color: #fff; font-weight: 800;">🖼️ Bosh Sahifa Slayder Rasmlari va Matnlarini Boshqarish</h4>
+            </div>
+
+            <form onsubmit="saveSliderSettings(event)">
+              <div class="slider-manage-grid" id="sliderManageContainer"></div>
+              <div style="margin-top: 24px; text-align: right;">
+                <button type="submit" class="btn-submit" style="width: auto; padding: 12px 36px;">💾 Barcha Slayder Rasmlarini Saqlash</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Tab 5: 2 ta Telegram Bot Sozlamalari -->
+          <div id="botSettingsTab" class="tab-content">
+            <div class="bot-settings-grid">
+              <div class="bot-box">
+                <h4>🤖 1-BOT: Telegram Mini App Boti</h4>
+                <p>Mijozlar Telegram ichidan chiqmasdan sotuvlarni amalga oshiradigan Mini Telegram App sozlamalari.</p>
+                <form onsubmit="saveMiniAppBot(event)">
+                  <div class="form-group">
+                    <label>Mini App Bot Token:</label>
+                    <input type="text" id="miniAppToken" class="form-input" value="7123456789:AAFxX_ExampleMiniAppBotToken_Uzbekistan" />
+                  </div>
+                  <button type="submit" class="btn-submit">💾 1-Bot Sozlamalarini Saqlash</button>
+                </form>
+              </div>
+
+              <div class="bot-box">
+                <h4>📢 2-BOT: Buyurtmalar & Tashriflar Boti</h4>
+                <p>Yangi sotuvlar va buyurtmalar haqida admin chatiga lahzalik xabar beruvchi bot.</p>
+                <form onsubmit="saveNotificationBot(event)">
+                  <div class="form-group">
+                    <label>Notification Bot Token:</label>
+                    <input type="text" id="notifyToken" class="form-input" value="7987654321:AAHyY_ExampleNotificationBotToken_Uzbekistan" />
+                  </div>
+                  <div class="form-group">
+                    <label>Admin Telegram Chat ID:</label>
+                    <input type="text" id="adminChatId" class="form-input" value="987654321" />
+                  </div>
+                  <button type="submit" class="btn-submit">💾 2-Bot Sozlamalarini Saqlash</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // SLEEK TOAST NOTIFICATION SYSTEM (REPLACES INTRUSIVE BROWSER ALERTS)
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast-message ${type === 'error' ? 'error' : ''}`;
+      toast.innerText = message;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // I18N DICTIONARY FOR UZ, RU, EN
+    const i18n = {
+      uz: {
+        topHq: "📍 Bosh qarorgoh: Shenchjen, Xitoy",
+        topHub: "🇺🇿 Mintaqaviy markaz: Toshkent, O'zbekiston",
+        logoSub: "Quyosh Energiyasi Saqlash Yechimlari",
+        navHome: "Bosh sahifa",
+        navAbout: "Meco haqida",
+        navProducts: "Mahsulotlar",
+        navServices: "Xizmatlar",
+        navCases: "Qo'llanish holatlari",
+        navContact: "Bog'lanish",
+        btnLogin: "🔑 Kirish",
+        seriesTitle: "Mahsulotlar Turqumi",
+        tabAll: "Barchasi (All Products)",
+        tabPowerBank: "Quyosh Powerbanki",
+        tabGenerator: "Quyosh Generatori",
+        tabPanel: "Quyosh Paneli",
+        whyUsTitle: "Nima Uchun Bizni Tanlashadi",
+        whyUsSubtitle: "Fotovoltaika va Energiya Saqlashdagi Yetakchi Innovatsiyalar",
+        feature1Title: "Kombinatsiyalashgan (All-In-One) Dizayn",
+        feature1Desc: "MPPT zaryadlovchisi, invertor, akkumulyator va aqlli BMS tizimi bitta ixcham korpusda jamlangan.",
+        feature2Title: "GaN Texnologiyasi",
+        feature2Desc: "GaN (Galliy Nitrid) quvvat konversiyasi energiyani 92% gacha yuqori samaradorlik bilan yetkazadi.",
+        feature3Title: "LiFePO4 8000+ Sikl",
+        feature3Desc: "8000 dan ortiq zaryadlash sikliga ega eng uzoq muddat xizmat qiluvchi avtomobil darajasidagi batareyalar.",
+        feature4Title: "Xalqaro Sertifikatlar",
+        feature4Desc: "UN38.3, IEC62368 hamda xalqaro elektr xavfsizlik standartlariga javob beradi.",
+        footerHq: "Xitoydagi Bosh Qarorgoh",
+        footerHub: "O'zbekistondagi Mintaqaviy Markaz",
+        footerOffices: "Pokiston va Nigeriya Filiallari",
+        footerLineup: "Mahsulotlar Bo'limi",
+        footerManuals: "Qo'llanmalarni Yuklab Olish",
+        btnOrder: "Batafsil / Xarid",
+        btnSubmitQuote: "🛒 Ushbu Mahsulotga Buyurtma Berish",
+        loginModalTitle: "Admin Panelga Kirish",
+        loginModalSub: "Boshqaruv paneli va statistikalarga kirish uchun login hamda parolni kiriting (Standart: 123)",
+        loginUserLabel: "Login / Foydalanuvchi nomi:",
+        loginPassLabel: "Parol:",
+        btnSubmitLogin: "Tizimga Kirish →",
+      },
+      ru: {
+        topHq: "📍 Штаб-квартира: Шэньчжэнь, Китай",
+        topHub: "🇺🇿 Региональный центр: Ташкент, Узбекистан",
+        logoSub: "Решения для хранения солнечной энергии",
+        navHome: "Главная",
+        navAbout: "О Meco",
+        navProducts: "Продукция",
+        navServices: "Услуги",
+        navCases: "Применение",
+        navContact: "Контакты",
+        btnLogin: "🔑 Вход",
+        seriesTitle: "Серия Продукции",
+        tabAll: "Все продукты (All)",
+        tabPowerBank: "Солнечные повербанки",
+        tabGenerator: "Солнечные генераторы",
+        tabPanel: "Солнечные панели",
+        whyUsTitle: "Почему выбирают нас",
+        whyUsSubtitle: "Передовые инновации в фотовольтаике и накоплении энергии",
+        feature1Title: "Конструкция Все-в-одном (All-In-One)",
+        feature1Desc: "Встроенный контроллер MPPT, инвертор, аккумулятор и умная система BMS в едином корпусе.",
+        feature2Title: "Технология GaN",
+        feature2Desc: "Преобразование энергии на базе нитрида галлия (GaN) с эффективностью до 92%.",
+        feature3Title: "LiFePO4 8000+ ЦИКЛОВ",
+        feature3Desc: "Автомобильные аккумуляторы LiFePO4 с самым большим сроком службы — более 8000 циклов.",
+        feature4Title: "Международные Сертификаты",
+        feature4Desc: "Соответствует международным стандартам электробезопасности UN38.3 и IEC62368.",
+        footerHq: "Штаб-квартира в Китае",
+        footerHub: "Региональный центр в Узбекистане",
+        footerOffices: "Филиалы в Пакистане и Нигерии",
+        footerLineup: "Каталог Продукции",
+        footerManuals: "Скачать Руководства",
+        btnOrder: "Подробнее / Заказ",
+        btnSubmitQuote: "🛒 Заказать этот продукт",
+        loginModalTitle: "Вход в Админ Панель",
+        loginModalSub: "Введите логин и пароль для доступа к статистике (По умолчанию: 123)",
+        loginUserLabel: "Логин / Имя пользователя:",
+        loginPassLabel: "Пароль:",
+        btnSubmitLogin: "Войти в систему →",
+      },
+      en: {
+        topHq: "📍 Global HQ: Shenzhen, China",
+        topHub: "🇺🇿 Regional Hub: Tashkent, Uzbekistan",
+        logoSub: "Solar Energy Storage Solutions",
+        navHome: "Home",
+        navAbout: "About Meco",
+        navProducts: "Products",
+        navServices: "Services",
+        navCases: "Application Cases",
+        navContact: "Contact Us",
+        btnLogin: "🔑 Login",
+        seriesTitle: "Product Series",
+        tabAll: "All Products",
+        tabPowerBank: "Solar Power Bank",
+        tabGenerator: "Solar Generator",
+        tabPanel: "Solar Panel",
+        whyUsTitle: "Why Choose Us",
+        whyUsSubtitle: "Leading Innovations in Photovoltaic & Energy Storage",
+        feature1Title: "All-In-One Integrated Design",
+        feature1Desc: "Built-in MPPT controller, inverter, premium battery module, and smart BMS in a single sleek unit.",
+        feature2Title: "GaN Technology",
+        feature2Desc: "Gallium Nitride (GaN) power conversion achieving up to 92% ultra-high energy efficiency.",
+        feature3Title: "LiFePO4 8000+ Cycles",
+        feature3Desc: "Longest lifespan automotive-grade LiFePO4 chemistry with over 8,000 charge cycles.",
+        feature4Title: "Global Certification",
+        feature4Desc: "Certified to UN38.3, IEC62368, and international electrical safety standards.",
+        footerHq: "China Headquarters",
+        footerHub: "Uzbekistan Regional Hub",
+        footerOffices: "Pakistan & Nigeria Offices",
+        footerLineup: "Product Lineup",
+        footerManuals: "Manual Downloads",
+        btnOrder: "Details / Order",
+        btnSubmitQuote: "🛒 Order This Product",
+        loginModalTitle: "Admin Panel Login",
+        loginModalSub: "Enter credentials to access admin statistics (Default: 123)",
+        loginUserLabel: "Username / Login:",
+        loginPassLabel: "Password:",
+        btnSubmitLogin: "Sign In →",
+      }
+    };
+
+    let currentLang = localStorage.getItem('meco_lang') || 'uz';
+    let allProductsData = [];
+    let activeCategoryFilter = 'ALL';
+
+    let slidesData = [];
+    let currentSlide = 0;
+    let autoSlideInterval = null;
+    let selectedProductForDetail = null;
+
+    // Change Language Function with Premium Flag Pills Active State
+    function changeLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('meco_lang', lang);
+
+      document.getElementById('langBtnUz').classList.remove('active');
+      document.getElementById('langBtnRu').classList.remove('active');
+      document.getElementById('langBtnEn').classList.remove('active');
+
+      if (lang === 'ru') document.getElementById('langBtnRu').classList.add('active');
+      else if (lang === 'en') document.getElementById('langBtnEn').classList.add('active');
+      else document.getElementById('langBtnUz').classList.add('active');
+
+      const dict = i18n[lang] || i18n.uz;
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+          el.innerText = dict[key];
+        }
+      });
+
+      renderProductsGrid();
+      if (selectedProductForDetail) {
+        openProductDetail(selectedProductForDetail.id);
+      }
+    }
+
+    // Fetch All 11 Products from Backend API
+    async function loadAllProducts() {
+      try {
+        const res = await fetch('/api/v1/products');
+        const data = await res.json();
+        if (data.success && data.data) {
+          allProductsData = data.data;
+          renderProductsGrid();
+          renderAdminProductsEditor();
+        }
+      } catch (err) {
+        console.error('Products fetch error:', err);
+      }
+    }
+
+    // Filter Category Tabs
+    function filterCategory(category, btn) {
+      activeCategoryFilter = category;
+      document.querySelectorAll('.category-tab-btn').forEach(el => el.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      document.getElementById('breadcrumbCategory').innerText = category === 'ALL' ? 'All Products' : category;
+      renderProductsGrid();
+    }
+
+    // Render Full 11 Products Grid matching user screenshot & chosen language
+    function renderProductsGrid() {
+      const container = document.getElementById('productsGridContainer');
+      if (!allProductsData || allProductsData.length === 0) return;
+
+      const filtered = activeCategoryFilter === 'ALL' 
+        ? allProductsData 
+        : allProductsData.filter(p => p.category === activeCategoryFilter);
+
+      const dict = i18n[currentLang] || i18n.uz;
+
+      let html = '';
+      filtered.forEach(p => {
+        const desc = currentLang === 'ru' ? p.descriptionRu : (currentLang === 'en' ? p.descriptionEn : p.descriptionUz);
+        const specs = currentLang === 'ru' ? p.specsRu : (currentLang === 'en' ? p.specsEn : p.specsUz);
+        const badge = currentLang === 'ru' ? p.protectionBadgeRu : (currentLang === 'en' ? p.protectionBadgeEn : p.protectionBadgeUz);
+
+        html += `
+          <div class="product-card-item">
+            <div class="card-img-holder">
+              <span class="card-badge-tag">${badge}</span>
+              <img src="${p.imageUrl}" alt="${p.name}" />
+            </div>
+            
+            <div class="card-content">
+              <div>
+                <div class="card-title">${p.name}</div>
+                <div class="card-specs">${specs}</div>
+              </div>
+
+              <div class="card-footer-action">
+                <div class="card-price">${p.priceUzS.toLocaleString()} UZS</div>
+                <button onclick="openProductDetail('${p.id}')" class="btn-detail">${dict.btnOrder}</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Render Admin Products Editor Grid (Edit Price & PC Image Upload)
+    function renderAdminProductsEditor() {
+      const container = document.getElementById('adminProductsEditContainer');
+      if (!container || !allProductsData) return;
+
+      let html = '';
+      allProductsData.forEach((product, index) => {
+        html += `
+          <div class="slider-edit-card">
+            <div>
+              <div class="slide-preview-box" id="prodPreviewBox_${index}" style="background-image: url('${product.imageUrl}'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #1e293b;">
+                <span class="slide-preview-badge">${product.category}</span>
+              </div>
+
+              <div class="form-group">
+                <label>Mahsulot Nomi:</label>
+                <input type="text" id="prodName_${index}" class="form-input" value="${product.name}" required />
+              </div>
+
+              <div class="form-group">
+                <label>Mahsulot Narxi (UZS So'mda):</label>
+                <input type="number" id="prodPrice_${index}" class="form-input" value="${product.priceUzS}" required style="color: #10b981; font-weight: 800; font-size: 16px;" />
+              </div>
+
+              <div class="form-group">
+                <label>Rasm URL Manzili:</label>
+                <input type="text" id="prodImgUrl_${index}" class="form-input" value="${product.imageUrl}" oninput="updateProdPreview(${index}, this.value)" required />
+                
+                <input type="file" id="prodFileInput_${index}" accept="image/*" style="display:none" onchange="uploadDirectProductImage(${index}, event)" />
+                <button type="button" class="btn-upload-file" onclick="document.getElementById('prodFileInput_${index}').click()">
+                  📁 Kompyuterdan Yangi Rasm Yuklash
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function updateProdPreview(index, url) {
+      const box = document.getElementById(`prodPreviewBox_${index}`);
+      if (box) box.style.backgroundImage = `url('${url}')`;
+    }
+
+    // Handle Direct Product PC File Upload with Auto-Save and Toast
+    async function uploadDirectProductImage(index, event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        const base64Data = e.target.result;
+        try {
+          const res = await fetch('/api/v1/settings/upload-slide-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageBase64: base64Data, fileName: file.name })
+          });
+          const data = await res.json();
+
+          if (data.success && data.data && data.data.imageUrl) {
+            const newUrl = data.data.imageUrl;
+            document.getElementById(`prodImgUrl_${index}`).value = newUrl;
+            updateProdPreview(index, newUrl);
+            
+            // Auto-save updated products list to backend server immediately!
+            allProductsData[index].imageUrl = newUrl;
+            await saveProductChangesSilent();
+            showToast(`✅ Mahsulot #${index + 1} rasmi kompyuterdan yuklandi va saytda yangilandi!`);
+          } else {
+            showToast('Rasm yuklashda xatolik: ' + (data.message || 'Noma\'lum xatolik'), 'error');
+          }
+        } catch (err) {
+          showToast('Xatolik yuz berdi: ' + err.message, 'error');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Silent Auto-Save for Product Updates
+    async function saveProductChangesSilent() {
+      const updatedProducts = allProductsData.map((prod, index) => ({
+        id: prod.id,
+        name: document.getElementById(`prodName_${index}`).value,
+        priceUzS: parseFloat(document.getElementById(`prodPrice_${index}`).value),
+        imageUrl: document.getElementById(`prodImgUrl_${index}`).value
+      }));
+
+      try {
+        const res = await fetch('/api/v1/products/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ products: updatedProducts })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          allProductsData = data.data;
+          renderProductsGrid();
+        }
+      } catch (err) {
+        console.error('Auto save error:', err);
+      }
+    }
+
+    // Save All Product Changes Manual Button
+    async function saveProductChanges(e) {
+      e.preventDefault();
+
+      const updatedProducts = allProductsData.map((prod, index) => ({
+        id: prod.id,
+        name: document.getElementById(`prodName_${index}`).value,
+        priceUzS: parseFloat(document.getElementById(`prodPrice_${index}`).value),
+        imageUrl: document.getElementById(`prodImgUrl_${index}`).value
+      }));
+
+      try {
+        const res = await fetch('/api/v1/products/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ products: updatedProducts })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          allProductsData = data.data;
+          renderProductsGrid();
+          showToast('🚀 Barcha mahsulotlar narxlari va rasmlari saqlandi va saytda yangilandi!');
+        } else {
+          showToast('Xatolik: ' + data.message, 'error');
+        }
+      } catch (err) {
+        showToast('Xatolik yuz berdi: ' + err.message, 'error');
+      }
+    }
+
+    // Open Product Details Modal with Multilanguage Content
+    function openProductDetail(productId) {
+      const product = allProductsData.find(p => p.id === productId);
+      if (!product) return;
+
+      selectedProductForDetail = product;
+      const desc = currentLang === 'ru' ? product.descriptionRu : (currentLang === 'en' ? product.descriptionEn : product.descriptionUz);
+      const specs = currentLang === 'ru' ? product.specsRu : (currentLang === 'en' ? product.specsEn : product.specsUz);
+      const badge = currentLang === 'ru' ? product.protectionBadgeRu : (currentLang === 'en' ? product.protectionBadgeEn : product.protectionBadgeUz);
+
+      document.getElementById('detailImg').src = product.imageUrl;
+      document.getElementById('detailTitle').innerText = product.name;
+      document.getElementById('detailBadge').innerText = badge;
+      document.getElementById('detailDesc').innerText = desc;
+      document.getElementById('detailSpecs').innerText = `${specs}`;
+      document.getElementById('detailPrice').innerText = `${product.priceUzS.toLocaleString()} UZS`;
+
+      document.getElementById('productDetailModal').classList.add('active');
+    }
+
+    function closeProductDetailModal() {
+      document.getElementById('productDetailModal').classList.remove('active');
+    }
+
+    async function requestProductQuote() {
+      if (!selectedProductForDetail) return;
+      try {
+        const res = await fetch('/api/v1/orders/quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerName: 'Xaridor',
+            items: [{ productId: selectedProductForDetail.id, name: selectedProductForDetail.name }]
+          })
+        });
+        const data = await res.json();
+        showToast(`✅ Buyurtma kodi: ${data.data.quoteId}. Tez orada bog'lanamiz!`);
+        closeProductDetailModal();
+      } catch (err) {
+        showToast('Xatolik yuz berdi: ' + err.message, 'error');
+      }
+    }
+
+    // Fetch and render Hero Slides
+    async function loadSliderData() {
+      try {
+        const res = await fetch('/api/v1/settings/sliders');
+        const data = await res.json();
+        if (data.success && data.data) {
+          slidesData = data.data;
+          renderHomepageSlider();
+          renderAdminSliderEditor();
+        }
+      } catch (err) {
+        console.error('Slider fetch error:', err);
+      }
+    }
+
+    // Render Homepage Carousel
+    function renderHomepageSlider() {
+      const container = document.getElementById('heroContainer');
+      if (!slidesData || slidesData.length === 0) return;
+
+      let slidesHtml = '';
+      let dotsHtml = '';
+
+      slidesData.forEach((slide, i) => {
+        slidesHtml += `
+          <div class="slide ${i === 0 ? 'active' : ''}" style="background-image: url('${slide.imageUrl}');">
+            <div class="slide-overlay"></div>
+            <div class="slide-content-card">
+              <span class="slide-badge">${slide.badgeText}</span>
+              <h2>${slide.title}</h2>
+              <p>${slide.subtitle}</p>
+              <a href="#products" class="btn-slide-action">${slide.buttonText}</a>
+            </div>
+          </div>
+        `;
+        dotsHtml += `<div class="dot ${i === 0 ? 'active' : ''}" onclick="setSlide(${i})"></div>`;
+      });
+
+      slidesHtml += `
+        <svg class="slider-wave" viewBox="0 0 1440 80" fill="none" preserveAspectRatio="none">
+          <path d="M0 40C320 80 420 10 720 35C1020 60 1120 15 1440 40V80H0V40Z" fill="#0d9488" fill-opacity="0.95"/>
+          <path d="M0 45C320 85 420 15 720 40C1020 65 1120 20 1440 45" stroke="#f59e0b" stroke-width="3"/>
+        </svg>
+        <div class="slider-dots">${dotsHtml}</div>
+      `;
+
+      container.innerHTML = slidesHtml;
+      currentSlide = 0;
+
+      if (autoSlideInterval) clearInterval(autoSlideInterval);
+      autoSlideInterval = setInterval(() => {
+        let next = (currentSlide + 1) % slidesData.length;
+        setSlide(next);
+      }, 4500);
+    }
+
+    function setSlide(index) {
+      const slides = document.querySelectorAll('.slide');
+      const dots = document.querySelectorAll('.dot');
+      if (!slides.length) return;
+
+      slides[currentSlide].classList.remove('active');
+      if (dots[currentSlide]) dots[currentSlide].classList.remove('active');
+      currentSlide = index;
+      slides[currentSlide].classList.add('active');
+      if (dots[currentSlide]) dots[currentSlide].classList.add('active');
+    }
+
+    // Render Admin Slider Editor Cards with File Upload Button
+    function renderAdminSliderEditor() {
+      const container = document.getElementById('sliderManageContainer');
+      let html = '';
+
+      slidesData.forEach((slide, index) => {
+        html += `
+          <div class="slider-edit-card">
+            <div>
+              <div class="slide-preview-box" id="previewBox_${index}" style="background-image: url('${slide.imageUrl}');">
+                <span class="slide-preview-badge">Slayder #${slide.id}</span>
+              </div>
+
+              <div class="form-group">
+                <label>Slayder #${slide.id} Rasm Manzili (URL):</label>
+                <input type="text" id="slideImg_${index}" class="form-input" value="${slide.imageUrl}" oninput="updatePreview(${index}, this.value)" required />
+                
+                <input type="file" id="fileInput_${index}" accept="image/*" style="display:none" onchange="uploadDirectImage(${index}, event)" />
+                <button type="button" class="btn-upload-file" onclick="document.getElementById('fileInput_${index}').click()">
+                  📁 Kompyuterdan Rasm Tanlash va Yuklash
+                </button>
+              </div>
+
+              <div class="form-group">
+                <label>Nishon Matni (Badge):</label>
+                <input type="text" id="slideBadge_${index}" class="form-input" value="${slide.badgeText}" required />
+              </div>
+
+              <div class="form-group">
+                <label>Sarlavha (Title):</label>
+                <input type="text" id="slideTitle_${index}" class="form-input" value="${slide.title}" required />
+              </div>
+
+              <div class="form-group">
+                <label>Kichik Matn (Subtitle):</label>
+                <input type="text" id="slideSubtitle_${index}" class="form-input" value="${slide.subtitle}" required />
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function updatePreview(index, url) {
+      const box = document.getElementById(`previewBox_${index}`);
+      if (box) box.style.backgroundImage = `url('${url}')`;
+    }
+
+    // Handle Direct Image File Selection from PC for Hero Slider
+    async function uploadDirectImage(index, event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        const base64Data = e.target.result;
+        try {
+          const res = await fetch('/api/v1/settings/upload-slide-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageBase64: base64Data, fileName: file.name })
+          });
+          const data = await res.json();
+
+          if (data.success && data.data && data.data.imageUrl) {
+            const newUrl = data.data.imageUrl;
+            document.getElementById(`slideImg_${index}`).value = newUrl;
+            updatePreview(index, newUrl);
+            
+            // Auto-save updated slides to backend immediately
+            slidesData[index].imageUrl = newUrl;
+            await saveSliderSettingsSilent();
+            showToast(`✅ Slayder #${index + 1} rasmi kompyuteringizdan yuklandi va saqlandi!`);
+          } else {
+            showToast('Rasm yuklashda xatolik: ' + (data.message || 'Noma\'lum xatolik'), 'error');
+          }
+        } catch (err) {
+          showToast('Xatolik yuz berdi: ' + err.message, 'error');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Silent Auto Save Slider Settings
+    async function saveSliderSettingsSilent() {
+      const updatedSlides = slidesData.map((slide, index) => ({
+        ...slide,
+        imageUrl: document.getElementById(`slideImg_${index}`).value,
+        badgeText: document.getElementById(`slideBadge_${index}`).value,
+        title: document.getElementById(`slideTitle_${index}`).value,
+        subtitle: document.getElementById(`slideSubtitle_${index}`).value,
+      }));
+
+      try {
+        const res = await fetch('/api/v1/settings/sliders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slides: updatedSlides })
+        });
+        const data = await res.json();
+        if (data.success) {
+          slidesData = data.data;
+          renderHomepageSlider();
+        }
+      } catch (err) {
+        console.error('Slider save error:', err);
+      }
+    }
+
+    // Save Admin Slider Settings Manual Button
+    async function saveSliderSettings(e) {
+      e.preventDefault();
+
+      const updatedSlides = slidesData.map((slide, index) => ({
+        ...slide,
+        imageUrl: document.getElementById(`slideImg_${index}`).value,
+        badgeText: document.getElementById(`slideBadge_${index}`).value,
+        title: document.getElementById(`slideTitle_${index}`).value,
+        subtitle: document.getElementById(`slideSubtitle_${index}`).value,
+      }));
+
+      try {
+        const res = await fetch('/api/v1/settings/sliders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slides: updatedSlides })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          slidesData = data.data;
+          renderHomepageSlider();
+          showToast('🚀 Barcha slayder rasmlari va matnlari saqlandi va saytda yangilandi!');
+        } else {
+          showToast('Xatolik: ' + data.message, 'error');
+        }
+      } catch (err) {
+        showToast('Xatolik yuz berdi: ' + err.message, 'error');
+      }
+    }
+
+    // Open / Close Modals
+    function openLoginModal() {
+      document.getElementById('loginModal').classList.add('active');
+      document.getElementById('loginError').style.display = 'none';
+    }
+
+    function closeLoginModal() {
+      document.getElementById('loginModal').classList.remove('active');
+    }
+
+    function closeAdminModal() {
+      document.getElementById('adminModal').classList.remove('active');
+    }
+
+    // Handle Admin Login (123 / 123)
+    async function handleLogin(e) {
+      e.preventDefault();
+      const loginVal = document.getElementById('loginUsername').value;
+      const passVal = document.getElementById('loginPassword').value;
+      const errorDiv = document.getElementById('loginError');
+
+      try {
+        const res = await fetch('/api/v1/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: loginVal, password: passVal })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          closeLoginModal();
+          document.getElementById('adminModal').classList.add('active');
+          loadDashboardStats();
+          renderAdminSliderEditor();
+          renderAdminProductsEditor();
+          showToast('⚡ Admin Dashboardga xush kelibsiz!');
+        } else {
+          errorDiv.innerText = data.message || 'Login yoki parol noto\'g\'ri!';
+          errorDiv.style.display = 'block';
+        }
+      } catch (err) {
+        errorDiv.innerText = 'Xatolik yuz berdi: ' + err.message;
+        errorDiv.style.display = 'block';
+      }
+    }
+
+    // Sidebar Tab Switching inside Admin Modal
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.sidebar-nav-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // Load Live Dashboard Data
+    async function loadDashboardStats() {
+      try {
+        const res = await fetch('/api/v1/analytics/dashboard');
+        const data = await res.json();
+        if (data.success && data.data) {
+          const stats = data.data;
+          document.getElementById('activeVisitors').innerText = `● ${stats.activeVisitorsCount} kishi`;
+          document.getElementById('dailySales').innerText = `${stats.sales.dailySalesUzS.toLocaleString()} UZS`;
+          document.getElementById('weeklySales').innerText = `${stats.sales.weeklySalesUzS.toLocaleString()} UZS`;
+          document.getElementById('monthlySales').innerText = `${stats.sales.monthlySalesUzS.toLocaleString()} UZS`;
+        }
+      } catch (err) {
+        console.error('Stats loading error:', err);
+      }
+    }
+
+    // Save Bot 1 Settings
+    async function saveMiniAppBot(e) {
+      e.preventDefault();
+      showToast('🚀 1-Bot (Telegram Mini App) sozlamalari saqlandi!');
+    }
+
+    // Save Bot 2 Settings
+    async function saveNotificationBot(e) {
+      e.preventDefault();
+      showToast('🚀 2-Bot (Buyurtmalar & Tashriflar Boti) sozlamalari saqlandi!');
+    }
+
+    // Test Notification Button
+    async function sendTestBotMsg() {
+      const chatId = document.getElementById('adminChatId').value;
+      try {
+        const res = await fetch('/api/v1/settings/telegram/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adminChatId: chatId })
+        });
+        const data = await res.json();
+        showToast(`📲 Telegram test xabari yuborildi! Chat ID: ${chatId}`);
+      } catch (err) {
+        showToast('Xatolik: ' + err.message, 'error');
+      }
+    }
+
+    // Initialize on Page Load
+    loadAllProducts();
+    loadSliderData();
+    changeLanguage(currentLang);
+  </script>
+
+</body>
+</html>

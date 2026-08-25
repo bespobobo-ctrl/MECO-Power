@@ -1,0 +1,41 @@
+{
+  "name": "meco-power-uzbekistan-api",
+  "version": "1.0.0",
+  "description": "Web API for MECO Power Uzbekistan - Solar Energy Solutions, Products, Orders, Distributors & Service",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "meco-power",
+    "uzbekistan",
+    "solar",
+    "energy-storage",
+    "clean-architecture",
+    "api"
+  ],
+  "author": "MECO Power Engineering Team",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
+    "bcrypt": "^5.1.1",
+    "zod": "^3.23.8",
+    "winston": "^3.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/bcrypt": "^5.0.2",
+    "typescript": "^5.4.5",
+    "ts-node-dev": "^2.0.0"
+  }
+}
