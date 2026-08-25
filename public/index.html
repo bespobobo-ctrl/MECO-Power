@@ -2123,17 +2123,17 @@
     <div class="login-box">
       <button class="close-modal" onclick="closeLoginModal()">✕</button>
       <h3 data-i18n="loginModalTitle">Admin Panelga Kirish</h3>
-      <p data-i18n="loginModalSub">Boshqaruv paneli va statistikalarga kirish uchun login hamda parolni kiriting (Standart: <b>123</b>)</p>
+      <p data-i18n="loginModalSub">Boshqaruv paneli va statistikalarga kirish uchun login hamda parolni kiriting</p>
 
       <form onsubmit="handleLogin(event)">
         <div class="form-group">
           <label data-i18n="loginUserLabel">Login / Foydalanuvchi nomi:</label>
-          <input type="text" id="loginUsername" class="form-input" value="123" required />
+          <input type="text" id="loginUsername" class="form-input" placeholder="Login..." required />
         </div>
 
         <div class="form-group">
           <label data-i18n="loginPassLabel">Parol:</label>
-          <input type="password" id="loginPassword" class="form-input" value="123" required />
+          <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required />
         </div>
 
         <div id="loginError" style="color: #ef4444; font-size: 13px; margin-bottom: 12px; display: none;"></div>
@@ -2740,7 +2740,7 @@
         btnOrder: "Batafsil ➔",
         btnSubmitQuote: "🛒 Ushbu Mahsulotga Buyurtma Berish",
         loginModalTitle: "Admin Panelga Kirish",
-        loginModalSub: "Boshqaruv paneli va statistikalarga kirish uchun login hamda parolni kiriting (Standart: 123)",
+        loginModalSub: "Boshqaruv paneli va statistikalarga kirish uchun login hamda parolni kiriting.",
         loginUserLabel: "Login / Foydalanuvchi nomi:",
         loginPassLabel: "Parol:",
         btnSubmitLogin: "Tizimga Kirish →",
@@ -3253,6 +3253,12 @@
 
       if (!customerName || !customerPhone || !addressNotes) {
         showToast('Iltimos, barcha maydonlarni to\'ldiring', 'error');
+        return;
+      }
+
+      const cleanPhone = customerPhone.replace(/[\s\-\(\)\+]/g, '');
+      if (!cleanPhone || !/^\d{9,15}$/.test(cleanPhone)) {
+        showToast("Iltimos, to'g'ri telefon raqam kiriting! (Masalan: +998 90 123 45 67)", 'error');
         return;
       }
 

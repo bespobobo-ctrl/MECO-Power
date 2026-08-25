@@ -7,6 +7,13 @@ const ordersService = new OrdersService();
 export class OrdersController {
   async createOrder(req: Request, res: Response) {
     try {
+      const { customerPhone } = req.body;
+      const cleanPhone = (customerPhone || '').replace(/[\s\-\(\)\+]/g, '');
+
+      if (!cleanPhone || !/^\d{9,15}$/.test(cleanPhone)) {
+        return sendError(res, "Iltimos, to'g'ri telefon raqam kiriting! (Masalan: +998 90 123 45 67)", 400);
+      }
+
       const order = await ordersService.createOrder(req.body);
       return sendSuccess(res, 'Buyurtma muvaffaqiyatli qabul qilindi!', order, 201);
     } catch (err: any) {

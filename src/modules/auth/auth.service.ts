@@ -1,9 +1,9 @@
 export class AuthService {
   async login(login: string, pass: string) {
-    // Admin login validation (username: 123 or admin, pass: 123)
-    if ((login === '123' || login === 'admin') && pass === '123') {
+    // Strict admin login validation (username: admin, pass: meco3997)
+    if (login === 'admin' && pass === 'meco3997') {
       return {
-        token: 'meco-admin-jwt-token-123',
+        token: 'meco-admin-jwt-token-3997',
         user: {
           id: 'admin-1',
           name: 'MECO Admin Uzbekistan',
@@ -13,7 +13,7 @@ export class AuthService {
       };
     }
 
-    throw { statusCode: 401, message: "Login yoki parol noto'g'ri! (Login: 123, Parol: 123)" };
+    throw { statusCode: 401, message: "Login yoki parol noto'g'ri!" };
   }
 
   async register(data: any) {
