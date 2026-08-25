@@ -1524,7 +1524,7 @@
             </li>
             <li>
               <button class="sidebar-nav-btn" onclick="switchTab('botSettingsTab', this)">
-                <span>⚙️</span> 2 ta Telegram Bot
+                <span>⚙️</span> 2 ta Telegram Bot & Broadcaster
               </button>
             </li>
           </ul>
@@ -1722,36 +1722,57 @@
             </form>
           </div>
 
-          <!-- Tab 5: 2 ta Telegram Bot Sozlamalari -->
+          <!-- Tab 5: TELEGRAM BOTS CONFIGURATION & DAILY BROADCASTER -->
           <div id="botSettingsTab" class="tab-content">
             <div class="bot-settings-grid">
+              
+              <!-- 1-Bot: Telegram Mini App Bot -->
               <div class="bot-box">
                 <h4>🤖 1-BOT: Telegram Mini App Boti</h4>
-                <p>Mijozlar Telegram ichidan chiqmasdan sotuvlarni amalga oshiradigan Mini Telegram App sozlamalari.</p>
+                <p>Bot API Tokeningizni kiriting. Bot foydalanuvchilarga `/start` bosganda Mini Telegram App va xizmatlarni taqdim etadi.</p>
                 <form onsubmit="saveMiniAppBot(event)">
                   <div class="form-group">
-                    <label>Mini App Bot Token:</label>
-                    <input type="text" id="miniAppToken" class="form-input" value="7123456789:AAFxX_ExampleMiniAppBotToken_Uzbekistan" />
+                    <label>Telegram Bot API Token (BotFather'dan olingan):</label>
+                    <input type="text" id="miniAppToken" class="form-input" placeholder="Masalan: 7123456789:AAFxX_YourBotToken" required />
                   </div>
-                  <button type="submit" class="btn-submit">💾 1-Bot Sozlamalarini Saqlash</button>
+                  
+                  <div class="form-group">
+                    <label>Web App Manzili (Web App URL):</label>
+                    <input type="text" id="miniAppWebUrl" class="form-input" value="http://localhost:5000" required />
+                  </div>
+
+                  <button type="submit" class="btn-submit">💾 1-Bot Sozlamalarini Saqlash va Ishga Tushirish</button>
                 </form>
               </div>
 
-              <div class="bot-box">
-                <h4>📢 2-BOT: Buyurtmalar & Tashriflar Boti</h4>
-                <p>Yangi sotuvlar va buyurtmalar haqida admin chatiga lahzalik xabar beruvchi bot.</p>
-                <form onsubmit="saveNotificationBot(event)">
+              <!-- 📢 Broadcast Messaging Box -->
+              <div class="bot-box" style="grid-column: span 2;">
+                <h4>📢 Admin Ommaviy Xabarnoma Yuborish (Daily Broadcast)</h4>
+                <p>Botga a'zo bo'lgan barcha foydalanuvchilarga kunlik yangiliklar, aksiyalar va e'lonlarni bir vaqtda yuboring!</p>
+
+                <form onsubmit="sendBroadcastMessage(event)">
                   <div class="form-group">
-                    <label>Notification Bot Token:</label>
-                    <input type="text" id="notifyToken" class="form-input" value="7987654321:AAHyY_ExampleNotificationBotToken_Uzbekistan" />
+                    <label>Xabar Matni (Markdown formatini qo'llab-quvvatlaydi):</label>
+                    <textarea id="broadcastText" class="form-input" rows="4" placeholder="Masalan: ⚡ Diqqat aksiya! Barcha quyosh generatorlariga 10% chegirma e'lon qilindi!" required style="resize: vertical;"></textarea>
                   </div>
+
                   <div class="form-group">
-                    <label>Admin Telegram Chat ID:</label>
-                    <input type="text" id="adminChatId" class="form-input" value="987654321" />
+                    <label>Rasm URL Manzili (Ixtiyoriy foto biriktirish):</label>
+                    <input type="text" id="broadcastImgUrl" class="form-input" placeholder="https://..." />
                   </div>
-                  <button type="submit" class="btn-submit">💾 2-Bot Sozlamalarini Saqlash</button>
+
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+                    <div style="font-size: 13px; color: #10b981; font-weight: 700;" id="registeredUsersBadge">
+                      ● Jami Bot A'zolari: <span id="userCountNum">0</span> kishi
+                    </div>
+
+                    <button type="submit" class="btn-submit" style="width: auto; padding: 12px 32px; font-size: 15px; margin: 0;">
+                      🚀 Barcha Foydalanuvchilarga Xabarni Yuborish
+                    </button>
+                  </div>
                 </form>
               </div>
+
             </div>
           </div>
 
@@ -2429,6 +2450,7 @@
           closeLoginModal();
           document.getElementById('adminModal').classList.add('active');
           loadDashboardStats();
+          loadTelegramBotSettings();
           renderAdminSliderEditor();
           renderAdminProductsEditor();
           showToast('⚡ Admin Dashboardga xush kelibsiz!');
@@ -2467,31 +2489,68 @@
       }
     }
 
-    // Save Bot 1 Settings
+    // Load Telegram Bot Config
+    async function loadTelegramBotSettings() {
+      try {
+        const res = await fetch('/api/v1/settings/telegram');
+        const data = await res.json();
+        if (data.success && data.data) {
+          if (data.data.miniAppBot) {
+            document.getElementById('miniAppToken').value = data.data.miniAppBot.botToken || '';
+            document.getElementById('miniAppWebUrl').value = data.data.miniAppBot.webAppUrl || 'http://localhost:5000';
+          }
+          document.getElementById('userCountNum').innerText = data.data.totalBotUsers || 0;
+        }
+      } catch (err) {
+        console.error('Telegram config error:', err);
+      }
+    }
+
+    // Save Bot 1 Settings & Start Telegram Bot Listener
     async function saveMiniAppBot(e) {
       e.preventDefault();
-      showToast('🚀 1-Bot (Telegram Mini App) sozlamalari saqlandi!');
-    }
+      const token = document.getElementById('miniAppToken').value;
+      const webUrl = document.getElementById('miniAppWebUrl').value;
 
-    // Save Bot 2 Settings
-    async function saveNotificationBot(e) {
-      e.preventDefault();
-      showToast('🚀 2-Bot (Buyurtmalar & Tashriflar Boti) sozlamalari saqlandi!');
-    }
-
-    // Test Notification Button
-    async function sendTestBotMsg() {
-      const chatId = document.getElementById('adminChatId').value;
       try {
-        const res = await fetch('/api/v1/settings/telegram/test', {
+        const res = await fetch('/api/v1/settings/telegram', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ adminChatId: chatId })
+          body: JSON.stringify({ miniAppBotToken: token, webAppUrl: webUrl })
         });
         const data = await res.json();
-        showToast(`📲 Telegram test xabari yuborildi! Chat ID: ${chatId}`);
+        if (data.success) {
+          showToast('🚀 Telegram Mini App Boti saqlandi va ishga tushirildi!');
+        } else {
+          showToast('Xatolik: ' + data.message, 'error');
+        }
       } catch (err) {
-        showToast('Xatolik: ' + err.message, 'error');
+        showToast('Xatolik yuz berdi: ' + err.message, 'error');
+      }
+    }
+
+    // Send Broadcast Message to All Telegram Bot Users
+    async function sendBroadcastMessage(e) {
+      e.preventDefault();
+      const text = document.getElementById('broadcastText').value;
+      const img = document.getElementById('broadcastImgUrl').value;
+
+      try {
+        const res = await fetch('/api/v1/settings/telegram/broadcast', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messageText: text, imageUrl: img })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast(`📢 Ommaviy xabarnoma yuborildi! Yuborildi: ${data.data.successCount} kishi`);
+          document.getElementById('broadcastText').value = '';
+        } else {
+          showToast('Xatolik: ' + data.message, 'error');
+        }
+      } catch (err) {
+        showToast('Xatolik yuz berdi: ' + err.message, 'error');
       }
     }
 

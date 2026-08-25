@@ -3,6 +3,7 @@ import { SettingsService } from './settings.service';
 import { sendSuccess, sendError } from '../../utils/response';
 import { supabase } from '../../config/supabase';
 import { BUCKET_NAME } from '../../config/database';
+import { TelegramBotService } from '../../services/telegramBot.service';
 import fs from 'fs';
 import path from 'path';
 
@@ -97,16 +98,39 @@ export class SettingsController {
 
   async getTelegram(req: Request, res: Response) {
     const config = await settingsService.getTelegramSettings();
-    return sendSuccess(res, 'Telegram bot configurations retrieved', config);
+    return sendSuccess(res, 'Telegram bot configurations retrieved', {
+      ...config,
+      totalBotUsers: TelegramBotService.getRegisteredUsersCount()
+    });
   }
 
   async saveTelegram(req: Request, res: Response) {
-    const { miniAppBotToken, notificationBotToken, adminChatId } = req.body;
+    const { miniAppBotToken, notificationBotToken, adminChatId, webAppUrl } = req.body;
     const updated = await settingsService.saveTelegramSettings({
-      miniAppBot: { botToken: miniAppBotToken, webAppUrl: '', status: 'ACTIVE' },
+      miniAppBot: { botToken: miniAppBotToken, webAppUrl: webAppUrl || 'http://localhost:5000', status: 'ACTIVE' },
       notificationBot: { botToken: notificationBotToken, adminChatId, notifyNewOrders: true, notifyTrafficAlerts: true, notifyDailyReport: true, status: 'ACTIVE' }
     });
-    return sendSuccess(res, 'Telegram bot configurations updated', updated);
+
+    // Initialize or update Telegram Bot Listener
+    if (miniAppBotToken) {
+      await TelegramBotService.initBot(miniAppBotToken, webAppUrl || 'http://localhost:5000');
+    }
+
+    return sendSuccess(res, 'Telegram bot sozlamalari saqlandi va bot ishga tushirildi!', updated);
+  }
+
+  async sendBroadcast(req: Request, res: Response) {
+    try {
+      const { messageText, imageUrl } = req.body;
+      if (!messageText) {
+        return sendError(res, 'Xabar matni yuborilmadi', 400);
+      }
+
+      const result = await TelegramBotService.sendBroadcastMessage(messageText, imageUrl);
+      return sendSuccess(res, `Ommaviy xabar yuborildi! Jami bot a'zolari: ${result.totalUsers}, Yuborildi: ${result.successCount}, Xato: ${result.failCount}`, result);
+    } catch (err: any) {
+      return sendError(res, `Ommaviy xabarnoma yuborishda xatolik: ${err.message}`, 500);
+    }
   }
 
   async sendTestNotification(req: Request, res: Response) {
