@@ -1287,6 +1287,25 @@
       color: #34d399;
     }
 
+    .card-badge-tag.badge-out-of-stock {
+      background: rgba(239, 68, 68, 0.95) !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    .out-stock-badge-overlay {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
+    }
+
     .traffic-table-wrapper {
       background: #0f192e;
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -2688,15 +2707,18 @@
 
       let html = '';
       filtered.forEach(p => {
+        const isOut = p.inStockUzbekistan === false;
         const desc = currentLang === 'ru' ? p.descriptionRu : (currentLang === 'en' ? p.descriptionEn : p.descriptionUz);
         const specs = currentLang === 'ru' ? p.specsRu : (currentLang === 'en' ? p.specsEn : p.specsUz);
-        const badge = currentLang === 'ru' ? p.protectionBadgeRu : (currentLang === 'en' ? p.protectionBadgeEn : p.protectionBadgeUz);
+        const badge = isOut
+          ? (currentLang === 'ru' ? '🚫 Временно нет в наличии' : (currentLang === 'en' ? '🚫 Out of Stock' : '🚫 Vaqtinchalik Tugagan'))
+          : (currentLang === 'ru' ? p.protectionBadgeRu : (currentLang === 'en' ? p.protectionBadgeEn : p.protectionBadgeUz));
 
         html += `
-          <div class="product-card-item">
+          <div class="product-card-item ${isOut ? 'product-out-of-stock' : ''}">
             <div class="card-img-holder">
-              <span class="card-badge-tag">${badge}</span>
-              <img src="${p.imageUrl}" alt="${p.name}" />
+              <span class="card-badge-tag ${isOut ? 'badge-out-of-stock' : ''}">${badge}</span>
+              <img src="${p.imageUrl}" alt="${p.name}" style="${isOut ? 'filter: grayscale(0.6) opacity(0.65);' : ''}" />
             </div>
             
             <div class="card-content">
@@ -2710,7 +2732,13 @@
                   <span class="card-price-val">${p.priceUzS.toLocaleString('uz-UZ')}</span>
                   <span class="card-price-unit">UZS SO'M</span>
                 </div>
-                <button onclick="openProductDetail('${p.id}')" class="btn-detail">${dict.btnOrder}</button>
+                ${isOut ? `
+                  <button class="btn-detail" disabled style="background: #475569; color: #cbd5e1; cursor: not-allowed; opacity: 0.8; padding: 6px 12px; font-size: 11px;">
+                    🚫 Tugagan
+                  </button>
+                ` : `
+                  <button onclick="openProductDetail('${p.id}')" class="btn-detail">${dict.btnOrder}</button>
+                `}
               </div>
             </div>
           </div>
@@ -2720,28 +2748,42 @@
       container.innerHTML = html;
     }
 
-    // Render Admin Products Editor Grid (Edit Price & PC Image Upload)
+    // Render Admin Products Editor Grid (Edit Name, Price, Image & Stock Status Toggle)
     function renderAdminProductsEditor() {
       const container = document.getElementById('adminProductsEditContainer');
       if (!container || !allProductsData) return;
 
       let html = '';
       allProductsData.forEach((product, index) => {
+        const isOut = product.inStockUzbekistan === false;
+
         html += `
-          <div class="slider-edit-card">
+          <div class="slider-edit-card" style="${isOut ? 'border-color: rgba(239,68,68,0.5);' : ''}">
             <div>
-              <div class="slide-preview-box" id="prodPreviewBox_${index}" style="background-image: url('${product.imageUrl}'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #1e293b;">
+              <div class="slide-preview-box" id="prodPreviewBox_${index}" style="background-image: url('${product.imageUrl}'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #1e293b; position: relative;">
                 <span class="slide-preview-badge">${product.category}</span>
+                ${isOut ? '<span class="out-stock-badge-overlay">🚫 Vaqtinchalik Tugagan</span>' : ''}
               </div>
 
               <div class="form-group">
-                <label>Mahsulot Nomi:</label>
+                <label>Mahsulot Nomi (Name):</label>
                 <input type="text" id="prodName_${index}" class="form-input" value="${product.name}" required />
               </div>
 
               <div class="form-group">
                 <label>Mahsulot Narxi (UZS So'mda):</label>
                 <input type="number" id="prodPrice_${index}" class="form-input" value="${product.priceUzS}" required style="color: #10b981; font-weight: 800; font-size: 16px;" />
+              </div>
+
+              <!-- STOCK STATUS SELECTOR: VAQTINCHALIK TUGAGAN -->
+              <div class="form-group" style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 14px;">
+                <label style="font-weight: 700; color: #fff; display: flex; flex-direction: column; gap: 6px;">
+                  <span>📦 Ombor Holati (Stock Status):</span>
+                  <select id="prodStockStatus_${index}" class="form-input" style="padding: 8px 12px; font-weight: 800; border-radius: 10px; color: ${isOut ? '#ef4444' : '#10b981'}; background: #0f172a;" onchange="this.style.color = this.value === 'IN_STOCK' ? '#10b981' : '#ef4444'">
+                    <option value="IN_STOCK" ${!isOut ? 'selected' : ''}>🟢 Omborxonada Mavjud (In Stock)</option>
+                    <option value="OUT_OF_STOCK" ${isOut ? 'selected' : ''}>🔴 Vaqtinchalik Tugagan (Out of Stock)</option>
+                  </select>
+                </label>
               </div>
 
               <div class="form-group">
@@ -2807,7 +2849,8 @@
         id: prod.id,
         name: document.getElementById(`prodName_${index}`).value,
         priceUzS: parseFloat(document.getElementById(`prodPrice_${index}`).value),
-        imageUrl: document.getElementById(`prodImgUrl_${index}`).value
+        imageUrl: document.getElementById(`prodImgUrl_${index}`).value,
+        inStockUzbekistan: document.getElementById(`prodStockStatus_${index}`).value === 'IN_STOCK'
       }));
 
       try {
@@ -2835,7 +2878,8 @@
         id: prod.id,
         name: document.getElementById(`prodName_${index}`).value,
         priceUzS: parseFloat(document.getElementById(`prodPrice_${index}`).value),
-        imageUrl: document.getElementById(`prodImgUrl_${index}`).value
+        imageUrl: document.getElementById(`prodImgUrl_${index}`).value,
+        inStockUzbekistan: document.getElementById(`prodStockStatus_${index}`).value === 'IN_STOCK'
       }));
 
       try {
@@ -2849,7 +2893,8 @@
         if (data.success) {
           allProductsData = data.data;
           renderProductsGrid();
-          showToast('🚀 Barcha mahsulotlar narxlari va rasmlari saqlandi va saytda yangilandi!');
+          renderAdminProductsEditor();
+          showToast('🚀 Mahsulotlar nomi, narxi, rasmi hamda ombor holati saqlandi!');
         } else {
           showToast('Xatolik: ' + data.message, 'error');
         }
