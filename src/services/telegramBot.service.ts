@@ -14,6 +14,8 @@ export class TelegramBotService {
   private static botInstance: any = null;
   private static botToken: string = '8733193378:AAE-FdK9cXbM7gKsTy3Rpe3uklCdQyaZJog';
   private static registeredUsers: Map<number, BotUser> = new Map();
+  private static authenticatedChatIds: Set<number> = new Set();
+  private static SECRET_CODE: string = 'meco3997';
 
   static async initBot(token: string = '8733193378:AAE-FdK9cXbM7gKsTy3Rpe3uklCdQyaZJog', webAppUrl: string = 'https://meco-power.vercel.app') {
     if (!token) return;
@@ -53,60 +55,105 @@ export class TelegramBotService {
         logger.warn(`SetChatMenuButton note: ${menuErr.message}`);
       }
 
-      // Load registered users from Supabase / cache
+      // Load registered & authenticated users from Supabase / cache
       await this.loadRegisteredUsers();
 
-      // Handle /start command
-      this.botInstance.command('start', async (ctx: any) => {
+      // Handle text messages and password verification
+      this.botInstance.on('message', async (ctx: any) => {
         const chatId = ctx.chat?.id || ctx.from?.id;
-        const userName = ctx.from?.first_name || 'Hurmatli Mijoz';
+        if (!chatId) return;
 
-        const user: BotUser = {
-          chatId,
-          firstName: ctx.from?.first_name,
-          lastName: ctx.from?.last_name,
-          username: ctx.from?.username,
-          registeredAt: new Date().toISOString(),
-        };
+        const text = (ctx.text || '').trim();
+        const userName = ctx.from?.first_name || 'Foydalanuvchi';
 
-        this.registeredUsers.set(chatId, user);
-        await this.saveUserToSupabase(user);
+        // 1. Check if user enters the correct password code "meco3997"
+        if (text.toLowerCase() === this.SECRET_CODE.toLowerCase()) {
+          this.authenticatedChatIds.add(chatId);
 
-        const welcomeText = 
-          `🌟 *Assalomu aleykum, ${userName}!*\n\n` +
-          `🇺🇿 *MECO POWER UZBEKISTAN* rasmiy Telegram Botiga xush kelibsiz!\n\n` +
-          `🏢 *MECO Power Uzbekistan haqida:* \n` +
-          `Biz O'zbekiston bo'yicha fotovoltaik quyosh panellari, invertorlar hamda 300Wh dan 5.4kWh gacha bo'lgan *LiFePO4 akkumulyatorli quyosh energiya saqlash generatorlarini* yetkazib beruvchi rasmiy markazmiz.\n\n` +
-          `✨ *Bizning Afzalliklarimiz:*\n` +
-          `• ⚡ *GaN 92%* yuqori energiya konversiyasi\n` +
-          `• 🔋 *LiFePO4 8000+* uzoq muddatli batareya sikli\n` +
-          `• 🛡️ *UN38.3 va IEC62368* xalqaro xavfsizlik sertifikatlari\n` +
-          `• 🚚 *O'zbekiston bo'ylab* kafolatli yetkazib berish va Qo'qon Shaxridagi Bosh Shourum\n\n` +
-          `👇 *Bizning MECO Power Uzbekistan Mini App-imizni ochish uchun pastdagi tugmani bosing:*`;
+          const user: BotUser = {
+            chatId,
+            firstName: ctx.from?.first_name,
+            lastName: ctx.from?.last_name,
+            username: ctx.from?.username,
+            registeredAt: new Date().toISOString(),
+          };
+          this.registeredUsers.set(chatId, user);
+          await this.saveUserToSupabase(user);
 
-        const inlineKeyboard = [
-          [
-            { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: targetUrl } }
-          ],
-          [
-            { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
-            { text: '🏢 BOSH SHOURUMI', callback_data: 'ACTION_CONTACT' }
-          ]
-        ];
+          const successMsg = 
+            `✅ *KOD TO'G'RI! TIZIMGA XUSH KELIBSIZ!* 🎉\n\n` +
+            `Siz MECO Power Uzbekistan boshqaruv va bildirishnomalar botiga muvaffaqiyatli kirdingiz.\n\n` +
+            `⚡ *Yangi buyurtmalar kelishi bilan ushbu botga darhol xabarnoma yetib keladi!*\n\n` +
+            `👇 *Mini App-ni ochish yoki katologni ko'rish uchun pastdagi tugmalardan foydalaning:*`;
 
-        try {
-          await ctx.reply(welcomeText, {
+          const inlineKeyboard = [
+            [
+              { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: targetUrl } }
+            ],
+            [
+              { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
+              { text: '🏢 BOSH SHOURUMI', callback_data: 'ACTION_CONTACT' }
+            ]
+          ];
+
+          return ctx.reply(successMsg, {
             parse_mode: 'Markdown',
             reply_markup: { inline_keyboard: inlineKeyboard }
           });
-        } catch (sendErr: any) {
-          logger.warn(`Reply error fallback: ${sendErr.message}`);
-          await ctx.reply(`Assalomu aleykum, ${userName}!\nMECO Power Uzbekistan rasmiy botiga xush kelibsiz!\nRasmiy portal: https://meco-power.vercel.app`);
+        }
+
+        // 2. If user is already authenticated
+        if (this.authenticatedChatIds.has(chatId)) {
+          if (text === '/start') {
+            const welcomeText = 
+              `🌟 *Assalomu aleykum, ${userName}!*\n\n` +
+              `🇺🇿 *MECO POWER UZBEKISTAN* rasmiy Telegram Botida siz avtorizatsiyadan o'tgansiz!\n\n` +
+              `✨ *Afzalliklarimiz:*\n` +
+              `• ⚡ *GaN 92%* yuqori energiya konversiyasi\n` +
+              `• 🔋 *LiFePO4 8000+* uzoq muddatli batareya sikli\n` +
+              `• 🛡️ *UN38.3 va IEC62368* xalqaro sertifikatlar\n` +
+              `• 🚚 *Qo'qon Shaxridagi Bosh Shourum* va butun O'zbekiston bo'ylab yetkazib berish\n\n` +
+              `👇 *Boshqarish va xarid qilish uchun Mini App-ni oching:*`;
+
+            const inlineKeyboard = [
+              [
+                { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: targetUrl } }
+              ],
+              [
+                { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
+                { text: '🏢 BOSH SHOURUMI', callback_data: 'ACTION_CONTACT' }
+              ]
+            ];
+
+            return ctx.reply(welcomeText, {
+              parse_mode: 'Markdown',
+              reply_markup: { inline_keyboard: inlineKeyboard }
+            });
+          }
+          return; // Allow authenticated user text
+        }
+
+        // 3. User is NOT authenticated -> Prompt for Password Code
+        const authPromptText = 
+          `🔐 *XAVFSIZLIK TEKSHIRUVI (KIRISH CHEKLANGAN)*\n\n` +
+          `Assalomu aleykum, *${userName}*!\n` +
+          `*MECO POWER UZBEKISTAN* rasmiy botidan foydalanish hamda buyurtmalar xabarnomasini olish uchun maxsus kirish kodini kiriting.\n\n` +
+          `✍️ *Iltimos, maxsus parolni (kodni) yozib yuboring:*`;
+
+        try {
+          await ctx.reply(authPromptText, { parse_mode: 'Markdown' });
+        } catch (err: any) {
+          await ctx.reply(`🔐 XAVFSIZLIK TEKSHIRUVI: Maxsus kirish kodini yozib yuboring.`);
         }
       });
 
-      // Handle Callback queries
+      // Handle Callback queries (Protected by password)
       this.botInstance.on('callback_query', async (ctx: any) => {
+        const chatId = ctx.chat?.id || ctx.from?.id;
+        if (chatId && !this.authenticatedChatIds.has(chatId)) {
+          return ctx.reply('🔒 Maxsus kirish kodi kiritilmagan. Iltimos parolni yozib yuboring.');
+        }
+
         const queryData = ctx.callbackQuery?.data || ctx.data;
 
         if (queryData === 'ACTION_CATALOG') {
@@ -177,6 +224,8 @@ export class TelegramBotService {
             username: u.username,
             registeredAt: u.registered_at
           });
+          // Auto-authorize previously saved authenticated bot users
+          this.authenticatedChatIds.add(u.chat_id);
         });
       }
     } catch (err) {
@@ -198,7 +247,7 @@ export class TelegramBotService {
     }
   }
 
-  // Admin Broadcast Message to all Telegram Bot Users
+  // Admin Broadcast Message to all Authenticated Telegram Bot Users
   static async sendBroadcastMessage(messageText: string, imageUrl?: string): Promise<{ totalUsers: number; successCount: number; failCount: number }> {
     const userList = Array.from(this.registeredUsers.values());
     let successCount = 0;
