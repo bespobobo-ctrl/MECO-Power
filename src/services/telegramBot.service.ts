@@ -1,6 +1,5 @@
 import { logger } from '../config/logger';
 import { supabase } from '../config/supabase';
-const { Bot } = require('node-telegram-bot-api');
 
 export interface BotUser {
   chatId: number;
@@ -11,7 +10,6 @@ export interface BotUser {
 }
 
 export class TelegramBotService {
-  private static botInstance: any = null;
   private static botToken: string = '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA';
   private static registeredUsers: Map<number, BotUser> = new Map();
   private static isPolling: boolean = false;
@@ -21,8 +19,6 @@ export class TelegramBotService {
 
     try {
       this.botToken = token;
-      this.botInstance = new Bot(token);
-
       logger.info(`🚀 MECO Power Telegram Bot initialized with Token (${token.slice(0, 10)}...)`);
 
       // Load registered users from Supabase / cache
@@ -57,7 +53,6 @@ export class TelegramBotService {
           }
         }
       } catch (err: any) {
-        // Sleep 3 seconds on error before retrying
         await new Promise(r => setTimeout(r, 3000));
       }
     }
@@ -86,30 +81,27 @@ export class TelegramBotService {
 
         const welcomeText = 
           `🌟 *Assalomu aleykum, ${userName}!*\n\n` +
-          `⚡ *MECO POWER UZBEKISTAN* rasmiy Telegram Botiga xush kelibsiz!\n\n` +
-          `🏢 *MECO Power haqida qisqacha:*\n` +
-          `Biz fotovoltaik quyosh panellari, invertorlar hamda 300Wh dan 5.4kWh gacha bo'lgan *LiFePO4 akkumulyatorli quyosh energiya saqlash generatorlarini* ishlab chiqarish va yetkazib berish bo'yicha dunyodagi yetakchi brendlardan birimiz.\n\n` +
+          `🇺🇿 *MECO POWER UZBEKISTAN* rasmiy Telegram Botiga xush kelibsiz!\n\n` +
+          `🏢 *MECO Power Uzbekistan haqida:* \n` +
+          `Biz O'zbekiston bo'yicha fotovoltaik quyosh panellari, invertorlar hamda 300Wh dan 5.4kWh gacha bo'lgan *LiFePO4 akkumulyatorli quyosh energiya saqlash generatorlarini* yetkazib beruvchi rasmiy markazmiz.\n\n` +
           `✨ *Bizning Afzalliklarimiz:*\n` +
           `• ⚡ *GaN 92%* yuqori energiya konversiyasi\n` +
           `• 🔋 *LiFePO4 8000+* uzoq muddatli batareya sikli\n` +
           `• 🛡️ *UN38.3 va IEC62368* xalqaro xavfsizlik sertifikatlari\n` +
-          `• 🚚 *O'zbekiston bo'ylab* kafolatli yetkazib berish va servis\n\n` +
-          `👇 *Kerakli bo'limni tanlang:*`;
+          `• 🚚 *O'zbekiston bo'ylab* kafolatli yetkazib berish va Toshkent shourumi\n\n` +
+          `👇 *Bizning MECO Power Uzbekistan portalimizni ochish uchun tugmani bosing:*`;
 
         const isHttps = webAppUrl.startsWith('https://');
 
         const inlineKeyboard = [
           [
             isHttps 
-              ? { text: '🚀 MECO Mini App (Katalog va Buyurtma)', web_app: { url: webAppUrl } }
-              : { text: '🌐 MECO Veb Portalini Ochish', url: 'https://www.mecopower.com' }
+              ? { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: webAppUrl } }
+              : { text: '🌐 MECO Uzbekistan Portalini Ochish', url: webAppUrl }
           ],
           [
-            { text: '📦 Mahsulotlar Ro\'yxati', callback_data: 'ACTION_CATALOG' },
-            { text: '📞 Toshkent Shourumi', callback_data: 'ACTION_CONTACT' }
-          ],
-          [
-            { text: '🌐 Rasmiy Veb Sayt', url: 'https://www.mecopower.com' }
+            { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
+            { text: '📞 Toshkent Shourumi va Aloqa', callback_data: 'ACTION_CONTACT' }
           ]
         ];
 
@@ -121,25 +113,28 @@ export class TelegramBotService {
 
       if (query.data === 'ACTION_CATALOG') {
         const catalogMsg = 
-          `📦 *MECO POWER UZBEKISTAN MAHSULOTLAR KATALOGI:*\n\n` +
+          `📦 *MECO POWER UZBEKISTAN BARCHA MAHSULOTLARI VA NARXLARI:*\n\n` +
           `1. 🔋 *Meco 300Wh Solar Power Bank* — 3,200,000 UZS\n` +
           `2. ⚡ *Meco 1kWh Solar Generator* — 8,900,000 UZS\n` +
-          `3. ⚡ *Meco 1.8kWh Solar Generator* — 14,200,000 UZS\n` +
-          `4. ⚡ *Meco 2kWh Solar Generator* — 16,800,000 UZS\n` +
-          `5. ⚡ *Meco 3.6kWh Pro Solar Generator* — 24,500,000 UZS\n` +
-          `6. ⚡ *Meco 5.4kWh Heavy Duty Generator* — 38,000,000 UZS\n` +
-          `7. ☀️ *Meco F200W Solar Panel* — 2,100,000 UZS\n` +
-          `8. ☀️ *Meco 620W Solar Panel* — 3,100,000 UZS\n\n` +
-          `🌐 Rasmiy sayt: www.mecopower.com`;
+          `3. ⚡ *Meco 1kWh Pro Solar Generator* — 10,500,000 UZS\n` +
+          `4. ⚡ *Meco 1.8kWh Solar Generator* — 14,200,000 UZS\n` +
+          `5. ⚡ *Meco 2kWh Solar Generator* — 16,800,000 UZS\n` +
+          `6. ⚡ *Meco 3.6kWh Solar Generator* — 21,000,000 UZS\n` +
+          `7. ⚡ *Meco 3.6kWh Pro Solar Generator* — 24,500,000 UZS\n` +
+          `8. ⚡ *Meco 5.4kWh Heavy Duty Generator* — 38,000,000 UZS\n` +
+          `9. ☀️ *Meco F200W Solar Panel* — 2,100,000 UZS\n` +
+          `10. ☀️ *Meco 580W Solar Panel* — 2,800,000 UZS\n` +
+          `11. ☀️ *Meco 620W Solar Panel* — 3,100,000 UZS\n\n` +
+          `🇺🇿 MECO Uzbekistan portali: ${webAppUrl}`;
 
         await this.sendTelegramApiMessage(chatId, catalogMsg);
       } else if (query.data === 'ACTION_CONTACT') {
         const contactMsg = 
           `🏢 *MECO POWER UZBEKISTAN BOSH SHOURUMI:*\n\n` +
-          `📍 Manzil: Toshkent tumani, Chilonzor 42, Bunyodkor shox ko'chasi.\n` +
+          `📍 Manzil: Toshkent markaziy shourum, Chilonzor tumani, Bunyodkor shox ko'chasi 42, Toshkent, O'zbekiston\n` +
           `📞 Telefon: +998 71 200 00 00\n` +
           `✉️ Email: uzbekistan@mecopower.com\n` +
-          `🌐 Sayt: www.mecopower.com`;
+          `🇺🇿 Portal: ${webAppUrl}`;
 
         await this.sendTelegramApiMessage(chatId, contactMsg);
       }
