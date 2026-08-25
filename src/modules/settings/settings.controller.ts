@@ -170,12 +170,15 @@ export class SettingsController {
 
   async connectInstagramLogin(req: Request, res: Response) {
     try {
-      const { username, password } = req.body;
+      const { username, password, followersCount, mediaCount, fullName } = req.body;
       if (!username) {
         return sendError(res, 'Instagram login/username kiritilmadi', 400);
       }
-      const updated = await settingsService.connectInstagramLogin(username, password);
-      return sendSuccess(res, `✅ @${updated.username} Instagram akkauntingiz muvaffaqiyatli bog'landi va avtorizatsiyadan o'tdi!`, updated);
+      const manualStats = (followersCount !== undefined || mediaCount !== undefined)
+        ? { followersCount: Number(followersCount) || 0, mediaCount: Number(mediaCount) || 0, fullName }
+        : undefined;
+      const updated = await settingsService.connectInstagramLogin(username, password, manualStats);
+      return sendSuccess(res, `✅ @${updated.username} Instagram akkauntingiz muvaffaqiyatli bog'landi!`, updated);
     } catch (err: any) {
       return sendError(res, `Instagram login bog'lashda xatolik: ${err.message}`, 500);
     }

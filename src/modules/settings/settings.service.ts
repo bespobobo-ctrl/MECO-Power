@@ -206,18 +206,51 @@ export class SettingsService {
     return SettingsService.botSettings;
   }
 
+  // ─── Fetch real public Instagram profile data by username ───────────────────
+  private static async fetchRealInstagramProfile(username: string): Promise<{
+    followersCount: number;
+    followingCount: number;
+    mediaCount: number;
+    fullName: string;
+    bio: string;
+    isVerified: boolean;
+    profilePicUrl: string;
+  } | null> {
+    try {
+      // Instagram public JSON endpoint — no token required
+      const url = `https://www.instagram.com/${username}/?__a=1&__d=dis`;
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'application/json, text/javascript, */*; q=0.01',
+          'X-Requested-With': 'XMLHttpRequest',
+          'Referer': 'https://www.instagram.com/',
+        }
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json() as any;
+
+      const user = json?.graphql?.user || json?.data?.user;
+      if (!user) throw new Error('User data not found in response');
+
+      return {
+        followersCount: user.edge_followed_by?.count ?? user.follower_count ?? 0,
+        followingCount: user.edge_follow?.count ?? user.following_count ?? 0,
+        mediaCount: user.edge_owner_to_timeline_media?.count ?? user.media_count ?? 0,
+        fullName: user.full_name ?? '',
+        bio: user.biography ?? '',
+        isVerified: user.is_verified ?? false,
+        profilePicUrl: user.profile_pic_url_hd ?? user.profile_pic_url ?? '',
+      };
+    } catch (err: any) {
+      logger.warn(`Instagram public scrape failed for @${username}: ${err.message}`);
+      return null;
+    }
+  }
+
   async getInstagramSettings(): Promise<InstagramConfig> {
     await SettingsService.syncFromCloudStorage();
-    if (!SettingsService.instagramSettings.insights) {
-      SettingsService.instagramSettings.insights = {
-        followersCount: 12850,
-        mediaCount: 192,
-        impressionsCount: 48600,
-        reachCount: 31200,
-        profileViewsCount: 4120,
-        lastFetchedAt: new Date().toISOString()
-      };
-    }
     return SettingsService.instagramSettings;
   }
 
@@ -231,17 +264,6 @@ export class SettingsService {
       updatedAt: new Date().toISOString()
     };
 
-    if (!SettingsService.instagramSettings.insights) {
-      SettingsService.instagramSettings.insights = {
-        followersCount: 12850,
-        mediaCount: 192,
-        impressionsCount: 48600,
-        reachCount: 31200,
-        profileViewsCount: 4120,
-        lastFetchedAt: new Date().toISOString()
-      };
-    }
-
     await SettingsService.saveInstagramToDisk();
     return SettingsService.instagramSettings;
   }
@@ -249,35 +271,41 @@ export class SettingsService {
   async fetchInstagramInsights(customToken?: string): Promise<InstagramConfig> {
     await SettingsService.syncFromCloudStorage();
     const token = customToken || SettingsService.instagramSettings.accessToken;
+    const username = SettingsService.instagramSettings.username || 'mecopower_uzbekistan';
 
-    let followers = SettingsService.instagramSettings.insights?.followersCount || 12850;
-    let mediaCount = SettingsService.instagramSettings.insights?.mediaCount || 192;
-    let impressions = SettingsService.instagramSettings.insights?.impressionsCount || 48600;
-    let reach = SettingsService.instagramSettings.insights?.reachCount || 31200;
-    let profileViews = SettingsService.instagramSettings.insights?.profileViewsCount || 4120;
-
+    // 1. Try Graph API with token first
     if (token && token.length > 10) {
       try {
-        const res = await fetch(`https://graph.instagram.com/me?fields=id,username,account_type,media_count&access_token=${token}`).then(r => r.json());
+        const res = await fetch(
+          `https://graph.instagram.com/me?fields=id,username,account_type,media_count&access_token=${token}`
+        ).then(r => r.json()) as any;
         if (res && res.username) {
           SettingsService.instagramSettings.username = res.username;
           SettingsService.instagramSettings.profileUrl = `https://www.instagram.com/${res.username}`;
           SettingsService.instagramSettings.dmUrl = `https://ig.me/m/${res.username}`;
-          if (res.media_count) mediaCount = Number(res.media_count);
+          SettingsService.instagramSettings.insights = {
+            ...(SettingsService.instagramSettings.insights || {}),
+            mediaCount: res.media_count ? Number(res.media_count) : (SettingsService.instagramSettings.insights?.mediaCount || 0),
+            lastFetchedAt: new Date().toISOString()
+          } as InstagramInsights;
         }
       } catch (err: any) {
-        logger.warn(`Instagram graph api note: ${err.message}`);
+        logger.warn(`Instagram Graph API: ${err.message}`);
       }
     }
 
-    SettingsService.instagramSettings.insights = {
-      followersCount: followers,
-      mediaCount,
-      impressionsCount: impressions,
-      reachCount: reach,
-      profileViewsCount: profileViews,
-      lastFetchedAt: new Date().toISOString()
-    };
+    // 2. Fetch real public profile data
+    const realData = await SettingsService.fetchRealInstagramProfile(username);
+    if (realData) {
+      SettingsService.instagramSettings.insights = {
+        followersCount: realData.followersCount,
+        mediaCount: realData.mediaCount,
+        impressionsCount: SettingsService.instagramSettings.insights?.impressionsCount || 0,
+        reachCount: realData.followingCount,
+        profileViewsCount: SettingsService.instagramSettings.insights?.profileViewsCount || 0,
+        lastFetchedAt: new Date().toISOString()
+      };
+    }
 
     SettingsService.instagramSettings.status = 'CONNECTED';
     SettingsService.instagramSettings.updatedAt = new Date().toISOString();
@@ -285,10 +313,20 @@ export class SettingsService {
     return SettingsService.instagramSettings;
   }
 
-  async connectInstagramLogin(loginUsername: string, loginPassword?: string): Promise<InstagramConfig> {
+  async connectInstagramLogin(
+    loginUsername: string,
+    loginPassword?: string,
+    manualStats?: {
+      followersCount?: number;
+      mediaCount?: number;
+      fullName?: string;
+    }
+  ): Promise<InstagramConfig> {
     await SettingsService.syncFromCloudStorage();
-    const cleanUser = (loginUsername || 'mecopower_uzbekistan').replace('@', '').trim();
+    const cleanUser = (loginUsername || '').replace('@', '').trim();
+    if (!cleanUser) throw new Error('Username kiritilmadi');
 
+    // Save username and profile links
     SettingsService.instagramSettings = {
       ...SettingsService.instagramSettings,
       username: cleanUser,
@@ -296,15 +334,45 @@ export class SettingsService {
       dmUrl: `https://ig.me/m/${cleanUser}`,
       status: 'CONNECTED',
       updatedAt: new Date().toISOString(),
-      insights: {
-        followersCount: SettingsService.instagramSettings.insights?.followersCount || 12850,
-        mediaCount: SettingsService.instagramSettings.insights?.mediaCount || 192,
-        impressionsCount: SettingsService.instagramSettings.insights?.impressionsCount || 48600,
-        reachCount: SettingsService.instagramSettings.insights?.reachCount || 31200,
-        profileViewsCount: SettingsService.instagramSettings.insights?.profileViewsCount || 4120,
-        lastFetchedAt: new Date().toISOString()
-      }
     };
+
+    // Use user-provided stats if given, otherwise try public scrape
+    if (manualStats && (manualStats.followersCount !== undefined || manualStats.mediaCount !== undefined)) {
+      SettingsService.instagramSettings.insights = {
+        followersCount: manualStats.followersCount ?? 0,
+        mediaCount: manualStats.mediaCount ?? 0,
+        impressionsCount: 0,
+        reachCount: 0,
+        profileViewsCount: 0,
+        lastFetchedAt: new Date().toISOString()
+      };
+      logger.info(`✅ Instagram connected for @${cleanUser} with manual stats: ${manualStats.followersCount} followers, ${manualStats.mediaCount} posts`);
+    } else {
+      // Try public profile scrape
+      const realData = await SettingsService.fetchRealInstagramProfile(cleanUser);
+      if (realData) {
+        SettingsService.instagramSettings.insights = {
+          followersCount: realData.followersCount,
+          mediaCount: realData.mediaCount,
+          impressionsCount: 0,
+          reachCount: realData.followingCount,
+          profileViewsCount: 0,
+          lastFetchedAt: new Date().toISOString()
+        };
+        logger.info(`✅ Real Instagram data fetched for @${cleanUser}: ${realData.followersCount} followers, ${realData.mediaCount} posts`);
+      } else {
+        // Cannot auto-fetch — set zeros, no fake data
+        SettingsService.instagramSettings.insights = {
+          followersCount: 0,
+          mediaCount: 0,
+          impressionsCount: 0,
+          reachCount: 0,
+          profileViewsCount: 0,
+          lastFetchedAt: new Date().toISOString()
+        };
+        logger.warn(`⚠️ Could not fetch public profile for @${cleanUser}`);
+      }
+    }
 
     await SettingsService.saveInstagramToDisk();
     return SettingsService.instagramSettings;
