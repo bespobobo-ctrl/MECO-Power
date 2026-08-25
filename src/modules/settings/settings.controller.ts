@@ -107,13 +107,13 @@ export class SettingsController {
   async saveTelegram(req: Request, res: Response) {
     const { miniAppBotToken, notificationBotToken, adminChatId, webAppUrl } = req.body;
     const updated = await settingsService.saveTelegramSettings({
-      miniAppBot: { botToken: miniAppBotToken, webAppUrl: webAppUrl || 'http://localhost:5000', status: 'ACTIVE' },
+      miniAppBot: { botToken: miniAppBotToken, webAppUrl: webAppUrl || 'https://meco-power.vercel.app', status: 'ACTIVE' },
       notificationBot: { botToken: notificationBotToken, adminChatId, notifyNewOrders: true, notifyTrafficAlerts: true, notifyDailyReport: true, status: 'ACTIVE' }
     });
 
     // Initialize or update Telegram Bot Listener
     if (miniAppBotToken) {
-      await TelegramBotService.initBot(miniAppBotToken, webAppUrl || 'http://localhost:5000');
+      await TelegramBotService.initBot(miniAppBotToken, webAppUrl || 'https://meco-power.vercel.app');
     }
 
     return sendSuccess(res, 'Telegram bot sozlamalari saqlandi va bot ishga tushirildi!', updated);

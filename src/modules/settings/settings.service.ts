@@ -27,7 +27,7 @@ export class SettingsService {
   private static botSettings: TelegramBotConfig = {
     miniAppBot: {
       botToken: '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA',
-      webAppUrl: 'http://localhost:5000',
+      webAppUrl: 'https://meco-power.vercel.app',
       status: 'ACTIVE',
     },
     notificationBot: {

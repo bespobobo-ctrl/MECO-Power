@@ -9,15 +9,25 @@
   <!-- Telegram WebApp JS SDK Integration -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      if (window.Telegram && window.Telegram.WebApp) {
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        if (tg.setHeaderColor) tg.setHeaderColor('#090d16');
-        if (tg.setBackgroundColor) tg.setBackgroundColor('#0b1320');
+    (function() {
+      function initTg() {
+        if (window.Telegram && window.Telegram.WebApp) {
+          const tg = window.Telegram.WebApp;
+          tg.ready();
+          tg.expand();
+          try {
+            if (tg.setHeaderColor) tg.setHeaderColor('#090d16');
+            if (tg.setBackgroundColor) tg.setBackgroundColor('#0b1320');
+            if (tg.enableClosingConfirmation) tg.enableClosingConfirmation();
+          } catch(e){}
+        }
       }
-    });
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTg);
+      } else {
+        initTg();
+      }
+    })();
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">

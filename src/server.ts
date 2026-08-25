@@ -8,7 +8,7 @@ async function startServer() {
   await connectDatabase();
 
   const botToken = process.env.TELEGRAM_BOT_TOKEN || '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA';
-  const webAppUrl = process.env.VERCEL ? 'https://meco-power.vercel.app' : `http://localhost:${env.PORT}`;
+  const webAppUrl = process.env.WEB_APP_URL || 'https://meco-power.vercel.app';
   
   await TelegramBotService.initBot(botToken, webAppUrl);
 

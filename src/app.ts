@@ -19,13 +19,23 @@ import settingsRoutes from './modules/settings/settings.routes';
 const app: Application = express();
 
 // Middlewares - Increased payload limit to 50MB for uploading large PC images
-app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors({ origin: env.ALLOWED_ORIGINS }));
+app.use(helmet({ 
+  contentSecurityPolicy: false,
+  frameguard: false,
+  crossOriginResourcePolicy: false,
+  crossOriginEmbedderPolicy: false
+}));
+
+app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Real-time visitor traffic tracker middleware
+// Enable Telegram WebApp iframe embedding
 app.use((req: Request, res: Response, next: NextFunction) => {
+  res.removeHeader('X-Frame-Options');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
   if (!req.path.startsWith('/api') && !req.path.includes('.')) {
     const ref = (req.query.ref as string) || (req.headers.referer as string);
     AnalyticsService.recordVisit(ref, req.ip || '127.0.0.1');

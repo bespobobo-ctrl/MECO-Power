@@ -18,6 +18,11 @@ export class TelegramBotService {
   static async initBot(token: string = '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA', webAppUrl: string = 'https://meco-power.vercel.app') {
     if (!token) return;
 
+    // Enforce HTTPS URL for Telegram WebApp compatibility
+    const targetUrl = (webAppUrl && webAppUrl.startsWith('https://')) 
+      ? webAppUrl 
+      : 'https://meco-power.vercel.app';
+
     try {
       if (this.botInstance && typeof this.botInstance.stop === 'function') {
         try {
@@ -39,11 +44,11 @@ export class TelegramBotService {
             menu_button: {
               type: 'web_app',
               text: '⚡ Mini App',
-              web_app: { url: webAppUrl }
+              web_app: { url: targetUrl }
             }
           })
         });
-        logger.info('📱 Telegram Bot Mini App Menu Button configured successfully!');
+        logger.info(`📱 Telegram Bot Mini App Menu Button configured successfully for ${targetUrl}!`);
       } catch (menuErr: any) {
         logger.warn(`SetChatMenuButton note: ${menuErr.message}`);
       }
@@ -79,13 +84,9 @@ export class TelegramBotService {
           `• 🚚 *O'zbekiston bo'ylab* kafolatli yetkazib berish va Qo'qon Shaxridagi Bosh Shourum\n\n` +
           `👇 *Bizning MECO Power Uzbekistan Mini App-imizni ochish uchun pastdagi tugmani bosing:*`;
 
-        const isHttps = webAppUrl.startsWith('https://');
-
         const inlineKeyboard = [
           [
-            isHttps 
-              ? { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: webAppUrl } }
-              : { text: '🌐 MECO Uzbekistan Portalini Ochish', url: 'https://meco-power.vercel.app' }
+            { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: targetUrl } }
           ],
           [
             { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
