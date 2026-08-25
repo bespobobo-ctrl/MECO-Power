@@ -1770,35 +1770,93 @@
         filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.8));
       }
 
-      .settings-sub-tab-btn {
-        background: rgba(255, 255, 255, 0.05);
+      .settings-segmented-nav {
+        display: flex;
+        gap: 10px;
+        background: rgba(15, 23, 42, 0.85);
         border: 1px solid rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(16px);
+        padding: 8px;
+        border-radius: 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        flex-wrap: wrap;
+      }
+      .settings-nav-pill {
+        flex: 1;
+        min-width: 220px;
+        background: transparent;
+        border: 1px solid transparent;
         color: #94a3b8;
-        padding: 10px 22px;
-        border-radius: 12px;
+        padding: 12px 22px;
+        border-radius: 14px;
         font-size: 14px;
         font-weight: 700;
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 8px;
-        transition: all 0.25s ease;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
-      .settings-sub-tab-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: #fff;
+      .settings-nav-pill:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: #f8fafc;
       }
-      .settings-sub-tab-btn.active {
+      .settings-nav-pill.active {
         background: linear-gradient(135deg, #0284c7, #0d9488);
         border-color: #38bdf8;
-        color: #fff;
-        box-shadow: 0 4px 16px rgba(14, 165, 233, 0.35);
+        color: #ffffff;
+        box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
       }
-      .settings-sub-tab-btn.insta-btn.active {
-        background: linear-gradient(135deg, #ec4899, #8b5cf6);
+      .settings-nav-pill.insta-pill.active {
+        background: linear-gradient(135deg, #f43f5e, #d946ef, #8b5cf6);
         border-color: #f472b6;
-        color: #fff;
-        box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
+        color: #ffffff;
+        box-shadow: 0 6px 20px rgba(217, 70, 239, 0.45);
+      }
+      .pill-badge-cyan {
+        background: rgba(56, 189, 248, 0.2);
+        color: #38bdf8;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 3px 10px;
+        border-radius: 10px;
+      }
+      .settings-nav-pill.active .pill-badge-cyan {
+        background: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+      }
+      .pill-badge-pink {
+        background: rgba(244, 114, 182, 0.2);
+        color: #f472b6;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 3px 10px;
+        border-radius: 10px;
+      }
+      .settings-nav-pill.active .pill-badge-pink {
+        background: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+      }
+
+      .pro-card-glass {
+        background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.7));
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+        margin-bottom: 24px;
+        backdrop-filter: blur(12px);
+      }
+
+      .pro-card-insta {
+        background: linear-gradient(145deg, rgba(244, 63, 94, 0.08), rgba(217, 70, 239, 0.08), rgba(139, 92, 246, 0.08));
+        border: 1px solid rgba(244, 63, 94, 0.35);
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow: 0 12px 36px rgba(217, 70, 239, 0.15);
+        backdrop-filter: blur(12px);
       }
 
       .admin-modal {
@@ -2509,117 +2567,134 @@
 
           <!-- Tab 5: SYSTEM & SOCIAL MEDIA SETTINGS (SOZLAMALAR) -->
           <div id="botSettingsTab" class="tab-content">
-            <div style="margin-bottom: 20px;">
-              <h4 style="font-size: 20px; color: #fff; font-weight: 800; margin: 0 0 6px 0;">⚙️ Tizim va Ijtimoiy Tarmoqlar Sozlamalari</h4>
-              <p style="font-size: 13px; color: #94a3b8; margin: 0;">Telegram botlar, rasmiy Instagram akkauntingiz hamda ommaviy xabarnomalarni boshqarish:</p>
+            <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h4 style="font-size: 22px; color: #fff; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px;">⚙️ Tizim va Ijtimoiy Tarmoqlar Sozlamalari</h4>
+                <p style="font-size: 13px; color: #94a3b8; margin: 0;">Telegram botlar, rasmiy Instagram akkauntingiz hamda ommaviy xabarnomalarni boshqarish</p>
+              </div>
             </div>
 
-            <!-- Sub-tab Pills Switcher -->
-            <div style="display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px; flex-wrap: wrap;">
-              <button class="settings-sub-tab-btn active" onclick="switchSettingsSubTab('telegramSettingsSection', this)">
-                <span>📱</span> Telegram Botlar & Xabarnoma
+            <!-- Segmented Floating Pill Switcher Bar -->
+            <div class="settings-segmented-nav">
+              <button class="settings-nav-pill active" onclick="switchSettingsSubTab('telegramSettingsSection', this)">
+                <span>📱</span>
+                <span>Telegram Botlar & Xabarnoma</span>
+                <span class="pill-badge-cyan">2 TA BOT</span>
               </button>
-              <button class="settings-sub-tab-btn insta-btn" onclick="switchSettingsSubTab('instagramSettingsSection', this)">
-                <span>📸</span> Instagram Akkaunt Integratsiyasi
+
+              <button class="settings-nav-pill insta-pill" onclick="switchSettingsSubTab('instagramSettingsSection', this)">
+                <span>📸</span>
+                <span>Instagram Akkaunt Integratsiyasi</span>
+                <span class="pill-badge-pink">OFFICIAL</span>
               </button>
             </div>
 
             <!-- SUB-SECTION 1: TELEGRAM BOTS -->
             <div id="telegramSettingsSection" class="settings-sub-section" style="display: block;">
-              <div class="bot-settings-grid">
-                
-                <!-- 1-Bot: Telegram Mini App Bot -->
-                <div class="bot-box" style="grid-column: span 2;">
-                  <h4 style="color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+              
+              <!-- 1-Bot: Telegram Mini App Bot -->
+              <div class="pro-card-glass">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                  <h4 style="color: #38bdf8; font-size: 18px; margin: 0; font-weight: 800; display: flex; align-items: center; gap: 10px;">
                     <span>🤖 Telegram Mini App Boti Sozlamalari</span>
-                    <span style="background: #10b981; color: #fff; font-size: 11px; font-weight: 800; padding: 2px 10px; border-radius: 12px;">● FAOL</span>
                   </h4>
-                  <p>Telegram Bot Tokeningizni kiriting. Bot foydalanuvchilarga <code>/start</code> bosganda Mini Telegram App va xizmatlarni taqdim etadi.</p>
-                  <form onsubmit="saveMiniAppBot(event)">
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
-                      <div class="form-group">
-                        <label>Telegram Bot API Token (BotFather'dan olingan):</label>
-                        <input type="text" id="miniAppToken" class="form-input" value="8733193378:AAE-FdK9cXbM7gKsTy3Rpe3uklCdQyaZJog" required />
-                      </div>
-                      
-                      <div class="form-group">
-                        <label>Web App Manzili (Web App URL):</label>
-                        <input type="text" id="miniAppWebUrl" class="form-input" value="https://meco-power.vercel.app" required />
-                      </div>
-                    </div>
-
-                    <button type="submit" class="btn-submit" style="width: auto; padding: 12px 36px; font-size: 15px; margin-top: 10px;">💾 Telegram Bot Sozlamalarini Saqlash</button>
-                  </form>
+                  <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 14px;">● ONLINE FAOL</span>
                 </div>
-
-                <!-- Broadcast Messaging Box -->
-                <div class="bot-box" style="grid-column: span 2;">
-                  <h4 style="color: #34d399;">📢 Ommaviy Xabarnoma Yuborish (Daily Broadcast)</h4>
-                  <p>Botga a'zo bo'lgan barcha foydalanuvchilarga kunlik yangiliklar, aksiyalar va e'lonlarni bir vaqtda yuboring!</p>
-
-                  <form onsubmit="sendBroadcastMessage(event)">
+                
+                <p style="color: #94a3b8; font-size: 13px; margin-bottom: 20px;">Telegram Bot API Tokeningizni kiriting. Bot foydalanuvchilarga <code>/start</code> bosganda Mini Telegram App va buyurtma berish xizmatlarini taqdim etadi.</p>
+                
+                <form onsubmit="saveMiniAppBot(event)">
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px;">
                     <div class="form-group">
-                      <label>Xabar Matni (Markdown formatini qo'llab-quvvatlaydi):</label>
-                      <textarea id="broadcastText" class="form-input" rows="4" placeholder="Masalan: ⚡ Diqqat aksiya! Barcha quyosh generatorlariga 10% chegirma e'lon qilindi!" required style="resize: vertical;"></textarea>
+                      <label style="color: #cbd5e1; font-weight: 700; font-size: 13px;">Telegram Bot API Token (BotFather'dan olingan):</label>
+                      <input type="text" id="miniAppToken" class="form-input" value="8733193378:AAE-FdK9cXbM7gKsTy3Rpe3uklCdQyaZJog" required style="border-color: rgba(56, 189, 248, 0.3); background: rgba(15, 23, 42, 0.7);" />
                     </div>
-
+                    
                     <div class="form-group">
-                      <label>Rasm URL Manzili (Ixtiyoriy foto biriktirish):</label>
-                      <input type="text" id="broadcastImgUrl" class="form-input" placeholder="https://..." />
+                      <label style="color: #cbd5e1; font-weight: 700; font-size: 13px;">Web App Manzili (Web App URL):</label>
+                      <input type="text" id="miniAppWebUrl" class="form-input" value="https://meco-power.vercel.app" required style="border-color: rgba(56, 189, 248, 0.3); background: rgba(15, 23, 42, 0.7);" />
                     </div>
+                  </div>
 
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
-                      <div style="font-size: 13px; color: #10b981; font-weight: 700;" id="registeredUsersBadge">
-                        ● Jami Bot A'zolari: <span id="userCountNum">0</span> kishi
-                      </div>
-
-                      <button type="submit" class="btn-submit" style="width: auto; padding: 12px 32px; font-size: 15px; margin: 0;">
-                        🚀 Barcha Foydalanuvchilarga Xabarni Yuborish
-                      </button>
-                    </div>
-                  </form>
-                </div>
-
+                  <div style="margin-top: 18px; text-align: right;">
+                    <button type="submit" class="btn-submit" style="width: auto; padding: 12px 36px; font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #0284c7, #10b981); border: none; box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);">
+                      💾 Telegram Bot Sozlamalarini Saqlash
+                    </button>
+                  </div>
+                </form>
               </div>
+
+              <!-- Broadcast Messaging Box -->
+              <div class="pro-card-glass">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                  <h4 style="color: #34d399; font-size: 18px; margin: 0; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+                    <span>📢 Admin Ommaviy Xabarnoma Yuborish (Daily Broadcast)</span>
+                  </h4>
+                  <span id="registeredUsersBadge" style="background: rgba(52, 211, 153, 0.15); color: #34d399; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 14px;">
+                    ● Jami Bot A'zolari: <span id="userCountNum">0</span> kishi
+                  </span>
+                </div>
+                
+                <p style="color: #94a3b8; font-size: 13px; margin-bottom: 20px;">Botga a'zo bo'lgan barcha foydalanuvchilarga kunlik yangiliklar, aksiyalar va e'lonlarni bir vaqtda yuboring!</p>
+
+                <form onsubmit="sendBroadcastMessage(event)">
+                  <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="color: #cbd5e1; font-weight: 700; font-size: 13px;">Xabar Matni (Markdown formatini qo'llab-quvvatlaydi):</label>
+                    <textarea id="broadcastText" class="form-input" rows="4" placeholder="Masalan: ⚡ Diqqat aksiya! Barcha quyosh generatorlariga 10% chegirma e'lon qilindi!" required style="resize: vertical; border-color: rgba(52, 211, 153, 0.3); background: rgba(15, 23, 42, 0.7);"></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label style="color: #cbd5e1; font-weight: 700; font-size: 13px;">Rasm URL Manzili (Ixtiyoriy foto biriktirish):</label>
+                    <input type="text" id="broadcastImgUrl" class="form-input" placeholder="https://..." style="border-color: rgba(52, 211, 153, 0.3); background: rgba(15, 23, 42, 0.7);" />
+                  </div>
+
+                  <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                    <button type="submit" class="btn-submit" style="width: auto; padding: 13px 40px; font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #10b981, #059669); border: none; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);">
+                      🚀 Barcha Foydalanuvchilarga Xabarni Yuborish
+                    </button>
+                  </div>
+                </form>
+              </div>
+
             </div>
 
             <!-- SUB-SECTION 2: INSTAGRAM INTEGRATION -->
             <div id="instagramSettingsSection" class="settings-sub-section" style="display: none;">
-              <div class="bot-box" style="border-color: rgba(236, 72, 153, 0.45); background: linear-gradient(135deg, rgba(236, 72, 153, 0.06), rgba(139, 92, 246, 0.06)); padding: 28px; border-radius: 20px;">
+              <div class="pro-card-insta">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
-                  <h4 style="color: #f472b6; font-size: 18px; margin: 0; display: flex; align-items: center; gap: 10px;">
+                  <h4 style="color: #f472b6; font-size: 20px; margin: 0; font-weight: 800; display: flex; align-items: center; gap: 10px;">
                     <span>📸 Instagram Rasmiy Akkaunti Integratsiyasi</span>
                   </h4>
-                  <span id="instaStatusBadge" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); color: #fff; font-size: 12px; font-weight: 800; padding: 4px 14px; border-radius: 20px; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);">● ULANGAN VA FAOL</span>
+                  <span id="instaStatusBadge" style="background: linear-gradient(135deg, #f43f5e, #d946ef, #8b5cf6); color: #fff; font-size: 12px; font-weight: 800; padding: 5px 16px; border-radius: 20px; box-shadow: 0 4px 16px rgba(217, 70, 239, 0.4);">● ULANGAN VA FAOL</span>
                 </div>
 
-                <p style="color: #cbd5e1; font-size: 14px; margin-bottom: 24px; line-height: 1.6;">MECO Power Uzbekistan rasmiy Instagram sahifangizni ulashingiz bilan sayt tashrifchilari hamda xaridorlar to'g'ridan-to'g'ri profilingiz va DM (Direct Message) chat sahifangizga bitta bosishda o'tadilar.</p>
+                <p style="color: #e2e8f0; font-size: 14px; margin-bottom: 24px; line-height: 1.6;">MECO Power Uzbekistan rasmiy Instagram sahifangizni ulashingiz bilan sayt tashrifchilari hamda xaridorlar to'g'ridan-to'g'ri profilingiz va DM (Direct Message) chat sahifangizga bitta bosishda o'tadilar.</p>
 
                 <form onsubmit="saveInstagramSettings(event)">
                   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                     <div class="form-group">
                       <label style="color: #f472b6; font-weight: 700; font-size: 13px;">👤 Instagram Akkaunt Usernami:</label>
-                      <input type="text" id="instaUsername" class="form-input" placeholder="mecopower_uzbekistan" value="mecopower_uzbekistan" required style="border-color: rgba(236, 72, 153, 0.3); background: rgba(15, 23, 42, 0.6);" />
+                      <input type="text" id="instaUsername" class="form-input" placeholder="mecopower_uzbekistan" value="mecopower_uzbekistan" required style="border-color: rgba(244, 63, 94, 0.4); background: rgba(15, 23, 42, 0.8);" />
                     </div>
 
                     <div class="form-group">
                       <label style="color: #f472b6; font-weight: 700; font-size: 13px;">🌐 Instagram Profil URL Havolasi:</label>
-                      <input type="text" id="instaProfileUrl" class="form-input" placeholder="https://www.instagram.com/mecopower_uzbekistan" value="https://www.instagram.com/mecopower_uzbekistan" required style="border-color: rgba(236, 72, 153, 0.3); background: rgba(15, 23, 42, 0.6);" />
+                      <input type="text" id="instaProfileUrl" class="form-input" placeholder="https://www.instagram.com/mecopower_uzbekistan" value="https://www.instagram.com/mecopower_uzbekistan" required style="border-color: rgba(244, 63, 94, 0.4); background: rgba(15, 23, 42, 0.8);" />
                     </div>
 
                     <div class="form-group" style="grid-column: span 2;">
                       <label style="color: #f472b6; font-weight: 700; font-size: 13px;">💬 Instagram DM (Direct Message) Aloqa Linki:</label>
-                      <input type="text" id="instaDmUrl" class="form-input" placeholder="https://ig.me/m/mecopower_uzbekistan" value="https://ig.me/m/mecopower_uzbekistan" required style="border-color: rgba(236, 72, 153, 0.3); background: rgba(15, 23, 42, 0.6);" />
+                      <input type="text" id="instaDmUrl" class="form-input" placeholder="https://ig.me/m/mecopower_uzbekistan" value="https://ig.me/m/mecopower_uzbekistan" required style="border-color: rgba(244, 63, 94, 0.4); background: rgba(15, 23, 42, 0.8);" />
                     </div>
                   </div>
 
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; flex-wrap: wrap; gap: 16px; border-top: 1px solid rgba(236, 72, 153, 0.2); padding-top: 20px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; flex-wrap: wrap; gap: 16px; border-top: 1px solid rgba(244, 63, 94, 0.25); padding-top: 20px;">
                     <label style="display: flex; align-items: center; gap: 10px; color: #fff; cursor: pointer; font-size: 14px; font-weight: 600;">
                       <input type="checkbox" id="instaShowWebsite" checked style="width: 20px; height: 20px; accent-color: #ec4899;" />
                       <span>Sayt footer va kontaktlar bo'limida Instagram tugmasini faol ko'rsatish</span>
                     </label>
 
-                    <button type="submit" class="btn-submit" style="width: auto; padding: 14px 42px; font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #ec4899, #8b5cf6); box-shadow: 0 4px 20px rgba(236, 72, 153, 0.4); border: none; margin: 0; cursor: pointer;">
+                    <button type="submit" class="btn-submit" style="width: auto; padding: 14px 44px; font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #f43f5e, #d946ef, #8b5cf6); box-shadow: 0 6px 24px rgba(217, 70, 239, 0.45); border: none; margin: 0; cursor: pointer;">
                       📸 Instagram Akkauntini Ulash va Saqlash
                     </button>
                   </div>
@@ -3814,6 +3889,7 @@
     function switchSettingsSubTab(sectionId, btn) {
       document.querySelectorAll('.settings-sub-section').forEach(sec => sec.style.display = 'none');
       document.querySelectorAll('.settings-sub-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.settings-nav-pill').forEach(b => b.classList.remove('active'));
       const target = document.getElementById(sectionId);
       if (target) target.style.display = 'block';
       if (btn) btn.classList.add('active');

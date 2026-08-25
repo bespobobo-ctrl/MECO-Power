@@ -1,5 +1,25 @@
 [
   {
+    "visitorId": "v-ssr-c2wkum",
+    "source": "direct_web",
+    "timestamp": "2026-08-25T14:10:25.548Z",
+    "ip": "::1"
+  },
+  {
+    "visitorId": "v-0paflnvmt8qggar",
+    "source": "direct_web",
+    "timestamp": "2026-08-25T14:08:36.210Z",
+    "ip": "94.158.60.160",
+    "ref": ""
+  },
+  {
+    "visitorId": "v-0paflnvmt8qggar",
+    "source": "direct_web",
+    "timestamp": "2026-08-25T14:01:10.761Z",
+    "ip": "94.158.60.160",
+    "ref": ""
+  },
+  {
     "visitorId": "v-test-tg-123",
     "source": "telegram_mini_app",
     "timestamp": "2026-08-25T14:00:46.482Z",
