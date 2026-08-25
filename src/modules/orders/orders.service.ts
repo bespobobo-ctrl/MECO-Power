@@ -31,10 +31,7 @@ export class OrdersService {
   private static defaultOrders: Order[] = [];
   private static orders: Order[] = [];
 
-  private static async initPersistence() {
-    if (this.isInitialized && this.orders.length > 0) return;
-
-    // 1. Try loading from Supabase Storage bucket (meco-assets/orders_config.json)
+  private static async syncFromCloudStorage() {
     try {
       const { data: downData } = await supabase.storage.from('meco-assets').download('orders_config.json');
       if (downData) {
@@ -44,7 +41,6 @@ export class OrdersService {
           this.orders = parsed;
           this.isInitialized = true;
           this.saveLocalDiskOnly();
-          logger.info(`📦 Loaded ${parsed.length} orders from Supabase Storage cloud!`);
           return;
         }
       }
@@ -52,7 +48,6 @@ export class OrdersService {
       logger.warn(`Supabase orders storage load note: ${sbErr.message}`);
     }
 
-    // 2. Try loading from local disk file (data/orders.json)
     try {
       if (!fs.existsSync(DATA_DIR)) {
         fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -64,17 +59,11 @@ export class OrdersService {
         if (Array.isArray(parsed)) {
           this.orders = parsed;
           this.isInitialized = true;
-          logger.info(`📦 Loaded ${parsed.length} persisted orders from local disk (${ORDERS_FILE})`);
-          return;
         }
       }
     } catch (err: any) {
       logger.warn(`Orders file persistence load note: ${err.message}`);
     }
-
-    this.orders = [...this.defaultOrders];
-    await this.saveToDisk();
-    this.isInitialized = true;
   }
 
   private static saveLocalDiskOnly() {
@@ -103,7 +92,7 @@ export class OrdersService {
   }
 
   async createOrder(orderData: Partial<Order>): Promise<Order> {
-    await OrdersService.initPersistence();
+    await OrdersService.syncFromCloudStorage();
 
     const lat = orderData.latitude ? Number(orderData.latitude) : null;
     const lng = orderData.longitude ? Number(orderData.longitude) : null;
@@ -140,12 +129,12 @@ export class OrdersService {
   }
 
   async getAllOrders(): Promise<Order[]> {
-    await OrdersService.initPersistence();
+    await OrdersService.syncFromCloudStorage();
     return OrdersService.orders;
   }
 
   async updateOrderStatus(id: string, status: OrderStatus): Promise<Order | null> {
-    await OrdersService.initPersistence();
+    await OrdersService.syncFromCloudStorage();
     const order = OrdersService.orders.find(o => o.id === id);
     if (!order) return null;
     order.status = status;
@@ -154,7 +143,7 @@ export class OrdersService {
   }
 
   async deleteOrder(id: string): Promise<boolean> {
-    await OrdersService.initPersistence();
+    await OrdersService.syncFromCloudStorage();
     const idx = OrdersService.orders.findIndex(o => o.id === id);
     if (idx !== -1) {
       OrdersService.orders.splice(idx, 1);
