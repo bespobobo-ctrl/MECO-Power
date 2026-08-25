@@ -9,9 +9,6 @@ const { Bot } = require('node-telegram-bot-api');
 const DATA_DIR = path.join(process.cwd(), 'data');
 const BOT_USERS_FILE = path.join(DATA_DIR, 'bot_users.json');
 
-const ordersService = new OrdersService();
-const analyticsService = new AnalyticsService();
-
 export interface BotUser {
   chatId: number;
   firstName?: string;
@@ -159,15 +156,17 @@ export class TelegramBotService {
 
         // Button 1: 🛍️ FAOL BUYURTMALAR (Active Orders)
         if (queryData === 'ACTION_ACTIVE_ORDERS') {
+          const { OrdersService } = require('../modules/orders/orders.service');
+          const ordersService = new OrdersService();
           const allOrders = await ordersService.getAllOrders();
-          const activeOrders = allOrders.filter(o => o.status !== 'Bajarildi va Yopildi' && o.status !== 'Bekor qilindi');
+          const activeOrders = allOrders.filter((o: any) => o.status !== 'Bajarildi va Yopildi' && o.status !== 'Bekor qilindi');
 
           if (!activeOrders || activeOrders.length === 0) {
             return this.replyMessage(chatId, `🛍️ *Hozircha faol buyurtmalar mavjud emas (0 ta).*`, getAdminKeyboard());
           }
 
           let msg = `🛍️ *FAOL BUYURTMALAR RO'YXATI (${activeOrders.length} ta):*\n\n`;
-          activeOrders.forEach((o, i) => {
+          activeOrders.forEach((o: any, i: number) => {
             msg += 
               `*${i + 1}. Buyurtma ID:* \`${o.id}\`\n` +
               `👤 *Mijoz:* ${o.customerName} (\`${o.customerPhone}\`)\n` +
@@ -184,20 +183,22 @@ export class TelegramBotService {
 
         // Button 2: ✅ BAJARILGAN BUYURTMALAR (Completed Orders)
         if (queryData === 'ACTION_CLOSED_ORDERS') {
+          const { OrdersService } = require('../modules/orders/orders.service');
+          const ordersService = new OrdersService();
           const allOrders = await ordersService.getAllOrders();
-          const closedOrders = allOrders.filter(o => o.status === 'Bajarildi va Yopildi');
+          const closedOrders = allOrders.filter((o: any) => o.status === 'Bajarildi va Yopildi');
 
           if (!closedOrders || closedOrders.length === 0) {
             return this.replyMessage(chatId, `✅ *Hozircha bajarilgan buyurtmalar mavjud emas (0 ta).*`, getAdminKeyboard());
           }
 
-          const totalClosedRevenue = closedOrders.reduce((sum, o) => sum + (o.totalAmountUzS || 0), 0);
+          const totalClosedRevenue = closedOrders.reduce((sum: number, o: any) => sum + (o.totalAmountUzS || 0), 0);
 
           let msg = 
             `✅ *BAJARILGAN VA YOPILGAN BUYURTMALAR (${closedOrders.length} ta):*\n` +
             `💰 *Bajarilgan jami savdo tushumi:* *${totalClosedRevenue.toLocaleString('uz-UZ')} UZS*\n\n`;
 
-          closedOrders.forEach((o, i) => {
+          closedOrders.forEach((o: any, i: number) => {
             msg += 
               `*${i + 1}. ID:* \`${o.id}\` | ${o.customerName} (\`${o.customerPhone}\`)\n` +
               `📦 ${o.productName} — *${o.totalAmountUzS.toLocaleString('uz-UZ')} UZS*\n` +
@@ -209,6 +210,8 @@ export class TelegramBotService {
 
         // Button 3: 📊 SOTUVLAR STATISTIKASI (Daily, Weekly, Monthly Revenue Analytics)
         if (queryData === 'ACTION_SALES_STATS') {
+          const { AnalyticsService } = require('../modules/analytics/analytics.service');
+          const analyticsService = new AnalyticsService();
           const analytics = await analyticsService.getDashboardStats();
           const sales = analytics.sales;
 
@@ -327,18 +330,22 @@ export class TelegramBotService {
 
   // Admin Broadcast Message to all Authenticated Telegram Bot Users
   static async sendBroadcastMessage(messageText: string, imageUrl?: string): Promise<{ totalUsers: number; successCount: number; failCount: number }> {
-    const userList = Array.from(this.registeredUsers.values());
+    const allChatIds = new Set<number>([
+      ...Array.from(this.registeredUsers.keys()),
+      ...Array.from(this.authenticatedChatIds.values())
+    ]);
+
     let successCount = 0;
     let failCount = 0;
 
-    for (const user of userList) {
+    for (const chatId of allChatIds) {
       try {
         if (imageUrl && imageUrl.startsWith('http')) {
           await fetch(`https://api.telegram.org/bot${this.botToken}/sendPhoto`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              chat_id: user.chatId,
+              chat_id: chatId,
               photo: imageUrl,
               caption: messageText,
               parse_mode: 'Markdown'
@@ -349,7 +356,7 @@ export class TelegramBotService {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              chat_id: user.chatId,
+              chat_id: chatId,
               text: messageText,
               parse_mode: 'Markdown'
             })
@@ -362,7 +369,7 @@ export class TelegramBotService {
     }
 
     return {
-      totalUsers: userList.length,
+      totalUsers: allChatIds.size,
       successCount,
       failCount
     };
