@@ -35,12 +35,12 @@ export class SettingsService {
 
   private static botSettings: TelegramBotConfig = {
     miniAppBot: {
-      botToken: '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA',
+      botToken: '8733193378:AAE-FdK9cXbM7gKsTy3Rpe3uklCdQyaZJog',
       webAppUrl: 'https://meco-power.vercel.app',
       status: 'ACTIVE',
     },
     notificationBot: {
-      botToken: '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA',
+      botToken: '8733193378:AAE-FdK9cXbM7gKsTy3Rpe3uklCdQyaZJog',
       adminChatId: '987654321',
       notifyNewOrders: true,
       notifyTrafficAlerts: true,

@@ -12,10 +12,10 @@ export interface BotUser {
 
 export class TelegramBotService {
   private static botInstance: any = null;
-  private static botToken: string = '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA';
+  private static botToken: string = '8733193378:AAE-FdK9cXbM7gKsTy3Rpe3uklCdQyaZJog';
   private static registeredUsers: Map<number, BotUser> = new Map();
 
-  static async initBot(token: string = '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA', webAppUrl: string = 'https://meco-power.vercel.app') {
+  static async initBot(token: string = '8733193378:AAE-FdK9cXbM7gKsTy3Rpe3uklCdQyaZJog', webAppUrl: string = 'https://meco-power.vercel.app') {
     if (!token) return;
 
     // Enforce HTTPS URL for Telegram WebApp compatibility
