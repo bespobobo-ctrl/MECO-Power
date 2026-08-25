@@ -30,6 +30,24 @@ export class TelegramBotService {
 
       logger.info(`🚀 MECO Power Telegram Bot listener starting for Token (${token.slice(0, 10)}...)...`);
 
+      // Set Permanent Web App Menu Button next to chat input field for 1-tap Mini App launch
+      try {
+        await fetch(`https://api.telegram.org/bot${token}/setChatMenuButton`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            menu_button: {
+              type: 'web_app',
+              text: '⚡ Mini App',
+              web_app: { url: webAppUrl }
+            }
+          })
+        });
+        logger.info('📱 Telegram Bot Mini App Menu Button configured successfully!');
+      } catch (menuErr: any) {
+        logger.warn(`SetChatMenuButton note: ${menuErr.message}`);
+      }
+
       // Load registered users from Supabase / cache
       await this.loadRegisteredUsers();
 
@@ -59,7 +77,7 @@ export class TelegramBotService {
           `• 🔋 *LiFePO4 8000+* uzoq muddatli batareya sikli\n` +
           `• 🛡️ *UN38.3 va IEC62368* xalqaro xavfsizlik sertifikatlari\n` +
           `• 🚚 *O'zbekiston bo'ylab* kafolatli yetkazib berish va Qo'qon Shaxridagi Bosh Shourum\n\n` +
-          `👇 *Bizning MECO Power Uzbekistan portalimizni ochish uchun tugmani bosing:*`;
+          `👇 *Bizning MECO Power Uzbekistan Mini App-imizni ochish uchun pastdagi tugmani bosing:*`;
 
         const isHttps = webAppUrl.startsWith('https://');
 
@@ -104,7 +122,7 @@ export class TelegramBotService {
             `9. ☀️ *Meco F200W Solar Panel* — 2,100,000 UZS\n` +
             `10. ☀️ *Meco 580W Solar Panel* — 2,800,000 UZS\n` +
             `11. ☀️ *Meco 620W Solar Panel* — 3,100,000 UZS\n\n` +
-            `🌐 Rasmiy portal: https://meco-power.vercel.app`;
+            `🌐 Rasmiy Mini App: https://meco-power.vercel.app`;
 
           try {
             await ctx.reply(catalogMsg, { parse_mode: 'Markdown' });

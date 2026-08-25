@@ -11,8 +11,11 @@
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        if (tg.setHeaderColor) tg.setHeaderColor('#090d16');
+        if (tg.setBackgroundColor) tg.setBackgroundColor('#0b1320');
       }
     });
   </script>
@@ -48,6 +51,7 @@
       color: var(--text-main);
       background-color: #fff;
       line-height: 1.6;
+      padding-bottom: 0;
     }
 
     /* TOAST NOTIFICATION CONTAINER */
@@ -1281,17 +1285,173 @@
       gap: 24px;
     }
 
-    @media (max-width: 640px) {
+    /* NATIVE TELEGRAM MINI APP MOBILE RESPONSIVE STYLING */
+    .mobile-bottom-nav {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding-bottom: 70px;
+      }
+      
+      .top-bar {
+        padding: 8px 12px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .top-bar-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      header {
+        padding: 12px 16px;
+      }
+
+      nav ul {
+        display: none;
+      }
+
+      .logo-text h1 {
+        font-size: 18px;
+      }
+
+      .logo-text p {
+        font-size: 9px;
+      }
+
+      .btn-login {
+        padding: 8px 14px;
+        font-size: 12px;
+      }
+
+      .hero-slider-container {
+        height: 380px;
+      }
+
+      .slide {
+        padding: 0 16px;
+      }
+
+      .slide-content-card {
+        padding: 20px;
+        max-width: 100%;
+        border-radius: 14px;
+      }
+
+      .slide-content-card h2 {
+        font-size: 26px;
+      }
+
+      .slide-content-card p {
+        font-size: 13px;
+        margin-bottom: 16px;
+      }
+
+      .btn-slide-action {
+        padding: 10px 22px;
+        font-size: 13px;
+      }
+
+      .product-series-section {
+        padding: 30px 16px 100px;
+      }
+
+      .series-nav-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .category-tabs {
+        gap: 10px;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+
+      .category-tab-btn {
+        font-size: 13px;
+        padding: 8px 16px;
+        background: #e2e8f0;
+        border-radius: 20px;
+        color: #334155;
+      }
+
+      .category-tab-btn.active {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .category-tab-btn.active::after {
+        display: none;
+      }
+
+      .series-header h2 {
+        font-size: 26px;
+      }
+
+      .products-grid-full {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
       .product-detail-grid {
         grid-template-columns: 1fr;
       }
+
       .admin-modal {
         flex-direction: column;
       }
+
       .admin-sidebar {
         width: 100%;
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      /* Native Mobile Bottom Nav Bar for Telegram WebApp */
+      .mobile-bottom-nav {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 64px;
+        background: rgba(11, 19, 32, 0.98);
+        backdrop-filter: blur(16px);
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        z-index: 9999;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 8px;
+      }
+
+      .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 700;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+
+      .mobile-nav-item.active, .mobile-nav-item:hover {
+        color: #34d399;
+      }
+
+      .mobile-nav-icon {
+        font-size: 20px;
       }
     }
   </style>
@@ -1470,6 +1630,29 @@
       <p>© 2026 MECO POWER Technology Co., Ltd. Barcha huquqlar himoyalangan. | O'zbekiston Veb Portali va API Tizimi</p>
     </div>
   </footer>
+
+  <!-- NATIVE MOBILE BOTTOM NAVIGATION BAR FOR TELEGRAM MINI APP -->
+  <div class="mobile-bottom-nav">
+    <button onclick="scrollToSection('heroContainer')" class="mobile-nav-item active">
+      <span class="mobile-nav-icon">🏠</span>
+      <span>Bosh sahifa</span>
+    </button>
+
+    <button onclick="scrollToSection('products')" class="mobile-nav-item">
+      <span class="mobile-nav-icon">📦</span>
+      <span>Mahsulotlar</span>
+    </button>
+
+    <button onclick="scrollToSection('about')" class="mobile-nav-item">
+      <span class="mobile-nav-icon">⚡</span>
+      <span>Afzalliklar</span>
+    </button>
+
+    <button onclick="openLoginModal()" class="mobile-nav-item">
+      <span class="mobile-nav-icon">🔑</span>
+      <span>Admin</span>
+    </button>
+  </div>
 
   <!-- LOGIN MODAL -->
   <div class="modal-overlay" id="loginModal">
@@ -1818,7 +2001,14 @@
   </div>
 
   <script>
-    // SLEEK TOAST NOTIFICATION SYSTEM (REPLACES INTRUSIVE BROWSER ALERTS)
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // SLEEK TOAST NOTIFICATION SYSTEM
     function showToast(message, type = 'success') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
