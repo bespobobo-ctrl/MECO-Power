@@ -59,12 +59,12 @@ export class TelegramBotService {
       await this.loadRegisteredUsers();
 
       // Handle text messages and password verification
-      this.botInstance.on('message', async (ctx: any) => {
-        const chatId = ctx.chat?.id || ctx.from?.id;
+      this.botInstance.on('message', async (msg: any) => {
+        const chatId = msg.chat?.id || msg.from?.id;
         if (!chatId) return;
 
-        const text = (ctx.text || '').trim();
-        const userName = ctx.from?.first_name || 'Foydalanuvchi';
+        const text = (msg.text || '').trim();
+        const userName = msg.from?.first_name || 'Foydalanuvchi';
 
         // 1. Check if user enters the correct password code "meco3997"
         if (text.toLowerCase() === this.SECRET_CODE.toLowerCase()) {
@@ -72,9 +72,9 @@ export class TelegramBotService {
 
           const user: BotUser = {
             chatId,
-            firstName: ctx.from?.first_name,
-            lastName: ctx.from?.last_name,
-            username: ctx.from?.username,
+            firstName: msg.from?.first_name,
+            lastName: msg.from?.last_name,
+            username: msg.from?.username,
             registeredAt: new Date().toISOString(),
           };
           this.registeredUsers.set(chatId, user);
@@ -86,20 +86,19 @@ export class TelegramBotService {
             `⚡ *Yangi buyurtmalar kelishi bilan ushbu botga darhol xabarnoma yetib keladi!*\n\n` +
             `👇 *Mini App-ni ochish yoki katologni ko'rish uchun pastdagi tugmalardan foydalaning:*`;
 
-          const inlineKeyboard = [
-            [
-              { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: targetUrl } }
-            ],
-            [
-              { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
-              { text: '🏢 BOSH SHOURUMI', callback_data: 'ACTION_CONTACT' }
+          const inlineKeyboard = {
+            inline_keyboard: [
+              [
+                { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: targetUrl } }
+              ],
+              [
+                { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
+                { text: '🏢 BOSH SHOURUMI', callback_data: 'ACTION_CONTACT' }
+              ]
             ]
-          ];
+          };
 
-          return ctx.reply(successMsg, {
-            parse_mode: 'Markdown',
-            reply_markup: { inline_keyboard: inlineKeyboard }
-          });
+          return this.replyMessage(chatId, successMsg, inlineKeyboard);
         }
 
         // 2. If user is already authenticated
@@ -115,20 +114,19 @@ export class TelegramBotService {
               `• 🚚 *Qo'qon Shaxridagi Bosh Shourum* va butun O'zbekiston bo'ylab yetkazib berish\n\n` +
               `👇 *Boshqarish va xarid qilish uchun Mini App-ni oching:*`;
 
-            const inlineKeyboard = [
-              [
-                { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: targetUrl } }
-              ],
-              [
-                { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
-                { text: '🏢 BOSH SHOURUMI', callback_data: 'ACTION_CONTACT' }
+            const inlineKeyboard = {
+              inline_keyboard: [
+                [
+                  { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: targetUrl } }
+                ],
+                [
+                  { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
+                  { text: '🏢 BOSH SHOURUMI', callback_data: 'ACTION_CONTACT' }
+                ]
               ]
-            ];
+            };
 
-            return ctx.reply(welcomeText, {
-              parse_mode: 'Markdown',
-              reply_markup: { inline_keyboard: inlineKeyboard }
-            });
+            return this.replyMessage(chatId, welcomeText, inlineKeyboard);
           }
           return; // Allow authenticated user text
         }
@@ -140,21 +138,17 @@ export class TelegramBotService {
           `*MECO POWER UZBEKISTAN* rasmiy botidan foydalanish hamda buyurtmalar xabarnomasini olish uchun maxsus kirish kodini kiriting.\n\n` +
           `✍️ *Iltimos, maxsus parolni (kodni) yozib yuboring:*`;
 
-        try {
-          await ctx.reply(authPromptText, { parse_mode: 'Markdown' });
-        } catch (err: any) {
-          await ctx.reply(`🔐 XAVFSIZLIK TEKSHIRUVI: Maxsus kirish kodini yozib yuboring.`);
-        }
+        return this.replyMessage(chatId, authPromptText);
       });
 
       // Handle Callback queries (Protected by password)
-      this.botInstance.on('callback_query', async (ctx: any) => {
-        const chatId = ctx.chat?.id || ctx.from?.id;
+      this.botInstance.on('callback_query', async (msg: any) => {
+        const chatId = msg.chat?.id || msg.from?.id;
         if (chatId && !this.authenticatedChatIds.has(chatId)) {
-          return ctx.reply('🔒 Maxsus kirish kodi kiritilmagan. Iltimos parolni yozib yuboring.');
+          return this.replyMessage(chatId, '🔒 Maxsus kirish kodi kiritilmagan. Iltimos parolni yozib yuboring.');
         }
 
-        const queryData = ctx.callbackQuery?.data || ctx.data;
+        const queryData = msg.callbackQuery?.data || msg.data;
 
         if (queryData === 'ACTION_CATALOG') {
           const catalogMsg = 
@@ -172,11 +166,7 @@ export class TelegramBotService {
             `11. ☀️ *Meco 620W Solar Panel* — 3,100,000 UZS\n\n` +
             `🌐 Rasmiy Mini App: https://meco-power.vercel.app`;
 
-          try {
-            await ctx.reply(catalogMsg, { parse_mode: 'Markdown' });
-          } catch (e) {
-            await ctx.reply(catalogMsg);
-          }
+          return this.replyMessage(chatId, catalogMsg);
         } else if (queryData === 'ACTION_CONTACT') {
           const contactMsg = 
             `🏢 *MECO POWER UZBEKISTAN BOSH SHOURUMI:*\n\n` +
@@ -185,11 +175,7 @@ export class TelegramBotService {
             `✉️ *Email:* uzbekistan@mecopower.com\n` +
             `🌐 *Portal:* https://meco-power.vercel.app`;
 
-          try {
-            await ctx.reply(contactMsg, { parse_mode: 'Markdown' });
-          } catch (e) {
-            await ctx.reply(contactMsg);
-          }
+          return this.replyMessage(chatId, contactMsg);
         }
       });
 
@@ -208,6 +194,23 @@ export class TelegramBotService {
 
     } catch (err: any) {
       logger.error(`Telegram Bot Startup Error: ${err.message}`);
+    }
+  }
+
+  private static async replyMessage(chatId: number, text: string, replyMarkup?: any) {
+    try {
+      await fetch(`https://api.telegram.org/bot${this.botToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: text,
+          parse_mode: 'Markdown',
+          reply_markup: replyMarkup
+        })
+      });
+    } catch (e: any) {
+      logger.error(`SendMessage error: ${e.message}`);
     }
   }
 
