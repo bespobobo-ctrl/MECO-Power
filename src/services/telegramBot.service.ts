@@ -1,6 +1,16 @@
+import fs from 'fs';
+import path from 'path';
 import { logger } from '../config/logger';
 import { supabase } from '../config/supabase';
+import { OrdersService } from '../modules/orders/orders.service';
+import { AnalyticsService } from '../modules/analytics/analytics.service';
 const { Bot } = require('node-telegram-bot-api');
+
+const DATA_DIR = path.join(process.cwd(), 'data');
+const BOT_USERS_FILE = path.join(DATA_DIR, 'bot_users.json');
+
+const ordersService = new OrdersService();
+const analyticsService = new AnalyticsService();
 
 export interface BotUser {
   chatId: number;
@@ -55,8 +65,27 @@ export class TelegramBotService {
         logger.warn(`SetChatMenuButton note: ${menuErr.message}`);
       }
 
-      // Load registered & authenticated users from Supabase / cache
+      // Load registered & authenticated users from disk & Supabase / cache
       await this.loadRegisteredUsers();
+
+      // Keyboard markup with user requested buttons:
+      // 1. 🚀 MECO Power Web Portal Mini App
+      // 2. 🛍️ Faol Buyurtmalar | ✅ Bajarilgan Buyurtmalar
+      // 3. 📊 Sotuvlar Statistikasi (Kunlik, Haftalik, Oylik)
+      const getAdminKeyboard = () => ({
+        inline_keyboard: [
+          [
+            { text: '🚀 MECO Power Web Portal Mini App', web_app: { url: targetUrl } }
+          ],
+          [
+            { text: '🛍️ Faol Buyurtmalar', callback_data: 'ACTION_ACTIVE_ORDERS' },
+            { text: '✅ Bajarilgan Buyurtmalar', callback_data: 'ACTION_CLOSED_ORDERS' }
+          ],
+          [
+            { text: '📊 Sotuvlar Statistikasi (Kunlik, Haftalik, Oylik)', callback_data: 'ACTION_SALES_STATS' }
+          ]
+        ]
+      });
 
       // Handle text messages and password verification
       this.botInstance.on('message', async (ctx: any) => {
@@ -87,21 +116,9 @@ export class TelegramBotService {
             `✅ *KOD TO'G'RI! TIZIMGA XUSH KELIBSIZ!* 🎉\n\n` +
             `Siz MECO Power Uzbekistan boshqaruv va bildirishnomalar botiga muvaffaqiyatli kirdingiz.\n\n` +
             `⚡ *Yangi buyurtmalar kelishi bilan ushbu botga darhol xabarnoma yetib keladi!*\n\n` +
-            `👇 *Mini App-ni ochish yoki katologni ko'rish uchun pastdagi tugmalardan foydalaning:*`;
+            `👇 *Buyurtmalarni va sotuvlar statistikasini ko'rish uchun pastdagi tugmalardan foydalaning:*`;
 
-          const inlineKeyboard = {
-            inline_keyboard: [
-              [
-                { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: targetUrl } }
-              ],
-              [
-                { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
-                { text: '🏢 BOSH SHOURUMI', callback_data: 'ACTION_CONTACT' }
-              ]
-            ]
-          };
-
-          return this.replyMessage(chatId, successMsg, inlineKeyboard);
+          return this.replyMessage(chatId, successMsg, getAdminKeyboard());
         }
 
         // 2. If user is already authenticated
@@ -109,27 +126,14 @@ export class TelegramBotService {
           if (text === '/start') {
             const welcomeText = 
               `🌟 *Assalomu aleykum, ${userName}!*\n\n` +
-              `🇺🇿 *MECO POWER UZBEKISTAN* rasmiy Telegram Botida siz avtorizatsiyadan o'tgansiz!\n\n` +
-              `✨ *Afzalliklarimiz:*\n` +
-              `• ⚡ *GaN 92%* yuqori energiya konversiyasi\n` +
-              `• 🔋 *LiFePO4 8000+* uzoq muddatli batareya sikli\n` +
-              `• 🛡️ *UN38.3 va IEC62368* xalqaro sertifikatlar\n` +
-              `• 🚚 *Qo'qon Shaxridagi Bosh Shourum* va butun O'zbekiston bo'ylab yetkazib berish\n\n` +
-              `👇 *Boshqarish va xarid qilish uchun Mini App-ni oching:*`;
+              `🇺🇿 *MECO POWER UZBEKISTAN* boshqaruv botiga xush kelibsiz!\n\n` +
+              `✨ *Tizim imkoniyatlari:*\n` +
+              `• 🛍️ Kelgan yangi buyurtmalarni nazorat qilish\n` +
+              `• 📊 Kunlik, haftalik va oylik tushumlarni ko'rish\n` +
+              `• 🚀 Mini App orqali barcha mahsulotlarni boshqarish\n\n` +
+              `👇 *Boshqaruv menyusidan kerakli bo'limni tanlang:*`;
 
-            const inlineKeyboard = {
-              inline_keyboard: [
-                [
-                  { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: targetUrl } }
-                ],
-                [
-                  { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
-                  { text: '🏢 BOSH SHOURUMI', callback_data: 'ACTION_CONTACT' }
-                ]
-              ]
-            };
-
-            return this.replyMessage(chatId, welcomeText, inlineKeyboard);
+            return this.replyMessage(chatId, welcomeText, getAdminKeyboard());
           }
           return; // Allow authenticated user text
         }
@@ -144,7 +148,7 @@ export class TelegramBotService {
         return this.replyMessage(chatId, authPromptText);
       });
 
-      // Handle Callback queries (Protected by password)
+      // Handle Callback queries for 3 custom requested buttons
       this.botInstance.on('callback_query', async (ctx: any) => {
         const chatId = ctx.chatId || ctx.callbackQuery?.message?.chat?.id || ctx.from?.id;
         if (chatId && !this.authenticatedChatIds.has(chatId)) {
@@ -153,32 +157,70 @@ export class TelegramBotService {
 
         const queryData = ctx.callbackQuery?.data || ctx.data;
 
-        if (queryData === 'ACTION_CATALOG') {
-          const catalogMsg = 
-            `📦 *MECO POWER UZBEKISTAN BARCHA MAHSULOTLARI VA NARXLARI:*\n\n` +
-            `1. 🔋 *Meco 300Wh Solar Power Bank* — 3,200,000 UZS\n` +
-            `2. ⚡ *Meco 1kWh Solar Generator* — 8,900,000 UZS\n` +
-            `3. ⚡ *Meco 1kWh Pro Solar Generator* — 10,500,000 UZS\n` +
-            `4. ⚡ *Meco 1.8kWh Solar Generator* — 14,200,000 UZS\n` +
-            `5. ⚡ *Meco 2kWh Solar Generator* — 16,800,000 UZS\n` +
-            `6. ⚡ *Meco 3.6kWh Solar Generator* — 21,000,000 UZS\n` +
-            `7. ⚡ *Meco 3.6kWh Pro Solar Generator* — 24,500,000 UZS\n` +
-            `8. ⚡ *Meco 5.4kWh Heavy Duty Generator* — 38,000,000 UZS\n` +
-            `9. ☀️ *Meco F200W Solar Panel* — 2,100,000 UZS\n` +
-            `10. ☀️ *Meco 580W Solar Panel* — 2,800,000 UZS\n` +
-            `11. ☀️ *Meco 620W Solar Panel* — 3,100,000 UZS\n\n` +
-            `🌐 Rasmiy Mini App: https://meco-power.vercel.app`;
+        // Button 1: 🛍️ FAOL BUYURTMALAR (Active Orders)
+        if (queryData === 'ACTION_ACTIVE_ORDERS') {
+          const allOrders = await ordersService.getAllOrders();
+          const activeOrders = allOrders.filter(o => o.status !== 'Bajarildi va Yopildi' && o.status !== 'Bekor qilindi');
 
-          return this.replyMessage(chatId, catalogMsg);
-        } else if (queryData === 'ACTION_CONTACT') {
-          const contactMsg = 
-            `🏢 *MECO POWER UZBEKISTAN BOSH SHOURUMI:*\n\n` +
-            `📍 *Manzil:* Qo'qon Shaxar, A.Navoiy Mavzesi, ko'chasi 42, Farg'ona Qo'qon, O'zbekiston\n` +
-            `📞 *Telefon:* +998 94 399 39 97\n` +
-            `✉️ *Email:* uzbekistan@mecopower.com\n` +
-            `🌐 *Portal:* https://meco-power.vercel.app`;
+          if (!activeOrders || activeOrders.length === 0) {
+            return this.replyMessage(chatId, `🛍️ *Hozircha faol buyurtmalar mavjud emas (0 ta).*`, getAdminKeyboard());
+          }
 
-          return this.replyMessage(chatId, contactMsg);
+          let msg = `🛍️ *FAOL BUYURTMALAR RO'YXATI (${activeOrders.length} ta):*\n\n`;
+          activeOrders.forEach((o, i) => {
+            msg += 
+              `*${i + 1}. Buyurtma ID:* \`${o.id}\`\n` +
+              `👤 *Mijoz:* ${o.customerName} (\`${o.customerPhone}\`)\n` +
+              `📦 *Mahsulot:* ${o.productName} (${o.quantity} dona)\n` +
+              `💰 *Jami Summa:* *${o.totalAmountUzS.toLocaleString('uz-UZ')} UZS*\n` +
+              `📌 *Holati:* ${o.status}\n` +
+              `🏠 *Manzil:* ${o.addressNotes || 'Ko\'rsatilmadi'}\n` +
+              `${o.mapUrl ? `🗺️ [Google Maps Manzilni Ochish](${o.mapUrl})\n` : ''}` +
+              `----------------------------------------\n\n`;
+          });
+
+          return this.replyMessage(chatId, msg, getAdminKeyboard());
+        }
+
+        // Button 2: ✅ BAJARILGAN BUYURTMALAR (Completed Orders)
+        if (queryData === 'ACTION_CLOSED_ORDERS') {
+          const allOrders = await ordersService.getAllOrders();
+          const closedOrders = allOrders.filter(o => o.status === 'Bajarildi va Yopildi');
+
+          if (!closedOrders || closedOrders.length === 0) {
+            return this.replyMessage(chatId, `✅ *Hozircha bajarilgan buyurtmalar mavjud emas (0 ta).*`, getAdminKeyboard());
+          }
+
+          const totalClosedRevenue = closedOrders.reduce((sum, o) => sum + (o.totalAmountUzS || 0), 0);
+
+          let msg = 
+            `✅ *BAJARILGAN VA YOPILGAN BUYURTMALAR (${closedOrders.length} ta):*\n` +
+            `💰 *Bajarilgan jami savdo tushumi:* *${totalClosedRevenue.toLocaleString('uz-UZ')} UZS*\n\n`;
+
+          closedOrders.forEach((o, i) => {
+            msg += 
+              `*${i + 1}. ID:* \`${o.id}\` | ${o.customerName} (\`${o.customerPhone}\`)\n` +
+              `📦 ${o.productName} — *${o.totalAmountUzS.toLocaleString('uz-UZ')} UZS*\n` +
+              `⏰ ${new Date(o.createdAt).toLocaleString('uz-UZ')}\n\n`;
+          });
+
+          return this.replyMessage(chatId, msg, getAdminKeyboard());
+        }
+
+        // Button 3: 📊 SOTUVLAR STATISTIKASI (Daily, Weekly, Monthly Revenue Analytics)
+        if (queryData === 'ACTION_SALES_STATS') {
+          const analytics = await analyticsService.getDashboardStats();
+          const sales = analytics.sales;
+
+          const statsMsg = 
+            `📊 *MECO POWER UZBEKISTAN SOTUVLAR STATISTIKASI:*\n\n` +
+            `💰 *Bugungi Sotuvlar (Daily):* *${sales.dailySalesUzS.toLocaleString('uz-UZ')} UZS*\n` +
+            `📈 *Haftalik Sotuvlar (Weekly):* *${sales.weeklySalesUzS.toLocaleString('uz-UZ')} UZS*\n` +
+            `🏆 *Oylik Sotuvlar (Monthly):* *${sales.monthlySalesUzS.toLocaleString('uz-UZ')} UZS*\n\n` +
+            `👁️ *Real-vaqtdagi Faol Tashrifchilar:* *${analytics.activeVisitorsCount} kishi*\n` +
+            `⚡ *Barcha sotuvlar real kelgan buyurtmalar bo'yicha avtomatik hisoblanadi!*`;
+
+          return this.replyMessage(chatId, statsMsg, getAdminKeyboard());
         }
       });
 
@@ -217,8 +259,28 @@ export class TelegramBotService {
     }
   }
 
-  // Load user database from Supabase
+  // Load user database from local disk & Supabase
   private static async loadRegisteredUsers() {
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+
+      if (fs.existsSync(BOT_USERS_FILE)) {
+        const fileContent = fs.readFileSync(BOT_USERS_FILE, 'utf-8');
+        const parsed = JSON.parse(fileContent);
+        if (Array.isArray(parsed)) {
+          parsed.forEach(u => {
+            this.registeredUsers.set(u.chatId, u);
+            this.authenticatedChatIds.add(u.chatId);
+          });
+          logger.info(`👥 Loaded ${parsed.length} authenticated Telegram bot users from disk.`);
+        }
+      }
+    } catch (err: any) {
+      logger.warn(`Bot users disk load note: ${err.message}`);
+    }
+
     try {
       const { data } = await supabase.from('bot_users').select('*');
       if (data && Array.isArray(data)) {
@@ -230,17 +292,27 @@ export class TelegramBotService {
             username: u.username,
             registeredAt: u.registered_at
           });
-          // Auto-authorize previously saved authenticated bot users
           this.authenticatedChatIds.add(u.chat_id);
         });
       }
     } catch (err) {
-      logger.warn('Bot users load note: Memory cache active');
+      logger.warn('Bot users Supabase load note: Memory cache active');
     }
   }
 
   private static async saveUserToSupabase(user: BotUser) {
     try {
+      this.registeredUsers.set(user.chatId, user);
+      this.authenticatedChatIds.add(user.chatId);
+
+      // Save to local disk file
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+      const userList = Array.from(this.registeredUsers.values());
+      fs.writeFileSync(BOT_USERS_FILE, JSON.stringify(userList, null, 2), 'utf-8');
+
+      // Save to Supabase
       await supabase.from('bot_users').upsert({
         chat_id: user.chatId,
         first_name: user.firstName,
@@ -248,8 +320,8 @@ export class TelegramBotService {
         username: user.username,
         registered_at: user.registeredAt
       });
-    } catch (err) {
-      logger.warn('Bot user save note: user stored in memory cache');
+    } catch (err: any) {
+      logger.warn(`Bot user save note: ${err.message}`);
     }
   }
 
@@ -313,7 +385,9 @@ export class TelegramBotService {
       `🗺️ *Geolokatsiya:* ${locText}\n\n` +
       `⏰ *Vaqti:* ${new Date(order.createdAt || Date.now()).toLocaleString('uz-UZ')}`;
 
-    return this.sendBroadcastMessage(msg);
+    const res = await this.sendBroadcastMessage(msg);
+    logger.info(`🚨 Sent instant order notification to ${res.successCount} admin Telegram chats!`);
+    return res;
   }
 
   static getRegisteredUsersCount(): number {
