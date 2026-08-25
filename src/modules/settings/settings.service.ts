@@ -1,3 +1,10 @@
+import fs from 'fs';
+import path from 'path';
+import { logger } from '../../config/logger';
+
+const DATA_DIR = path.join(process.cwd(), 'data');
+const SLIDES_FILE = path.join(DATA_DIR, 'slides.json');
+
 export interface HeroSlide {
   id: number;
   title: string;
@@ -24,6 +31,8 @@ export interface TelegramBotConfig {
 }
 
 export class SettingsService {
+  private static isInitialized = false;
+
   private static botSettings: TelegramBotConfig = {
     miniAppBot: {
       botToken: '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA',
@@ -40,7 +49,7 @@ export class SettingsService {
     },
   };
 
-  private static slides: HeroSlide[] = [
+  private static defaultSlides: HeroSlide[] = [
     {
       id: 1,
       badgeText: '⚡ Global Energy Storage Leader',
@@ -67,6 +76,45 @@ export class SettingsService {
     },
   ];
 
+  private static slides: HeroSlide[] = [];
+
+  private static initPersistence() {
+    if (this.isInitialized && this.slides.length > 0) return;
+
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+
+      if (fs.existsSync(SLIDES_FILE)) {
+        const fileContent = fs.readFileSync(SLIDES_FILE, 'utf-8');
+        const parsed = JSON.parse(fileContent);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.slides = parsed;
+          this.isInitialized = true;
+          return;
+        }
+      }
+    } catch (err: any) {
+      logger.warn(`Slides load note: ${err.message}`);
+    }
+
+    this.slides = [...this.defaultSlides];
+    this.saveToDisk();
+    this.isInitialized = true;
+  }
+
+  private static saveToDisk() {
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+      fs.writeFileSync(SLIDES_FILE, JSON.stringify(this.slides, null, 2), 'utf-8');
+    } catch (err: any) {
+      logger.warn(`Slides save note: ${err.message}`);
+    }
+  }
+
   async getTelegramSettings() {
     return SettingsService.botSettings;
   }
@@ -90,11 +138,14 @@ export class SettingsService {
   }
 
   async getSliders() {
+    SettingsService.initPersistence();
     return SettingsService.slides;
   }
 
   async updateSliders(newSlides: HeroSlide[]) {
+    SettingsService.initPersistence();
     SettingsService.slides = newSlides;
+    SettingsService.saveToDisk();
     return SettingsService.slides;
   }
 }

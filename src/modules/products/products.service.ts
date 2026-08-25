@@ -1,3 +1,11 @@
+import fs from 'fs';
+import path from 'path';
+import { logger } from '../../config/logger';
+import { supabase } from '../../config/supabase';
+
+const DATA_DIR = path.join(process.cwd(), 'data');
+const PRODUCTS_FILE = path.join(DATA_DIR, 'products.json');
+
 export interface Product {
   id: string;
   name: string;
@@ -20,7 +28,9 @@ export interface Product {
 }
 
 export class ProductsService {
-  private static products: Product[] = [
+  private static isInitialized = false;
+
+  private static defaultProducts: Product[] = [
     {
       id: 'prod-300wh',
       name: 'Meco 300Wh Solar Power Bank',
@@ -243,15 +253,70 @@ export class ProductsService {
     },
   ];
 
+  private static products: Product[] = [];
+
+  private static initPersistence() {
+    if (this.isInitialized && this.products.length > 0) return;
+
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+
+      if (fs.existsSync(PRODUCTS_FILE)) {
+        const fileContent = fs.readFileSync(PRODUCTS_FILE, 'utf-8');
+        const parsed = JSON.parse(fileContent);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.products = parsed;
+          this.isInitialized = true;
+          logger.info(`📦 Loaded ${parsed.length} persisted products from disk (${PRODUCTS_FILE})`);
+          return;
+        }
+      }
+    } catch (err: any) {
+      logger.warn(`File persistence load note: ${err.message}`);
+    }
+
+    // Fallback to default
+    this.products = [...this.defaultProducts];
+    this.saveToDisk();
+    this.isInitialized = true;
+  }
+
+  private static saveToDisk() {
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+      fs.writeFileSync(PRODUCTS_FILE, JSON.stringify(this.products, null, 2), 'utf-8');
+      logger.info(`💾 Products catalog saved to disk (${PRODUCTS_FILE})`);
+    } catch (err: any) {
+      logger.warn(`File persistence save note: ${err.message}`);
+    }
+
+    // Async save to Supabase system_config
+    try {
+      supabase.from('system_config').upsert({
+        key: 'products_catalog',
+        value: this.products,
+        updated_at: new Date().toISOString()
+      }).then(() => {});
+    } catch (e) {}
+  }
+
   async getAllProducts() {
+    ProductsService.initPersistence();
     return ProductsService.products;
   }
 
   async getProductById(id: string) {
+    ProductsService.initPersistence();
     return ProductsService.products.find((p) => p.id === id) || null;
   }
 
   async updateProductsBatch(updatedList: Partial<Product>[]) {
+    ProductsService.initPersistence();
+
     updatedList.forEach((item) => {
       if (!item.id) return;
       const index = ProductsService.products.findIndex((p) => p.id === item.id);
@@ -262,6 +327,8 @@ export class ProductsService {
         };
       }
     });
+
+    ProductsService.saveToDisk();
     return ProductsService.products;
   }
 }
