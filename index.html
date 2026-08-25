@@ -4162,21 +4162,50 @@
 
     // Meta / Instagram OAuth Login Trigger
     async function triggerMetaInstagramLogin() {
+      const metaAppIdInput = document.getElementById('instaMetaAppId')?.value || '';
+      
+      if (!metaAppIdInput || metaAppIdInput.length < 5) {
+        const customTokenOrAppId = prompt(
+          '📸 Meta Instagram Avtorizatsiyasi:\n\n' +
+          '1️⃣ Agar developers.facebook.com dan Meta App ID bo\'lsa kiritishingiz mumkin.\n' +
+          '2️⃣ Yoki Graph API Access Token bo\'lsa uni yuboring (OK tugmasini bosing):',
+          ''
+        );
+
+        if (customTokenOrAppId && customTokenOrAppId.length > 5) {
+          if (customTokenOrAppId.startsWith('EAA') || customTokenOrAppId.length > 20) {
+            if (document.getElementById('instaAccessToken')) document.getElementById('instaAccessToken').value = customTokenOrAppId;
+            showToast('🔄 Meta Graph API orqali Instagram analitikasi yuklanmoqda...');
+            await refreshInstagramInsights(customTokenOrAppId);
+            return;
+          } else {
+            openMetaOAuthPopup(customTokenOrAppId);
+            return;
+          }
+        } else {
+          // Direct token sync with live analytics
+          showToast('🔄 Meta Graph API orqali Instagram analitikasi yangilanmoqda...');
+          await refreshInstagramInsights();
+          return;
+        }
+      } else {
+        openMetaOAuthPopup(metaAppIdInput);
+      }
+    }
+
+    function openMetaOAuthPopup(appId) {
       const width = 600;
       const height = 700;
       const left = (screen.width / 2) - (width / 2);
       const top = (screen.height / 2) - (height / 2);
 
       window.open(
-        'https://www.facebook.com/v19.0/dialog/oauth?client_id=109283746592837&redirect_uri=https://meco-power.vercel.app&scope=instagram_basic,instagram_manage_insights,pages_show_list',
+        `https://www.facebook.com/v19.0/dialog/oauth?client_id=${appId}&redirect_uri=https://meco-power.vercel.app&scope=instagram_basic,instagram_manage_insights,pages_show_list`,
         'MetaInstagramLogin',
         `width=${width},height=${height},top=${top},left=${left}`
       );
-
-      const userToken = prompt('📸 Meta Instagram Loginingiz bilan avtorizatsiyadan o\'tdingizmi?\n\nAgar Meta Graph API Access Tokeningiz bo\'lsa uni yuboring (yoki OK tugmasini bosing):');
-      
-      showToast('🔄 Meta Graph API orqali Instagram analitikasi va followers soni yuklanmoqda...');
-      await refreshInstagramInsights(userToken);
+      showToast('📸 Meta avtorizatsiya oynasi ochildi...');
+      setTimeout(() => refreshInstagramInsights(), 2500);
     }
 
     async function refreshInstagramInsights(token) {
