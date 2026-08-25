@@ -19,10 +19,16 @@ export class TelegramBotService {
     if (!token) return;
 
     try {
+      if (this.botInstance && typeof this.botInstance.stop === 'function') {
+        try {
+          this.botInstance.stop();
+        } catch (e) {}
+      }
+
       this.botToken = token;
       this.botInstance = new Bot(token);
 
-      logger.info(`🚀 MECO Power Telegram Bot listener configured for Token (${token.slice(0, 10)}...)...`);
+      logger.info(`🚀 MECO Power Telegram Bot listener starting for Token (${token.slice(0, 10)}...)...`);
 
       // Load registered users from Supabase / cache
       await this.loadRegisteredUsers();
@@ -52,7 +58,7 @@ export class TelegramBotService {
           `• ⚡ *GaN 92%* yuqori energiya konversiyasi\n` +
           `• 🔋 *LiFePO4 8000+* uzoq muddatli batareya sikli\n` +
           `• 🛡️ *UN38.3 va IEC62368* xalqaro xavfsizlik sertifikatlari\n` +
-          `• 🚚 *O'zbekiston bo'ylab* kafolatli yetkazib berish va Toshkent shourumi\n\n` +
+          `• 🚚 *O'zbekiston bo'ylab* kafolatli yetkazib berish va Qo'qon Shaxridagi Bosh Shourum\n\n` +
           `👇 *Bizning MECO Power Uzbekistan portalimizni ochish uchun tugmani bosing:*`;
 
         const isHttps = webAppUrl.startsWith('https://');
@@ -65,7 +71,7 @@ export class TelegramBotService {
           ],
           [
             { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
-            { text: '📞 Toshkent Shourumi va Aloqa', callback_data: 'ACTION_CONTACT' }
+            { text: '🏢 BOSH SHOURUMI', callback_data: 'ACTION_CONTACT' }
           ]
         ];
 
@@ -108,10 +114,10 @@ export class TelegramBotService {
         } else if (queryData === 'ACTION_CONTACT') {
           const contactMsg = 
             `🏢 *MECO POWER UZBEKISTAN BOSH SHOURUMI:*\n\n` +
-            `📍 Manzil: Toshkent markaziy shourum, Chilonzor tumani, Bunyodkor shox ko'chasi 42, Toshkent, O'zbekiston\n` +
-            `📞 Telefon: +998 71 200 00 00\n` +
-            `✉️ Email: uzbekistan@mecopower.com\n` +
-            `🌐 Portal: https://meco-power.vercel.app`;
+            `📍 *Manzil:* Qo'qon Shaxar, A.Navoiy Mavzesi, ko'chasi 42, Farg'ona Qo'qon, O'zbekiston\n` +
+            `📞 *Telefon:* +998 94 399 39 97\n` +
+            `✉️ *Email:* uzbekistan@mecopower.com\n` +
+            `🌐 *Portal:* https://meco-power.vercel.app`;
 
           try {
             await ctx.reply(contactMsg, { parse_mode: 'Markdown' });

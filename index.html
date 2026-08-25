@@ -466,11 +466,20 @@
       gap: 16px;
     }
 
+    /* HIDE SCROLLBAR ARROWS ON CATEGORY TABS CONTAINER & BUTTONS */
     .category-tabs {
       display: flex;
       gap: 32px;
       overflow-x: auto;
       white-space: nowrap;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .category-tabs::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
     }
 
     .category-tab-btn {
@@ -483,6 +492,10 @@
       position: relative;
       padding-bottom: 12px;
       transition: color 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+      outline: none;
+      white-space: nowrap;
     }
 
     .category-tab-btn:hover, .category-tab-btn.active {
@@ -1298,7 +1311,7 @@
           📍 Bosh qarorgoh: Shenchjen, Xitoy
         </div>
         <div class="info-pill" data-i18n="topHub">
-          🇺🇿 Mintaqaviy markaz: Toshkent, O'zbekiston
+          🇺🇿 Mintaqaviy markaz: Qo'qon Shaxri, O'zbekiston
         </div>
       </div>
       
@@ -1432,9 +1445,9 @@
       </div>
 
       <div class="footer-col">
-        <h5 data-i18n="footerHub">O'zbekistondagi Mintaqaviy Markaz</h5>
-        <p>📍 Toshkent markaziy shourum, Chilonzor tumani, Bunyodkor shox ko'chasi 42, Toshkent, O'zbekiston</p>
-        <p>📞 +998 71 200 00 00</p>
+        <h5 data-i18n="footerHub">O'zbekistondagi Bosh Shourum</h5>
+        <p>📍 Qo'qon Shaxar, A.Navoiy Mavzesi, ko'chasi 42, Farg'ona Qo'qon, O'zbekiston</p>
+        <p>📞 +998 94 399 39 97</p>
         <p>✉️ <a href="mailto:uzbekistan@mecopower.com">uzbekistan@mecopower.com</a></p>
       </div>
 
@@ -1825,7 +1838,7 @@
     const i18n = {
       uz: {
         topHq: "📍 Bosh qarorgoh: Shenchjen, Xitoy",
-        topHub: "🇺🇿 Mintaqaviy markaz: Toshkent, O'zbekiston",
+        topHub: "🇺🇿 Mintaqaviy markaz: Qo'qon Shaxri, O'zbekiston",
         logoSub: "Quyosh Energiyasi Saqlash Yechimlari",
         navHome: "Bosh sahifa",
         navAbout: "Meco haqida",
@@ -1850,7 +1863,7 @@
         feature4Title: "Xalqaro Sertifikatlar",
         feature4Desc: "UN38.3, IEC62368 hamda xalqaro elektr xavfsizlik standartlariga javob beradi.",
         footerHq: "Xitoydagi Bosh Qarorgoh",
-        footerHub: "O'zbekistondagi Mintaqaviy Markaz",
+        footerHub: "O'zbekistondagi Bosh Shourum",
         footerOffices: "Pokiston va Nigeriya Filiallari",
         footerLineup: "Mahsulotlar Bo'limi",
         footerManuals: "Qo'llanmalarni Yuklab Olish",
@@ -1864,7 +1877,7 @@
       },
       ru: {
         topHq: "📍 Штаб-квартира: Шэньчжэнь, Китай",
-        topHub: "🇺🇿 Региональный центр: Ташкент, Узбекистан",
+        topHub: "🇺🇿 Региональный центр: г. Коканд, Узбекистан",
         logoSub: "Решения для хранения солнечной энергии",
         navHome: "Главная",
         navAbout: "О Meco",
@@ -1889,7 +1902,7 @@
         feature4Title: "Международные Сертификаты",
         feature4Desc: "Соответствует международным стандартам электробезопасности UN38.3 и IEC62368.",
         footerHq: "Штаб-квартира в Китае",
-        footerHub: "Региональный центр в Узбекистане",
+        footerHub: "Главный шоурум в Узбекистане",
         footerOffices: "Филиалы в Пакистане и Нигерии",
         footerLineup: "Каталог Продукции",
         footerManuals: "Скачать Руководства",
@@ -1903,7 +1916,7 @@
       },
       en: {
         topHq: "📍 Global HQ: Shenzhen, China",
-        topHub: "🇺🇿 Regional Hub: Tashkent, Uzbekistan",
+        topHub: "🇺🇿 Regional Hub: Kokand City, Uzbekistan",
         logoSub: "Solar Energy Storage Solutions",
         navHome: "Home",
         navAbout: "About Meco",
@@ -1928,7 +1941,7 @@
         feature4Title: "Global Certification",
         feature4Desc: "Certified to UN38.3, IEC62368, and international electrical safety standards.",
         footerHq: "China Headquarters",
-        footerHub: "Uzbekistan Regional Hub",
+        footerHub: "Uzbekistan Main Showroom",
         footerOffices: "Pakistan & Nigeria Offices",
         footerLineup: "Product Lineup",
         footerManuals: "Manual Downloads",
