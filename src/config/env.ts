@@ -1,14 +1,13 @@
 import dotenv from 'dotenv';
-
 dotenv.config();
 
 export const env = {
-  PORT: process.env.PORT || 5000,
+  PORT: parseInt(process.env.PORT || '5000', 10),
   NODE_ENV: process.env.NODE_ENV || 'development',
-  DATABASE_URL: process.env.DATABASE_URL || '',
-  JWT_SECRET: process.env.JWT_SECRET || 'default_secret_key_meco_uz',
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
-  ALLOWED_ORIGINS: (process.env.ALLOWED_ORIGINS || '*').split(','),
-  REGION: process.env.DEFAULT_REGION || 'Uzbekistan',
-  CURRENCY: process.env.DEFAULT_CURRENCY || 'UZS',
+  JWT_SECRET: process.env.JWT_SECRET || 'super_secret_meco_power_uzbekistan_key_2026',
+  ALLOWED_ORIGINS: ['*'],
+  REGION: 'Uzbekistan',
+  supabaseUrl: process.env.SUPABASE_URL || 'https://udknramozyniwkcnhvik.supabase.co',
+  supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
+  supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
 };
