@@ -1594,12 +1594,16 @@
 
       .admin-modal {
         flex-direction: column;
-        overflow-y: auto;
+        height: 100vh;
+        height: 100dvh;
+        width: 100vw;
+        overflow: hidden;
+        background: #080d16;
       }
 
       .admin-sidebar {
         width: 100%;
-        padding: 14px 16px;
+        padding: 10px 14px;
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         background: #0b1320;
@@ -1607,148 +1611,121 @@
       }
 
       .admin-sidebar-brand {
-        margin-bottom: 12px;
-        padding-bottom: 10px;
+        margin-bottom: 6px;
+        padding-bottom: 6px;
       }
 
-    /* HIDE MAIN SITE MOBILE BOTTOM NAV WHEN ADMIN MODAL IS ACTIVE */
-    body.admin-mode-active .mobile-bottom-nav-wrapper {
-      display: none !important;
-    }
-
-    /* MOBILE DEDICATED ADMIN SUB-NAV DOCK STYLING */
-    .admin-mobile-bottom-dock {
-      display: none;
-    }
-
-    @media (max-width: 768px) {
-      .admin-sidebar .admin-menu-list {
-        display: none !important;
+      .admin-sidebar-brand h4 {
+        font-size: 15px;
       }
 
-      .admin-mobile-bottom-dock {
-        display: flex !important;
-        position: fixed;
-        bottom: 14px;
-        left: 3%;
-        width: 94%;
-        height: 68px;
-        background: rgba(13, 22, 38, 0.95);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid rgba(16, 185, 129, 0.35);
-        border-radius: 34px;
-        padding: 4px 6px;
-        z-index: 10001;
-        justify-content: space-around;
-        align-items: center;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(16, 185, 129, 0.2);
-      }
-
-      .admin-dock-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 3px;
-        background: transparent;
-        border: 1px solid transparent;
-        color: #94a3b8;
-        border-radius: 20px;
-        padding: 5px 6px;
-        cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        flex: 1;
-        max-width: 72px;
-      }
-
-      .admin-dock-btn .dock-icon {
-        font-size: 18px;
-        transition: transform 0.25s ease;
-      }
-
-      .admin-dock-btn span {
+      .admin-sidebar-brand p {
         font-size: 10px;
-        font-weight: 800;
-        white-space: nowrap;
-      }
-
-      .admin-dock-btn.active {
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.2));
-        border-color: rgba(16, 185, 129, 0.6);
-        color: #ffffff;
-        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
-      }
-
-      .admin-dock-btn.active .dock-icon {
-        transform: translateY(-2px) scale(1.15);
-        filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.8));
-      }
-
-      .admin-body {
-        padding-bottom: 90px !important;
-      }
-
-      .admin-menu-list::-webkit-scrollbar {
-        display: none;
-        width: 0;
-        height: 0;
-      }
-
-      .sidebar-nav-btn {
-        padding: 8px 14px;
-        font-size: 12px;
-        border-radius: 20px;
-        white-space: nowrap;
-        background: rgba(30, 41, 59, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        flex-shrink: 0;
-      }
-
-      .sidebar-nav-btn.active {
-        background: linear-gradient(135deg, #059669, #047857);
-        border-color: #10b981;
-        color: #ffffff;
-        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
       }
 
       .sidebar-footer {
-        padding-top: 10px;
-        margin-top: 10px;
+        padding-top: 6px;
+        margin-top: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .btn-logout-sidebar {
+        padding: 5px 12px;
+        font-size: 11px;
       }
 
       .admin-main-area {
         width: 100%;
-        overflow-y: visible;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       .admin-top-header {
-        padding: 16px;
+        padding: 10px 14px;
         flex-direction: column;
         align-items: flex-start;
-        gap: 10px;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+
+      .admin-top-header h3 {
+        font-size: 16px !important;
+      }
+
+      .admin-top-header p {
+        font-size: 11px !important;
+      }
+
+      .header-badge-status {
+        padding: 4px 10px;
+        font-size: 10px;
       }
 
       .admin-body {
-        padding: 16px;
+        padding: 12px 14px 95px 14px !important;
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Compact Responsive Tables for Mobile Screens */
+      .traffic-table-wrapper {
+        padding: 12px;
+        margin-top: 14px;
+        border-radius: 12px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .traffic-table-wrapper h4 {
+        font-size: 13px !important;
+        line-height: 1.3;
+      }
+
+      .traffic-table-wrapper p {
+        font-size: 11px !important;
+      }
+
+      .traffic-table-wrapper table {
+        min-width: 480px;
+        width: 100%;
+        font-size: 11px;
+      }
+
+      .traffic-table-wrapper th, 
+      .traffic-table-wrapper td {
+        padding: 8px 10px;
+        font-size: 11px;
       }
 
       .stats-cards-grid {
         grid-template-columns: 1fr;
-        gap: 14px;
+        gap: 10px;
+      }
+
+      .stat-card {
+        padding: 12px;
+      }
+
+      .stat-value {
+        font-size: 20px;
       }
 
       .slider-manage-grid {
         grid-template-columns: 1fr;
-        gap: 16px;
+        gap: 12px;
       }
 
       .bot-settings-grid {
         grid-template-columns: 1fr;
-      }
-
-      .bot-box[style*="grid-column: span 2"] {
-        grid-column: span 1 !important;
+        gap: 12px;
       }
 
       /* Native Mobile Floating Dock for Telegram WebApp */
