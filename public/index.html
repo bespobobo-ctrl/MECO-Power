@@ -100,56 +100,86 @@
       }
     }
 
-    /* ULTRA-PREMIUM TOP BAR STYLING */
+    /* ULTRA-PREMIUM LUXURY TOP BAR STYLING (APPLE/TESLA STYLE) */
     .top-bar-wrapper {
-      background: #090d16;
+      background: #080d17;
       position: relative;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 
     .top-bar-accent-line {
       height: 3px;
-      background: linear-gradient(90deg, #059669 0%, #f59e0b 50%, #0d9488 100%);
+      background: linear-gradient(90deg, #059669 0%, #10b981 30%, #f59e0b 60%, #0d9488 100%);
       width: 100%;
     }
 
     .top-bar {
-      background: rgba(11, 19, 32, 0.95);
-      backdrop-filter: blur(16px);
-      color: #94a3b8;
+      background: rgba(11, 19, 32, 0.98);
+      backdrop-filter: blur(20px);
+      color: #cbd5e1;
       font-size: 12px;
       padding: 10px 5%;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 14px;
     }
 
     .top-bar-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
     }
 
     .info-pill {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 5px 14px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 6px 14px;
       border-radius: 20px;
       color: #cbd5e1;
       font-weight: 500;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
+      gap: 8px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     .info-pill:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(13, 148, 136, 0.4);
-      color: #fff;
+      background: rgba(30, 41, 59, 0.85);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .gold-glow {
+      background: #f59e0b;
+      box-shadow: 0 0 8px #f59e0b;
+    }
+
+    .cyan-glow {
+      background: #0d9488;
+      box-shadow: 0 0 8px #0d9488;
+    }
+
+    .pill-label {
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .pill-val {
+      color: #ffffff;
+      font-weight: 700;
     }
 
     .top-bar-right {
@@ -159,29 +189,31 @@
       flex-wrap: wrap;
     }
 
+    /* Luxury Flag Language Switcher */
     .lang-switcher-group {
       display: flex;
       align-items: center;
-      gap: 3px;
-      background: rgba(15, 23, 42, 0.85);
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.9);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 3px;
+      padding: 4px;
       border-radius: 24px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
     }
 
     .lang-btn {
       background: transparent;
       border: none;
       color: #94a3b8;
-      padding: 5px 12px;
+      padding: 6px 14px;
       border-radius: 18px;
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
     }
 
     .lang-btn:hover {
@@ -192,28 +224,33 @@
     .lang-btn.active {
       background: linear-gradient(135deg, #059669, #047857);
       color: #ffffff;
-      box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4);
+      box-shadow: 0 3px 10px rgba(5, 150, 105, 0.45);
     }
 
-    /* TELEGRAM, INSTAGRAM, AND PHONE CONTACT PILLS */
+    .flag-icon {
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    /* Luxury Social & Phone Contact Badges */
     .social-contact-pills {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
     .social-pill {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 5px 13px;
+      gap: 7px;
+      padding: 6px 14px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 700;
       text-decoration: none;
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
     }
 
     .social-pill:hover {
@@ -221,33 +258,33 @@
     }
 
     .telegram-pill {
-      background: rgba(30, 162, 230, 0.15);
-      border: 1px solid rgba(30, 162, 230, 0.35);
+      background: rgba(14, 165, 233, 0.12);
+      border: 1px solid rgba(14, 165, 233, 0.35);
       color: #38bdf8;
     }
 
     .telegram-pill:hover {
-      background: rgba(30, 162, 230, 0.3);
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.3), rgba(2, 132, 199, 0.35));
       border-color: #38bdf8;
-      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+      box-shadow: 0 4px 16px rgba(56, 189, 248, 0.35);
       color: #ffffff;
     }
 
     .instagram-pill {
-      background: rgba(225, 48, 108, 0.15);
-      border: 1px solid rgba(225, 48, 108, 0.35);
+      background: rgba(236, 72, 153, 0.12);
+      border: 1px solid rgba(236, 72, 153, 0.35);
       color: #f472b6;
     }
 
     .instagram-pill:hover {
-      background: linear-gradient(135deg, rgba(225, 48, 108, 0.35), rgba(253, 29, 29, 0.35));
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.35), rgba(239, 68, 68, 0.35));
       border-color: #f472b6;
-      box-shadow: 0 4px 14px rgba(244, 114, 182, 0.3);
+      box-shadow: 0 4px 16px rgba(244, 114, 182, 0.35);
       color: #ffffff;
     }
 
     .phone-pill {
-      background: rgba(16, 185, 129, 0.15);
+      background: rgba(16, 185, 129, 0.12);
       border: 1px solid rgba(16, 185, 129, 0.35);
       color: #34d399;
     }
@@ -255,7 +292,7 @@
     .phone-pill:hover {
       background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.35));
       border-color: #34d399;
-      box-shadow: 0 4px 14px rgba(52, 211, 153, 0.3);
+      box-shadow: 0 4px 16px rgba(52, 211, 153, 0.35);
       color: #ffffff;
     }
 
@@ -266,6 +303,16 @@
       border-radius: 50%;
       box-shadow: 0 0 8px #10b981;
       display: inline-block;
+    }
+
+    .live-dot.pulse {
+      animation: pulseDot 1.8s infinite;
+    }
+
+    @keyframes pulseDot {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
 
     /* Header Navigation */
@@ -1578,50 +1625,57 @@
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- ULTRA-PREMIUM TOP BAR WITH ACCENT LINE -->
+  <!-- ULTRA-PREMIUM LUXURY TOP BAR (APPLE/TESLA STYLE) -->
   <div class="top-bar-wrapper">
     <div class="top-bar-accent-line"></div>
     <div class="top-bar">
       
       <div class="top-bar-left">
-        <div class="info-pill" data-i18n="topHq">
-          📍 Bosh qarorgoh: Shenchjen, Xitoy
+        <div class="info-pill hq-pill" data-i18n="topHq">
+          <span class="pill-dot gold-glow"></span>
+          <span>📍</span>
+          <span class="pill-label">Bosh qarorgoh:</span>
+          <strong class="pill-val">Shenchjen, Xitoy</strong>
         </div>
-        <div class="info-pill" data-i18n="topHub">
-          🇺🇿 Mintaqaviy markaz: Qo'qon Shaxri, O'zbekiston
+
+        <div class="info-pill hub-pill" data-i18n="topHub">
+          <span class="pill-dot cyan-glow"></span>
+          <span>🇺🇿</span>
+          <span class="pill-label">Mintaqaviy markaz:</span>
+          <strong class="pill-val">Qo'qon Shaxri, O'zbekiston</strong>
         </div>
       </div>
       
       <div class="top-bar-right">
-        <!-- Luxury Interactive Flag Pill Switcher -->
+        <!-- Luxury Flag Language Pill Switcher -->
         <div class="lang-switcher-group">
           <button class="lang-btn active" id="langBtnUz" onclick="changeLanguage('uz')">
-            🇺🇿 UZ
+            <span class="flag-icon">🇺🇿</span> UZ
           </button>
           <button class="lang-btn" id="langBtnRu" onclick="changeLanguage('ru')">
-            🇷🇺 RU
+            <span class="flag-icon">🇷🇺</span> RU
           </button>
           <button class="lang-btn" id="langBtnEn" onclick="changeLanguage('en')">
-            🇬🇧 EN
+            <span class="flag-icon">🇬🇧</span> EN
           </button>
         </div>
 
-        <!-- TELEGRAM, INSTAGRAM, AND PHONE CONTACT PILLS -->
+        <!-- Ultra-Modern Social & Phone Action Badges -->
         <div class="social-contact-pills">
           <a href="https://t.me/Meco_Power_Uzbot" target="_blank" class="social-pill telegram-pill" title="Telegram Bot & Kanal">
-            <span class="pill-icon">✈️</span>
-            <span class="pill-text">Telegram</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .54-1.43.53-.47-.01-1.37-.27-2.04-.49-.82-.27-1.47-.42-1.42-.88.03-.24.37-.49 1.02-.75 4-.1.74 6.69-2.87 9.38-4 .64-.27 1.23-.4 1.77-.4 1.25 0 1.59.27 2.37.28z"/></svg>
+            <span>Telegram</span>
           </a>
 
           <a href="https://instagram.com" target="_blank" class="social-pill instagram-pill" title="Instagram Sahifamiz">
-            <span class="pill-icon">📸</span>
-            <span class="pill-text">Instagram</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            <span>Instagram</span>
           </a>
 
           <a href="tel:+998943993997" class="social-pill phone-pill" title="Qo'ng'iroq qilish">
-            <span class="live-dot"></span>
-            <span class="pill-icon">📞</span>
-            <span class="pill-text">+998 94 399 39 97</span>
+            <span class="live-dot pulse"></span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
+            <span class="phone-num">+998 94 399 39 97</span>
           </a>
         </div>
       </div>
@@ -2239,8 +2293,6 @@
     // I18N DICTIONARY FOR UZ, RU, EN
     const i18n = {
       uz: {
-        topHq: "📍 Bosh qarorgoh: Shenchjen, Xitoy",
-        topHub: "🇺🇿 Mintaqaviy markaz: Qo'qon Shaxri, O'zbekiston",
         logoSub: "Quyosh Energiyasi Saqlash Yechimlari",
         navHome: "Bosh sahifa",
         navAbout: "Meco haqida",
@@ -2276,8 +2328,6 @@
         btnSubmitLogin: "Tizimga Kirish →",
       },
       ru: {
-        topHq: "📍 Штаб-квартира: Шэньчжэнь, Китай",
-        topHub: "🇺🇿 Региональный центр: г. Коканд, Узбекистан",
         logoSub: "Решения для хранения солнечной энергии",
         navHome: "Главная",
         navAbout: "О Meco",
@@ -2313,8 +2363,6 @@
         btnSubmitLogin: "Войти в систему →",
       },
       en: {
-        topHq: "📍 Global HQ: Shenzhen, China",
-        topHub: "🇺🇿 Regional Hub: Kokand City, Uzbekistan",
         logoSub: "Solar Energy Storage Solutions",
         navHome: "Home",
         navAbout: "About Meco",
@@ -2691,7 +2739,7 @@
             <div class="slide-overlay"></div>
             <div class="slide-content-card">
               <span class="slide-badge">${slide.badgeText}</span>
-              Hey <h2>${slide.title}</h2>
+              <h2>${slide.title}</h2>
               <p>${slide.subtitle}</p>
               <a href="#products" class="btn-slide-action">${slide.buttonText}</a>
             </div>
