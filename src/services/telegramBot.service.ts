@@ -15,20 +15,14 @@ export class TelegramBotService {
   private static botToken: string = '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA';
   private static registeredUsers: Map<number, BotUser> = new Map();
 
-  static async initBot(token: string = '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA', webAppUrl: string = 'http://localhost:5000') {
+  static async initBot(token: string = '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA', webAppUrl: string = 'https://meco-power.vercel.app') {
     if (!token) return;
 
     try {
-      if (this.botInstance && typeof this.botInstance.stop === 'function') {
-        try {
-          this.botInstance.stop();
-        } catch (e) {}
-      }
-
       this.botToken = token;
       this.botInstance = new Bot(token);
 
-      logger.info(`🚀 MECO Power Telegram Bot listener starting for Token (${token.slice(0, 10)}...)...`);
+      logger.info(`🚀 MECO Power Telegram Bot listener configured for Token (${token.slice(0, 10)}...)...`);
 
       // Load registered users from Supabase / cache
       await this.loadRegisteredUsers();
@@ -67,7 +61,7 @@ export class TelegramBotService {
           [
             isHttps 
               ? { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: webAppUrl } }
-              : { text: '🌐 MECO Uzbekistan Portalini Ochish', url: 'https://www.mecopower.com' }
+              : { text: '🌐 MECO Uzbekistan Portalini Ochish', url: 'https://meco-power.vercel.app' }
           ],
           [
             { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
@@ -82,7 +76,7 @@ export class TelegramBotService {
           });
         } catch (sendErr: any) {
           logger.warn(`Reply error fallback: ${sendErr.message}`);
-          await ctx.reply(`Assalomu aleykum, ${userName}!\nMECO Power Uzbekistan rasmiy botiga xush kelibsiz!\nRasmiy sayt: https://www.mecopower.com`);
+          await ctx.reply(`Assalomu aleykum, ${userName}!\nMECO Power Uzbekistan rasmiy botiga xush kelibsiz!\nRasmiy portal: https://meco-power.vercel.app`);
         }
       });
 
@@ -104,7 +98,7 @@ export class TelegramBotService {
             `9. ☀️ *Meco F200W Solar Panel* — 2,100,000 UZS\n` +
             `10. ☀️ *Meco 580W Solar Panel* — 2,800,000 UZS\n` +
             `11. ☀️ *Meco 620W Solar Panel* — 3,100,000 UZS\n\n` +
-            `🌐 Rasmiy portal: www.mecopower.com`;
+            `🌐 Rasmiy portal: https://meco-power.vercel.app`;
 
           try {
             await ctx.reply(catalogMsg, { parse_mode: 'Markdown' });
@@ -117,7 +111,7 @@ export class TelegramBotService {
             `📍 Manzil: Toshkent markaziy shourum, Chilonzor tumani, Bunyodkor shox ko'chasi 42, Toshkent, O'zbekiston\n` +
             `📞 Telefon: +998 71 200 00 00\n` +
             `✉️ Email: uzbekistan@mecopower.com\n` +
-            `🌐 Sayt: www.mecopower.com`;
+            `🌐 Portal: https://meco-power.vercel.app`;
 
           try {
             await ctx.reply(contactMsg, { parse_mode: 'Markdown' });
@@ -127,14 +121,18 @@ export class TelegramBotService {
         }
       });
 
-      // Catch any unhandled errors
+      // Catch unhandled errors
       this.botInstance.catch((err: any) => {
         logger.warn(`Telegram Bot Handler Note: ${err.message || err}`);
       });
 
-      // Start Polling
-      this.botInstance.startPolling();
-      logger.info('🚀 MECO Power Telegram Bot polling listener started successfully!');
+      // Only start long polling in non-Vercel environment (local/VPS)
+      if (!process.env.VERCEL) {
+        this.botInstance.startPolling();
+        logger.info('🚀 MECO Power Telegram Bot polling listener started successfully!');
+      } else {
+        logger.info('⚡ Vercel Serverless environment detected: Serverless Function active.');
+      }
 
     } catch (err: any) {
       logger.error(`Telegram Bot Startup Error: ${err.message}`);
