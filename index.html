@@ -3041,13 +3041,20 @@
 
     // Silent Auto-Save for Product Updates
     async function saveProductChangesSilent() {
-      const updatedProducts = allProductsData.map((prod, index) => ({
-        id: prod.id,
-        name: document.getElementById(`prodName_${index}`).value,
-        priceUzS: parseFloat(document.getElementById(`prodPrice_${index}`).value),
-        imageUrl: document.getElementById(`prodImgUrl_${index}`).value,
-        inStockUzbekistan: document.getElementById(`prodStockStatus_${index}`).value === 'IN_STOCK'
-      }));
+      const updatedProducts = allProductsData.map((prod, index) => {
+        const nameEl = document.getElementById(`prodName_${index}`);
+        const priceEl = document.getElementById(`prodPrice_${index}`);
+        const imgEl = document.getElementById(`prodImgUrl_${index}`);
+        const stockEl = document.getElementById(`prodStockStatus_${index}`);
+
+        return {
+          id: prod.id,
+          name: nameEl ? nameEl.value : prod.name,
+          priceUzS: priceEl ? (parseFloat(priceEl.value) || prod.priceUzS) : prod.priceUzS,
+          imageUrl: imgEl ? imgEl.value : prod.imageUrl,
+          inStockUzbekistan: stockEl ? (stockEl.value === 'IN_STOCK') : prod.inStockUzbekistan
+        };
+      });
 
       try {
         const res = await fetch('/api/v1/products/update', {
@@ -3056,8 +3063,7 @@
           body: JSON.stringify({ products: updatedProducts })
         });
         const data = await res.json();
-
-        if (data.success) {
+        if (data.success && data.data) {
           allProductsData = data.data;
           renderProductsGrid();
         }
