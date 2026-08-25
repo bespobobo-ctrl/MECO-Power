@@ -18,4 +18,9 @@ router.post('/instagram', controller.saveInstagram);
 router.post('/instagram/fetch-insights', controller.fetchInstagramInsights);
 router.post('/instagram/connect-login', controller.connectInstagramLogin);
 
+// Meta OAuth 2.0 routes
+router.post('/instagram/oauth/exchange', controller.exchangeMetaOAuthCode);
+router.post('/instagram/oauth/refresh', controller.refreshInstagramInsights);
+
 export default router;
+

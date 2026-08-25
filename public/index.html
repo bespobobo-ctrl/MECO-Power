@@ -2661,58 +2661,149 @@
             <!-- SUB-SECTION 2: INSTAGRAM INTEGRATION & META OAUTH -->
             <div id="instagramSettingsSection" class="settings-sub-section" style="display: none;">
               
-              <!-- META OAUTH 2.0 LOGIN CARD -->
-              <div class="pro-card-insta" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(244, 63, 94, 0.12), rgba(217, 70, 239, 0.12), rgba(139, 92, 246, 0.12)); border: 1px solid rgba(244, 63, 94, 0.45);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+              <!-- ═══════════════════════════════════════════════════════════ -->
+              <!-- INSTAGRAM CONNECTION STATUS CARD                          -->
+              <!-- ═══════════════════════════════════════════════════════════ -->
+              <div style="background: linear-gradient(135deg, rgba(244,63,94,0.12), rgba(217,70,239,0.12), rgba(139,92,246,0.12)); border: 1px solid rgba(244,63,94,0.4); border-radius: 20px; padding: 24px; margin-bottom: 20px;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
                   <h4 style="color: #f472b6; font-size: 20px; margin: 0; font-weight: 800; display: flex; align-items: center; gap: 10px;">
-                    <span>📸 Meta / Instagram Orqali Avtomatik Kirish (OAuth 2.0)</span>
+                    📸 Instagram Akkauntini Ulash
                   </h4>
-                  <span id="instaStatusBadge" style="background: linear-gradient(135deg, #f43f5e, #d946ef, #8b5cf6); color: #fff; font-size: 12px; font-weight: 800; padding: 5px 16px; border-radius: 20px; box-shadow: 0 4px 16px rgba(217, 70, 239, 0.4);">● META GRAPH API FAOL</span>
+                  <span id="instaStatusBadge" style="background: rgba(100,116,139,0.3); color: #94a3b8; font-size: 12px; font-weight: 800; padding: 6px 16px; border-radius: 20px;">● ULANMAGAN</span>
                 </div>
 
-                <p style="color: #e2e8f0; font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
-                  Instagram loginingiz va parolingiz bilan Meta muloqot oynasi orqali kiring. Tizim Instagram profilingiz obunachilari soni (followers), postlar va qamrov analitikasini avtomatik ravishda Meta Graph API orqali tortib oladi.
-                </p>
+                <!-- Connected State (shown when connected) -->
+                <div id="instaConnectedState" style="display: none; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.35); border-radius: 16px; padding: 16px; margin-bottom: 20px;">
+                  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                    <div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg,#f43f5e,#d946ef,#8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink:0;">📸</div>
+                    <div style="flex: 1;">
+                      <div style="color: #34d399; font-weight: 800; font-size: 16px;" id="instaConnectedUsername">@mecopower_uzbekistan</div>
+                      <div style="color: #94a3b8; font-size: 12px; margin-top: 3px;" id="instaTokenExpiry"></div>
+                    </div>
+                    <button onclick="disconnectInstagram()" style="background: rgba(244,63,94,0.2); border: 1px solid rgba(244,63,94,0.4); color: #f87171; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;">🔌 Uzish</button>
+                  </div>
+                </div>
 
-                <!-- Action Button for Meta Login Modal / Token Fetch -->
-                <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 24px;">
-                  <button type="button" onclick="openInstaLoginModal()" style="background: linear-gradient(135deg, #f43f5e, #d946ef, #8b5cf6); color: #fff; border: none; padding: 14px 28px; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 6px 20px rgba(217, 70, 239, 0.45); transition: all 0.3s ease;">
-                    <span>🔑 Instagram Logini va Paroli Bilan Kirish</span>
+                <!-- Stats Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 20px;" id="instaAnalyticsGrid">
+                  <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(244,114,182,0.3); padding: 16px; border-radius: 14px;">
+                    <div style="font-size: 11px; color: #f472b6; font-weight: 700; margin-bottom: 4px;">👥 OBUNACHILAR</div>
+                    <div style="font-size: 26px; color: #fff; font-weight: 900;" id="instaFollowersVal">—</div>
+                    <div style="font-size: 10px; color: #34d399; font-weight: 700; margin-top: 4px;" id="instaFollowersSrc">● Ulanmagan</div>
+                  </div>
+                  <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(217,70,239,0.3); padding: 16px; border-radius: 14px;">
+                    <div style="font-size: 11px; color: #c084fc; font-weight: 700; margin-bottom: 4px;">📸 POSTLAR</div>
+                    <div style="font-size: 26px; color: #fff; font-weight: 900;" id="instaMediaVal">—</div>
+                    <div style="font-size: 10px; color: #c084fc; font-weight: 700; margin-top: 4px;">● Media Feed</div>
+                  </div>
+                  <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(56,189,248,0.3); padding: 16px; border-radius: 14px;">
+                    <div style="font-size: 11px; color: #38bdf8; font-weight: 700; margin-bottom: 4px;">📈 QAMROV</div>
+                    <div style="font-size: 26px; color: #fff; font-weight: 900;" id="instaReachVal">—</div>
+                    <div style="font-size: 10px; color: #38bdf8; font-weight: 700; margin-top: 4px;">● Reach</div>
+                  </div>
+                  <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(52,211,153,0.3); padding: 16px; border-radius: 14px;">
+                    <div style="font-size: 11px; color: #34d399; font-weight: 700; margin-bottom: 4px;">👁️ TASHRIFLAR</div>
+                    <div style="font-size: 26px; color: #fff; font-weight: 900;" id="instaViewsVal">—</div>
+                    <div style="font-size: 10px; color: #34d399; font-weight: 700; margin-top: 4px;">● Profile Views</div>
+                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                  <button type="button" onclick="openMetaOAuthWizard()" style="background: linear-gradient(135deg, #f43f5e, #d946ef, #8b5cf6); color: #fff; border: none; padding: 13px 24px; border-radius: 13px; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 6px 20px rgba(217,70,239,0.4);">
+                    <span>🔗</span><span>Meta OAuth 2.0 Orqali Ulash</span>
                   </button>
-
-                  <button type="button" onclick="refreshInstagramInsights()" style="background: rgba(255,255,255,0.08); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); padding: 14px 24px; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <span>🔄 Real Analitikani Yangilash</span>
+                  <button type="button" onclick="openInstaLoginModal()" style="background: rgba(255,255,255,0.08); color: #f472b6; border: 1px solid rgba(244,63,94,0.4); padding: 13px 20px; border-radius: 13px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <span>✏️</span><span>Qo'lda Kiritish</span>
+                  </button>
+                  <button type="button" onclick="refreshInstagramInsightsReal()" style="background: rgba(255,255,255,0.06); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); padding: 13px 20px; border-radius: 13px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <span>🔄</span><span>Yangilash</span>
                   </button>
                 </div>
-
-                <!-- REAL INSTAGRAM METRICS ANALYTICS WIDGET GRID -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 20px;" id="instaAnalyticsGrid">
-                  <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(244, 114, 182, 0.3); padding: 16px; border-radius: 16px;">
-                    <div style="font-size: 12px; color: #f472b6; font-weight: 700; margin-bottom: 4px;">👥 Jami Obunachilar (Followers):</div>
-                    <div style="font-size: 24px; color: #fff; font-weight: 900;" id="instaFollowersVal">12,850</div>
-                    <div style="font-size: 10px; color: #34d399; font-weight: 700; margin-top: 4px;">● Meta Graph API LIVE</div>
-                  </div>
-
-                  <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(217, 70, 239, 0.3); padding: 16px; border-radius: 16px;">
-                    <div style="font-size: 12px; color: #c084fc; font-weight: 700; margin-bottom: 4px;">📸 Nashr Qilingan Postlar:</div>
-                    <div style="font-size: 24px; color: #fff; font-weight: 900;" id="instaMediaVal">192 ta</div>
-                    <div style="font-size: 10px; color: #c084fc; font-weight: 700; margin-top: 4px;">● Profile Media Feed</div>
-                  </div>
-
-                  <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.3); padding: 16px; border-radius: 16px;">
-                    <div style="font-size: 12px; color: #38bdf8; font-weight: 700; margin-bottom: 4px;">📈 Oylik Profil Qamrovi:</div>
-                    <div style="font-size: 24px; color: #fff; font-weight: 900;" id="instaReachVal">48,600</div>
-                    <div style="font-size: 10px; color: #38bdf8; font-weight: 700; margin-top: 4px;">● Impressions & Reach</div>
-                  </div>
-
-                  <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(52, 211, 153, 0.3); padding: 16px; border-radius: 16px;">
-                    <div style="font-size: 12px; color: #34d399; font-weight: 700; margin-bottom: 4px;">👁️ Profil Tashriflari:</div>
-                    <div style="font-size: 24px; color: #fff; font-weight: 900;" id="instaViewsVal">4,120</div>
-                    <div style="font-size: 10px; color: #34d399; font-weight: 700; margin-top: 4px;">● Account Views</div>
-                  </div>
-                </div>
-
               </div>
+
+              <!-- ═══════════════════════════════════════════════════════════ -->
+              <!-- META OAUTH 2.0 SETUP WIZARD SECTION                       -->
+              <!-- ═══════════════════════════════════════════════════════════ -->
+              <div id="metaOAuthWizardPanel" style="display: none; background: rgba(15,23,42,0.9); border: 1px solid rgba(139,92,246,0.4); border-radius: 20px; padding: 28px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                  <h4 style="color: #c084fc; font-size: 18px; margin: 0; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+                    🧙 Meta OAuth 2.0 — Ulanish Yo'riqnomasi
+                  </h4>
+                  <button onclick="document.getElementById('metaOAuthWizardPanel').style.display='none'" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #94a3b8; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: 700;">✕</button>
+                </div>
+
+                <!-- Steps -->
+                <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 28px;">
+                  
+                  <!-- Step 1 -->
+                  <div style="background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.25); border-radius: 14px; padding: 16px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                      <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#8b5cf6,#6366f1); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 14px; flex-shrink:0;">1</div>
+                      <span style="color: #e2e8f0; font-weight: 800; font-size: 14px;">Instagram akkauntingizni Business/Creator qiling</span>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 13px; margin: 0 0 10px 44px; line-height: 1.6;">Instagram ilovasi → Profil → ☰ Menyu → Hisob → Professional akkauntga o'tish → <b>Business</b> ni tanlang.</p>
+                    <a href="https://business.instagram.com/getting-started" target="_blank" style="margin-left: 44px; background: rgba(139,92,246,0.2); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">📖 Rasmiy qo'llanma →</a>
+                  </div>
+
+                  <!-- Step 2 -->
+                  <div style="background: rgba(217,70,239,0.08); border: 1px solid rgba(217,70,239,0.25); border-radius: 14px; padding: 16px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                      <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#d946ef,#a855f7); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 14px; flex-shrink:0;">2</div>
+                      <span style="color: #e2e8f0; font-weight: 800; font-size: 14px;">Facebook Developer da App yarating</span>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 13px; margin: 0 0 10px 44px; line-height: 1.6;">developers.facebook.com → Mening Dasturlarim → Yangi Dastur Yaratish → <b>Business</b> turini tanlang → Instagram Basic Display qo'shing.</p>
+                    <a href="https://developers.facebook.com/apps" target="_blank" style="margin-left: 44px; background: rgba(217,70,239,0.2); color: #e879f9; border: 1px solid rgba(217,70,239,0.3); padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">🔗 developers.facebook.com →</a>
+                  </div>
+
+                  <!-- Step 3 -->
+                  <div style="background: rgba(244,63,94,0.08); border: 1px solid rgba(244,63,94,0.25); border-radius: 14px; padding: 16px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                      <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#f43f5e,#e11d48); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 14px; flex-shrink:0;">3</div>
+                      <span style="color: #e2e8f0; font-weight: 800; font-size: 14px;">App ID va App Secret ni oling</span>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 13px; margin: 0 0 10px 44px; line-height: 1.6;">App yaratilgandan so'ng: <b>Sozlamalar → Asosiy</b> bo'limiga kiring. U yerda <b>App ID</b> va <b>App Secret</b> ni ko'rasiz. Quyidagi maydonlarga kiriting:</p>
+                    
+                    <div style="margin-left: 44px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+                      <div>
+                        <label style="display: block; color: #f472b6; font-size: 12px; font-weight: 700; margin-bottom: 6px;">App ID:</label>
+                        <input type="text" id="oauthAppId" placeholder="1234567890" style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: rgba(15,23,42,0.9); border: 1.5px solid rgba(244,63,94,0.35); border-radius: 10px; color: #fff; font-size: 13px; font-family: inherit; outline: none;" onfocus="this.style.borderColor='rgba(244,63,94,0.8)'" onblur="this.style.borderColor='rgba(244,63,94,0.35)'" />
+                      </div>
+                      <div>
+                        <label style="display: block; color: #f472b6; font-size: 12px; font-weight: 700; margin-bottom: 6px;">App Secret:</label>
+                        <input type="password" id="oauthAppSecret" placeholder="abc123def456..." style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: rgba(15,23,42,0.9); border: 1.5px solid rgba(244,63,94,0.35); border-radius: 10px; color: #fff; font-size: 13px; font-family: inherit; outline: none;" onfocus="this.style.borderColor='rgba(244,63,94,0.8)'" onblur="this.style.borderColor='rgba(244,63,94,0.35)'" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Step 4 -->
+                  <div style="background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.25); border-radius: 14px; padding: 16px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                      <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#38bdf8,#0284c7); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 14px; flex-shrink:0;">4</div>
+                      <span style="color: #e2e8f0; font-weight: 800; font-size: 14px;">OAuth bilan ulang</span>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 13px; margin: 0 0 12px 44px; line-height: 1.6;">App ID va Secret kiritilgandan so'ng quyidagi tugmani bosing. Instagram login sahifasi ochiladi, kirib tasdiqlang — ma'lumotlaringiz avtomatik saqlanadi.</p>
+                    <button onclick="startMetaOAuthFlow()" style="margin-left: 44px; background: linear-gradient(135deg,#38bdf8,#0284c7); color: #fff; border: none; padding: 11px 24px; border-radius: 11px; font-size: 14px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(56,189,248,0.4);">
+                      <span>🚀</span><span>Meta Instagram OAuth Orqali Kiring</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- OAuth Token Entry (for manual flow) -->
+                <div style="background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px;">
+                  <div style="color: #94a3b8; font-size: 12px; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.5px;">🔑 YOKI MAVJUD ACCESS TOKEN KIRITING:</div>
+                  <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="password" id="manualOauthToken" placeholder="EAAXXXX... (Access Token)" style="flex: 1; min-width: 220px; padding: 11px 14px; background: rgba(15,23,42,0.9); border: 1.5px solid rgba(255,255,255,0.12); border-radius: 11px; color: #fff; font-size: 13px; font-family: monospace; outline: none;" onfocus="this.style.borderColor='rgba(139,92,246,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'" />
+                    <button onclick="saveManualToken()" style="background: rgba(139,92,246,0.3); color: #c084fc; border: 1px solid rgba(139,92,246,0.4); padding: 11px 20px; border-radius: 11px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap;">💾 Token Saqlash</button>
+                  </div>
+                  <p style="color: #475569; font-size: 11px; margin: 8px 0 0; line-height: 1.5;">developers.facebook.com → Graph API Explorer → Ma'lumotlaringiz uchun token oling va bu yerga kiriting.</p>
+                </div>
+              </div>
+
+
+
+
 
               <!-- INSTAGRAM SETTINGS FORM -->
               <div class="pro-card-glass">
@@ -4386,7 +4477,153 @@
     loadAllProducts();
     loadSliderData();
     changeLanguage(currentLang);
+
+    // ─── LOAD INSTAGRAM SETTINGS ON PAGE LOAD ───────────────────────────────
+    async function loadInstagramSettings() {
+      try {
+        const res = await fetch('/api/v1/settings/instagram');
+        const data = await res.json();
+        if (data.success && data.data) {
+          const d = data.data;
+          const ins = d.insights || {};
+          updateInstaUI(d, ins);
+        }
+      } catch (e) { /* silent */ }
+    }
+
+    function updateInstaUI(d, ins) {
+      // Status badge
+      const badge = document.getElementById('instaStatusBadge');
+      const connectedState = document.getElementById('instaConnectedState');
+      const connUsername = document.getElementById('instaConnectedUsername');
+      const tokenExpiry = document.getElementById('instaTokenExpiry');
+      const followersSrc = document.getElementById('instaFollowersSrc');
+
+      if (d.status === 'CONNECTED' && d.username) {
+        if (badge) { badge.textContent = '● ULANDI: @' + d.username; badge.style.background = 'linear-gradient(135deg,#10b981,#059669)'; badge.style.color = '#fff'; }
+        if (connectedState) connectedState.style.display = 'block';
+        if (connUsername) connUsername.textContent = '@' + d.username;
+        if (tokenExpiry && d.tokenExpiresAt) {
+          const exp = new Date(d.tokenExpiresAt);
+          tokenExpiry.textContent = '🕐 Token amal qilish muddati: ' + exp.toLocaleDateString('uz-UZ');
+        }
+        if (followersSrc) followersSrc.textContent = '● Meta Graph API';
+      } else {
+        if (badge) { badge.textContent = '● ULANMAGAN'; badge.style.background = 'rgba(100,116,139,0.3)'; badge.style.color = '#94a3b8'; }
+        if (connectedState) connectedState.style.display = 'none';
+      }
+
+      // Stats
+      if (document.getElementById('instaFollowersVal')) document.getElementById('instaFollowersVal').textContent = ins.followersCount ? ins.followersCount.toLocaleString('uz-UZ') : '—';
+      if (document.getElementById('instaMediaVal')) document.getElementById('instaMediaVal').textContent = ins.mediaCount ? ins.mediaCount + ' ta' : '—';
+      if (document.getElementById('instaReachVal')) document.getElementById('instaReachVal').textContent = ins.reachCount ? ins.reachCount.toLocaleString('uz-UZ') : '—';
+      if (document.getElementById('instaViewsVal')) document.getElementById('instaViewsVal').textContent = ins.profileViewsCount ? ins.profileViewsCount.toLocaleString('uz-UZ') : '—';
+
+      // Form fields
+      if (d.username && document.getElementById('instaUsername')) document.getElementById('instaUsername').value = d.username;
+      if (d.profileUrl && document.getElementById('instaProfileUrl')) document.getElementById('instaProfileUrl').value = d.profileUrl;
+      if (d.dmUrl && document.getElementById('instaDmUrl')) document.getElementById('instaDmUrl').value = d.dmUrl;
+    }
+
+    function openMetaOAuthWizard() {
+      const panel = document.getElementById('metaOAuthWizardPanel');
+      if (panel) { panel.style.display = panel.style.display === 'none' ? 'block' : 'none'; panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    }
+
+    function startMetaOAuthFlow() {
+      const appId = (document.getElementById('oauthAppId')?.value || '').trim();
+      const appSecret = (document.getElementById('oauthAppSecret')?.value || '').trim();
+      if (!appId) { showToast('⚠️ App ID kiritilmadi!', 'error'); return; }
+      if (!appSecret) { showToast('⚠️ App Secret kiritilmadi!', 'error'); return; }
+
+      // Store temporarily in session storage for callback
+      sessionStorage.setItem('igAppId', appId);
+      sessionStorage.setItem('igAppSecret', appSecret);
+
+      const redirectUri = encodeURIComponent(window.location.origin + '/api/v1/settings/instagram/oauth-callback');
+      const scope = encodeURIComponent('instagram_basic,instagram_content_publish,instagram_manage_insights,pages_show_list,pages_read_engagement');
+      const oauthUrl = `https://api.instagram.com/oauth/authorize?client_id=${appId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code`;
+
+      const popup = window.open(oauthUrl, 'instagram_oauth', 'width=600,height=700,top=100,left=100');
+      
+      // Poll for code in URL (when popup redirects back)
+      const checkInterval = setInterval(() => {
+        try {
+          if (popup && popup.closed) {
+            clearInterval(checkInterval);
+            // Try to get code from server-side callback
+            loadInstagramSettings();
+            showToast('Instagram akkaunt ma\'lumotlari yangilandi!');
+          }
+        } catch (e) { /* cross-origin */ }
+      }, 1000);
+    }
+
+    async function saveManualToken() {
+      const token = (document.getElementById('manualOauthToken')?.value || '').trim();
+      const appId = (document.getElementById('oauthAppId')?.value || '').trim();
+      const appSecret = (document.getElementById('oauthAppSecret')?.value || '').trim();
+      if (!token) { showToast('⚠️ Token kiritilmadi!', 'error'); return; }
+      
+      showToast('⏳ Token tekshirilmoqda...');
+      try {
+        // Verify token and get profile
+        const profileRes = await fetch(`https://graph.instagram.com/me?fields=id,username,media_count&access_token=${token}`).then(r => r.json());
+        if (profileRes.error) { showToast('❌ Token noto\'g\'ri: ' + profileRes.error.message, 'error'); return; }
+
+        // Save to server
+        const res = await fetch('/api/v1/settings/instagram', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: profileRes.username || '',
+            profileUrl: `https://www.instagram.com/${profileRes.username || ''}`,
+            dmUrl: `https://ig.me/m/${profileRes.username || ''}`,
+            accessToken: token,
+            longLivedToken: token,
+            igBusinessId: String(profileRes.id || ''),
+            showOnWebsite: true
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('✅ Token saqlandi! @' + (profileRes.username || '') + ' ulandi!');
+          await loadInstagramSettings();
+          document.getElementById('metaOAuthWizardPanel').style.display = 'none';
+        }
+      } catch (err) { showToast('❌ Xatolik: ' + err.message, 'error'); }
+    }
+
+    async function refreshInstagramInsightsReal() {
+      showToast('⏳ Analitika yangilanmoqda...');
+      try {
+        const res = await fetch('/api/v1/settings/instagram/oauth/refresh', { method: 'POST' });
+        const data = await res.json();
+        if (data.success && data.data) {
+          updateInstaUI(data.data, data.data.insights || {});
+          showToast('✅ Instagram analitika muvaffaqiyatli yangilandi!');
+        } else {
+          showToast(data.message || 'Yangilash uchun avval ulaning', 'error');
+        }
+      } catch (err) { showToast('❌ Xatolik: ' + err.message, 'error'); }
+    }
+
+    function disconnectInstagram() {
+      if (!confirm('Instagram akkauntni uzishni tasdiqlaysizmi?')) return;
+      fetch('/api/v1/settings/instagram', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: '', status: 'DISCONNECTED', accessToken: '', longLivedToken: '', igBusinessId: '', showOnWebsite: true })
+      }).then(() => {
+        showToast('🔌 Instagram uzildi');
+        loadInstagramSettings();
+      });
+    }
+
+    // Load instagram settings on initial page load
+    loadInstagramSettings();
   </script>
+
 
   <!-- ============================================================ -->
   <!-- INSTAGRAM DIRECT LOGIN MODAL — FIXED POSITION OVERLAY        -->

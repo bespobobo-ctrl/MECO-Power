@@ -184,6 +184,29 @@ export class SettingsController {
     }
   }
 
+  async exchangeMetaOAuthCode(req: Request, res: Response) {
+    try {
+      const { code, appId, appSecret, redirectUri } = req.body;
+      if (!code || !appId || !appSecret) {
+        return sendError(res, 'code, appId va appSecret majburiy', 400);
+      }
+      const redirectUrl = redirectUri || `${req.protocol}://${req.get('host')}/api/v1/settings/instagram/oauth-callback`;
+      const updated = await settingsService.exchangeMetaOAuthCode(code, appId, appSecret, redirectUrl);
+      return sendSuccess(res, `✅ @${updated.username} — Meta OAuth orqali muvaffaqiyatli ulandi! Token 60 kunga amal qiladi.`, updated);
+    } catch (err: any) {
+      return sendError(res, `Meta OAuth xatolik: ${err.message}`, 500);
+    }
+  }
+
+  async refreshInstagramInsights(req: Request, res: Response) {
+    try {
+      const updated = await settingsService.refreshInsightsWithToken();
+      return sendSuccess(res, '✅ Instagram real analitika yangilandi!', updated);
+    } catch (err: any) {
+      return sendError(res, `Analitika yangilashda xatolik: ${err.message}`, 500);
+    }
+  }
+
   async sendTestNotification(req: Request, res: Response) {
     const { adminChatId } = req.body;
     return sendSuccess(res, 'Test Telegram xabarnomasi yuborildi', { adminChatId, status: 'SENT' });

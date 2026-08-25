@@ -46,12 +46,18 @@ export interface InstagramConfig {
   profileUrl: string;
   dmUrl: string;
   accessToken?: string;
+  longLivedToken?: string;
+  tokenExpiresAt?: string;
   metaAppId?: string;
+  metaAppSecret?: string;
+  pageId?: string;
+  igBusinessId?: string;
   showOnWebsite: boolean;
   status: 'CONNECTED' | 'DISCONNECTED';
   updatedAt?: string;
   insights?: InstagramInsights;
 }
+
 
 export class SettingsService {
   private static isInitialized = false;
@@ -253,6 +259,158 @@ export class SettingsService {
     await SettingsService.syncFromCloudStorage();
     return SettingsService.instagramSettings;
   }
+
+  // ─── Meta OAuth: Exchange short-lived code for long-lived token ──────────────
+  async exchangeMetaOAuthCode(code: string, appId: string, appSecret: string, redirectUri: string): Promise<InstagramConfig> {
+    await SettingsService.syncFromCloudStorage();
+
+    // Step 1: Exchange code for short-lived token
+    const tokenRes = await fetch(
+      `https://api.instagram.com/oauth/access_token`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: appId,
+          client_secret: appSecret,
+          grant_type: 'authorization_code',
+          redirect_uri: redirectUri,
+          code
+        }).toString()
+      }
+    ).then(r => r.json()) as any;
+
+    if (tokenRes.error_type || !tokenRes.access_token) {
+      throw new Error(tokenRes.error_message || 'OAuth token olishda xatolik');
+    }
+
+    const shortToken = tokenRes.access_token;
+    const igUserId = tokenRes.user_id;
+
+    // Step 2: Exchange for long-lived token (60 days)
+    const longRes = await fetch(
+      `https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${appSecret}&access_token=${shortToken}`
+    ).then(r => r.json()) as any;
+
+    const longToken = longRes.access_token || shortToken;
+    const expiresIn = longRes.expires_in || 5183944; // ~60 days
+    const tokenExpiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
+
+    // Step 3: Fetch real profile data
+    const profileRes = await fetch(
+      `https://graph.instagram.com/me?fields=id,username,account_type,media_count,biography,profile_picture_url&access_token=${longToken}`
+    ).then(r => r.json()) as any;
+
+    // Step 4: Fetch insights if Business account
+    let followersCount = 0;
+    let reach = 0;
+    let impressions = 0;
+    let profileViews = 0;
+    try {
+      const insightsRes = await fetch(
+        `https://graph.instagram.com/${profileRes.id || igUserId}/insights?metric=impressions,reach,profile_views&period=day&access_token=${longToken}`
+      ).then(r => r.json()) as any;
+      if (insightsRes.data) {
+        insightsRes.data.forEach((m: any) => {
+          const val = m.values?.[0]?.value || 0;
+          if (m.name === 'impressions') impressions = val;
+          if (m.name === 'reach') reach = val;
+          if (m.name === 'profile_views') profileViews = val;
+        });
+      }
+    } catch { /* insights optional for basic accounts */ }
+
+    // Try to get followers from business discovery
+    try {
+      const bizRes = await fetch(
+        `https://graph.instagram.com/${profileRes.id || igUserId}?fields=followers_count&access_token=${longToken}`
+      ).then(r => r.json()) as any;
+      if (bizRes.followers_count) followersCount = bizRes.followers_count;
+    } catch { /* optional */ }
+
+    const username = profileRes.username || '';
+    const mediaCount = profileRes.media_count || 0;
+
+    SettingsService.instagramSettings = {
+      ...SettingsService.instagramSettings,
+      username,
+      profileUrl: `https://www.instagram.com/${username}`,
+      dmUrl: `https://ig.me/m/${username}`,
+      accessToken: shortToken,
+      longLivedToken: longToken,
+      tokenExpiresAt,
+      metaAppId: appId,
+      metaAppSecret: appSecret,
+      igBusinessId: String(profileRes.id || igUserId),
+      status: 'CONNECTED',
+      updatedAt: new Date().toISOString(),
+      insights: {
+        followersCount,
+        mediaCount,
+        impressionsCount: impressions,
+        reachCount: reach,
+        profileViewsCount: profileViews,
+        lastFetchedAt: new Date().toISOString()
+      }
+    };
+
+    await SettingsService.saveInstagramToDisk();
+    logger.info(`✅ Meta OAuth success: @${username}, followers: ${followersCount}, posts: ${mediaCount}`);
+    return SettingsService.instagramSettings;
+  }
+
+  // ─── Refresh insights using saved long-lived token ───────────────────────────
+  async refreshInsightsWithToken(): Promise<InstagramConfig> {
+    await SettingsService.syncFromCloudStorage();
+    const token = SettingsService.instagramSettings.longLivedToken || SettingsService.instagramSettings.accessToken;
+    const igId = SettingsService.instagramSettings.igBusinessId;
+
+    if (!token || !igId) {
+      throw new Error('Instagram hali ulanmagan. Avval Meta OAuth orqali kiring.');
+    }
+
+    // Refresh followers
+    let followersCount = SettingsService.instagramSettings.insights?.followersCount || 0;
+    let mediaCount = SettingsService.instagramSettings.insights?.mediaCount || 0;
+    let impressions = 0;
+    let reach = 0;
+    let profileViews = 0;
+
+    try {
+      const profileRes = await fetch(
+        `https://graph.instagram.com/me?fields=id,username,media_count,followers_count&access_token=${token}`
+      ).then(r => r.json()) as any;
+      if (profileRes.followers_count) followersCount = profileRes.followers_count;
+      if (profileRes.media_count) mediaCount = profileRes.media_count;
+    } catch (err: any) { logger.warn(`Refresh profile: ${err.message}`); }
+
+    try {
+      const insightsRes = await fetch(
+        `https://graph.instagram.com/${igId}/insights?metric=impressions,reach,profile_views&period=day&access_token=${token}`
+      ).then(r => r.json()) as any;
+      if (insightsRes.data) {
+        insightsRes.data.forEach((m: any) => {
+          const val = m.values?.[0]?.value || 0;
+          if (m.name === 'impressions') impressions = val;
+          if (m.name === 'reach') reach = val;
+          if (m.name === 'profile_views') profileViews = val;
+        });
+      }
+    } catch (err: any) { logger.warn(`Refresh insights: ${err.message}`); }
+
+    SettingsService.instagramSettings.insights = {
+      followersCount,
+      mediaCount,
+      impressionsCount: impressions,
+      reachCount: reach,
+      profileViewsCount: profileViews,
+      lastFetchedAt: new Date().toISOString()
+    };
+    SettingsService.instagramSettings.updatedAt = new Date().toISOString();
+    await SettingsService.saveInstagramToDisk();
+    return SettingsService.instagramSettings;
+  }
+
 
   async saveInstagramSettings(newSettings: Partial<InstagramConfig>): Promise<InstagramConfig> {
     await SettingsService.syncFromCloudStorage();
