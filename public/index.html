@@ -331,38 +331,19 @@
     .logo-container {
       display: flex;
       align-items: center;
-      gap: 12px;
       text-decoration: none;
     }
 
-    .logo-icon {
-      width: 44px;
+    .brand-logo-img {
       height: 44px;
-      background: linear-gradient(135deg, #059669, #047857);
-      border-radius: 10px;
-      color: #fff;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 800;
-      font-size: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3);
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.08));
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .logo-text h1 {
-      font-size: 22px;
-      font-weight: 800;
-      color: #064e3b;
-      letter-spacing: -0.5px;
-    }
-
-    .logo-text p {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+    .brand-logo-img:hover {
+      transform: scale(1.04);
     }
 
     nav ul {
@@ -1686,11 +1667,7 @@
   <!-- Header Navigation -->
   <header>
     <a href="/" class="logo-container">
-      <div class="logo-icon">M</div>
-      <div class="logo-text">
-        <h1>MECO POWER</h1>
-        <p data-i18n="logoSub">Quyosh Energiyasi Saqlash Yechimlari</p>
-      </div>
+      <img src="/meco_logo.png" alt="MECO POWER KOKAND" class="brand-logo-img" />
     </a>
 
     <nav>
