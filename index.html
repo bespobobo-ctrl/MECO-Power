@@ -648,97 +648,6 @@
       background: var(--primary-hover);
     }
 
-    /* APPLIANCE AUTONOMY SECTION STYLING (EXACTLY MATCHING USER IMAGE 2) */
-    .introduction-section {
-      background: #ffffff;
-      padding: 80px 5%;
-      border-top: 1px solid #e2e8f0;
-      border-bottom: 1px solid #e2e8f0;
-    }
-
-    .autonomy-tabs-bar {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 45px;
-      flex-wrap: wrap;
-    }
-
-    .autonomy-tab-btn {
-      background: #f1f5f9;
-      border: 1px solid #cbd5e1;
-      color: #475569;
-      padding: 10px 24px;
-      border-radius: 30px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .autonomy-tab-btn.active, .autonomy-tab-btn:hover {
-      background: linear-gradient(135deg, #059669, #047857);
-      color: #ffffff;
-      border-color: #047857;
-      box-shadow: 0 6px 18px rgba(4, 120, 87, 0.3);
-    }
-
-    .appliance-autonomy-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 36px 20px;
-      justify-items: center;
-      max-width: 1150px;
-      margin: 0 auto;
-    }
-
-    .appliance-item-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      transition: transform 0.3s ease;
-    }
-
-    .appliance-item-card:hover {
-      transform: translateY(-6px);
-    }
-
-    .appliance-icon-circle {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      border: 2px solid #e2e8f0;
-      background: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-      margin-bottom: 14px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
-      transition: all 0.3s ease;
-    }
-
-    .appliance-item-card:hover .appliance-icon-circle {
-      border-color: #10b981;
-      box-shadow: 0 12px 28px rgba(16, 185, 129, 0.25);
-      background: #f0fdf4;
-    }
-
-    .appliance-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #475569;
-      margin-bottom: 4px;
-      line-height: 1.3;
-    }
-
-    .appliance-time {
-      font-size: 17px;
-      font-weight: 800;
-      color: #0f172a;
-    }
-
     /* Modal Appliance Autonomy Grid (Dark Theme) */
     .modal-appliance-grid {
       display: grid;
@@ -1000,7 +909,7 @@
       cursor: pointer;
     }
 
-    /* HIGH-END ENTERPRISE SAAS ADMIN PANEL LAYOUT (SIDEBAR + MAIN DASHBOARD) */
+    /* HIGH-END ENTERPRISE SAAS ADMIN PANEL LAYOUT */
     .admin-modal {
       width: 100vw;
       height: 100vh;
@@ -1646,7 +1555,6 @@
     <nav>
       <ul>
         <li><a href="/" class="active" data-i18n="navHome">Bosh sahifa</a></li>
-        <li><a href="#introduction" data-i18n="navIntro">Avtonomiya (Introduction)</a></li>
         <li><a href="#products" data-i18n="navProducts">Mahsulotlar</a></li>
         <li><a href="#about" data-i18n="navAbout">Meco haqida</a></li>
         <li><a href="#contact" data-i18n="navContact">Bog'lanish</a></li>
@@ -1663,29 +1571,6 @@
   <!-- DYNAMIC HERO SLIDER CAROUSEL -->
   <section class="hero-slider-container" id="heroContainer">
     <!-- Dynamic Slides Rendered via JavaScript -->
-  </section>
-
-  <!-- INTRODUCTION: APPLIANCE POWER AUTONOMY MATRIX SECTION (EXACTLY MATCHING USER IMAGE 2) -->
-  <section id="introduction" class="introduction-section">
-    <div class="section-header">
-      <div class="section-subtitle" data-i18n="introSubtitle">Avtonomiya va Imkoniyatlar</div>
-      <h2 class="section-title" data-i18n="introTitle">Introduction (Jihozlarning Ishlash Vaqti)</h2>
-      <p style="color: #64748b; font-size: 15px; margin-top: 8px;">MECO Power quyosh generatorlarining har xil maishiy va ofis jihozlarini avtonom ta'minlash vaqti</p>
-    </div>
-
-    <!-- Capacity Selection Tabs -->
-    <div class="autonomy-tabs-bar">
-      <button class="autonomy-tab-btn" onclick="selectAutonomyCapacity('300Wh', this)">300Wh</button>
-      <button class="autonomy-tab-btn" onclick="selectAutonomyCapacity('1kWh', this)">1kWh</button>
-      <button class="autonomy-tab-btn" onclick="selectAutonomyCapacity('2kWh', this)">2kWh</button>
-      <button class="autonomy-tab-btn active" onclick="selectAutonomyCapacity('3.6kWh', this)">3.6kWh (Pro)</button>
-      <button class="autonomy-tab-btn" onclick="selectAutonomyCapacity('5.4kWh', this)">5.4kWh Heavy Duty</button>
-    </div>
-
-    <!-- 10 Appliance Circles Grid matching Image 2 -->
-    <div class="appliance-autonomy-grid" id="homepageAutonomyGrid">
-      <!-- Rendered via JS -->
-    </div>
   </section>
 
   <!-- PRODUCT SERIES SECTION WITH MULTI-LANGUAGE TABS -->
@@ -1795,14 +1680,14 @@
       <span>Bosh sahifa</span>
     </button>
 
-    <button onclick="scrollToSection('introduction')" class="mobile-nav-item">
-      <span class="mobile-nav-icon">⚡</span>
-      <span>Avtonomiya</span>
-    </button>
-
     <button onclick="scrollToSection('products')" class="mobile-nav-item">
       <span class="mobile-nav-icon">📦</span>
       <span>Mahsulotlar</span>
+    </button>
+
+    <button onclick="scrollToSection('about')" class="mobile-nav-item">
+      <span class="mobile-nav-icon">⚡</span>
+      <span>Afzalliklar</span>
     </button>
 
     <button onclick="openLoginModal()" class="mobile-nav-item">
@@ -1836,7 +1721,7 @@
     </div>
   </div>
 
-  <!-- PRODUCT DETAIL POPUP MODAL ENHANCED WITH AUTONOMY MATRIX (MATCHING IMAGE 1 + IMAGE 2) -->
+  <!-- PRODUCT DETAIL POPUP MODAL ENHANCED WITH AUTONOMY MATRIX EXCLUSIVELY (MATCHING USER IMAGE 1 + IMAGE 2) -->
   <div class="modal-overlay" id="productDetailModal">
     <div class="product-detail-modal">
       <button class="close-modal" onclick="closeProductDetailModal()">✕</button>
@@ -1858,7 +1743,7 @@
         </div>
       </div>
 
-      <!-- Appliance Power Autonomy Matrix inside Modal -->
+      <!-- Appliance Power Autonomy Matrix inside Modal Exclusively -->
       <div style="margin-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 18px;">
         <h4 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
           ⚡ Ushbu modelning maishiy jihozlarni ishlata olish vaqti (Autonomy Times):
@@ -2241,33 +2126,6 @@
       ]
     };
 
-    function selectAutonomyCapacity(capacityKey, btn) {
-      document.querySelectorAll('.autonomy-tab-btn').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-
-      renderHomepageAutonomyGrid(capacityKey);
-    }
-
-    function renderHomepageAutonomyGrid(capacityKey = '3.6kWh') {
-      const container = document.getElementById('homepageAutonomyGrid');
-      if (!container) return;
-
-      const list = autonomyMatrix[capacityKey] || autonomyMatrix['3.6kWh'];
-
-      let html = '';
-      list.forEach(item => {
-        html += `
-          <div class="appliance-item-card">
-            <div class="appliance-icon-circle">${item.icon}</div>
-            <div class="appliance-title">${item.name}</div>
-            <div class="appliance-time">${item.hours}</div>
-          </div>
-        `;
-      });
-
-      container.innerHTML = html;
-    }
-
     function scrollToSection(id) {
       const el = document.getElementById(id);
       if (el) {
@@ -2298,13 +2156,10 @@
         topHub: "🇺🇿 Mintaqaviy markaz: Qo'qon Shaxri, O'zbekiston",
         logoSub: "Quyosh Energiyasi Saqlash Yechimlari",
         navHome: "Bosh sahifa",
-        navIntro: "Avtonomiya (Introduction)",
         navAbout: "Meco haqida",
         navProducts: "Mahsulotlar",
         navContact: "Bog'lanish",
         btnLogin: "🔑 Kirish",
-        introSubtitle: "Avtonomiya va Imkoniyatlar",
-        introTitle: "Introduction (Jihozlarning Ishlash Vaqti)",
         seriesTitle: "Mahsulotlar Turqumi",
         tabAll: "Barchasi (All Products)",
         tabPowerBank: "Quyosh Powerbanki",
@@ -2338,13 +2193,10 @@
         topHub: "🇺🇿 Региональный центр: г. Коканд, Узбекистан",
         logoSub: "Решения для хранения солнечной энергии",
         navHome: "Главная",
-        navIntro: "Автономия (Introduction)",
         navAbout: "О Meco",
         navProducts: "Продукция",
         navContact: "Контакты",
         btnLogin: "🔑 Вход",
-        introSubtitle: "Автономия и Возможности",
-        introTitle: "Introduction (Время работы приборов)",
         seriesTitle: "Серия Продукции",
         tabAll: "Все продукты (All)",
         tabPowerBank: "Солнечные повербанки",
@@ -2378,13 +2230,10 @@
         topHub: "🇺🇿 Regional Hub: Kokand City, Uzbekistan",
         logoSub: "Solar Energy Storage Solutions",
         navHome: "Home",
-        navIntro: "Autonomy (Introduction)",
         navAbout: "About Meco",
         navProducts: "Products",
         navContact: "Contact Us",
         btnLogin: "🔑 Login",
-        introSubtitle: "Autonomy & Power Capacities",
-        introTitle: "Introduction (Appliance Running Time)",
         seriesTitle: "Product Series",
         tabAll: "All Products",
         tabPowerBank: "Solar Power Bank",
@@ -2657,7 +2506,7 @@
       }
     }
 
-    // Open Product Details Modal with Multilanguage Content + APPLIANCE AUTONOMY MATRIX (IMAGE 1 + IMAGE 2)
+    // Open Product Details Modal with Multilanguage Content + APPLIANCE AUTONOMY MATRIX EXCLUSIVELY (IMAGE 1 + IMAGE 2)
     function openProductDetail(productId) {
       const product = allProductsData.find(p => p.id === productId);
       if (!product) return;
@@ -3074,7 +2923,6 @@
     // Initialize on Page Load
     loadAllProducts();
     loadSliderData();
-    renderHomepageAutonomyGrid('3.6kWh');
     changeLanguage(currentLang);
   </script>
 
