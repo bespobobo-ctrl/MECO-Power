@@ -2424,36 +2424,37 @@
           <!-- Tab 3: Real-Vaqt Tashriflar & Havolalar Statistikasi -->
           <div id="trafficTab" class="tab-content">
             <div class="traffic-table-wrapper">
-              <h4>🔗 Havolalar (Referral Links) Orqali Kelgan Tashrifchilar Statistikasi</h4>
-              <p style="color: #94a3b8; font-size: 13px; margin-bottom: 16px;">Siz tarqatgan reklama va bot linklari orqali loyihaga qancha odam tashrif buyurgani real vaqtda yangilanadi:</p>
+              <h4 style="font-size: 18px; color: #fff; font-weight: 800; margin-bottom: 8px;">🔗 Real Tashrifchilar va Havolalar Statistikasi</h4>
+              <p style="color: #94a3b8; font-size: 13px; margin-bottom: 20px;">Sayt hamda Telegram Bot Mini App-ga kelgan real foydalanuvchilarning isbotlangan statistikasi (1 kunda, 1 haftada, 1 oyda, 1 yilda):</p>
+
+              <!-- Summary Cards Grid for Web App & Telegram Mini App -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                <div id="webAppSummaryCard" style="background: rgba(14, 165, 233, 0.08); border: 1px solid rgba(14, 165, 233, 0.25); padding: 16px 20px; border-radius: 16px;">
+                  <div style="font-weight: 700; color: #38bdf8; margin-bottom: 6px;">🌐 BARCHA WEB APP TASHRIFLARI:</div>
+                  <div style="font-size: 13px; color: #cbd5e1;">Hisoblanmoqda...</div>
+                </div>
+
+                <div id="telegramAppSummaryCard" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); padding: 16px 20px; border-radius: 16px;">
+                  <div style="font-weight: 700; color: #10b981; margin-bottom: 6px;">🤖 TELEGRAM BOT & MINI APP TASHRIFLARI:</div>
+                  <div style="font-size: 13px; color: #cbd5e1;">Hisoblanmoqda...</div>
+                </div>
+              </div>
 
               <table>
                 <thead>
                   <tr>
                     <th>Tashrif Manbai / Link</th>
-                    <th>Tashriflar Soni</th>
-                    <th>Ushbu Manbadan sotuvlar</th>
+                    <th>1 Kunda (Bugun)</th>
+                    <th>1 Haftada</th>
+                    <th>1 Oyda</th>
+                    <th>1 Yilda</th>
+                    <th>Manbadan Sotuvlar</th>
                     <th>Konversiya Darajasi</th>
                   </tr>
                 </thead>
                 <tbody id="referralTableBody">
                   <tr>
-                    <td><b>📱 Telegram Bot / Kanal Linki</b> (<code>?ref=telegram</code>)</td>
-                    <td><b>620 kishi</b></td>
-                    <td>22 ta buyurtma</td>
-                    <td><b style="color: #10b981;">3.5%</b></td>
-                  </tr>
-                  <tr>
-                    <td><b>📸 Instagram Ads Linki</b> (<code>?ref=instagram</code>)</td>
-                    <td><b>410 kishi</b></td>
-                    <td>14 ta buyurtma</td>
-                    <td><b style="color: #10b981;">3.4%</b></td>
-                  </tr>
-                  <tr>
-                    <td><b>🔍 Google Search</b></td>
-                    <td><b>290 kishi</b></td>
-                    <td>8 ta buyurtma</td>
-                    <td><b style="color: #10b981;">2.7%</b></td>
+                    <td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">Tashriflar statistikasi yuklanmoqda...</td>
                   </tr>
                 </tbody>
               </table>
@@ -3745,7 +3746,39 @@
       document.querySelectorAll(`.admin-dock-btn[onclick*="${tabId}"]`).forEach(b => b.classList.add('active'));
     }
 
-    // Load Live Dashboard Data
+  // Automatic Visitor Analytics Ping on Page Load
+  (function initVisitorAnalytics() {
+    let visitorId = localStorage.getItem('meco_visitor_uuid');
+    if (!visitorId) {
+      visitorId = 'v-' + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+      localStorage.setItem('meco_visitor_uuid', visitorId);
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const refParam = (urlParams.get('ref') || urlParams.get('tgWebAppStartParam') || '').toLowerCase();
+    const isTelegramWebApp = !!(window.Telegram && window.Telegram.WebApp && (window.Telegram.WebApp.initData || window.Telegram.WebApp.initDataUnsafe?.user));
+
+    let visitSource = 'direct_web';
+    if (isTelegramWebApp || refParam.includes('telegram') || refParam.includes('tg') || window.location.hash.includes('tgWebAppData')) {
+      visitSource = 'telegram_mini_app';
+    } else if (refParam.includes('instagram') || refParam.includes('insta') || document.referrer.includes('instagram')) {
+      visitSource = 'instagram';
+    } else if (refParam.includes('google') || document.referrer.includes('google')) {
+      visitSource = 'google';
+    }
+
+    fetch('/api/v1/analytics/ping', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        visitorId,
+        source: visitSource,
+        ref: refParam
+      })
+    }).catch(function() {});
+  })();
+
+    // Load Live Dashboard Data & Real Visitor Statistics
     async function loadDashboardStats() {
       try {
         const res = await fetch('/api/v1/analytics/dashboard');
@@ -3769,6 +3802,59 @@
           if (dBadge) dBadge.innerText = dVal > 0 ? `↑ ${dVal.toLocaleString('uz-UZ')} UZS bugun` : `● Hozircha buyurtma yo'q`;
           if (wBadge) wBadge.innerText = wVal > 0 ? `↑ ${wVal.toLocaleString('uz-UZ')} UZS bu hafta` : `● Hozircha buyurtma yo'q`;
           if (mBadge) mBadge.innerText = mVal > 0 ? `↑ ${mVal.toLocaleString('uz-UZ')} UZS bu oy` : `● Hozircha buyurtma yo'q`;
+
+          // Render Real Traffic Summary Cards
+          if (stats.webAppVisits) {
+            const webSummary = document.getElementById('webAppSummaryCard');
+            if (webSummary) {
+              webSummary.innerHTML = `
+                <div style="font-weight: 700; color: #38bdf8; margin-bottom: 8px; font-size: 14px;">🌐 BARCHA WEB APP TASHRIFLARI:</div>
+                <div style="font-size: 13px; color: #e2e8f0; display: flex; gap: 14px; flex-wrap: wrap;">
+                  <span><b>1 Kunda:</b> <span style="color: #38bdf8; font-weight: 700;">${stats.webAppVisits.daily}</span> kishi</span>
+                  <span><b>1 Haftada:</b> <span style="color: #38bdf8; font-weight: 700;">${stats.webAppVisits.weekly}</span> kishi</span>
+                  <span><b>1 Oyda:</b> <span style="color: #38bdf8; font-weight: 700;">${stats.webAppVisits.monthly}</span> kishi</span>
+                  <span><b>1 Yilda:</b> <span style="color: #38bdf8; font-weight: 700;">${stats.webAppVisits.yearly}</span> kishi</span>
+                </div>
+              `;
+            }
+          }
+
+          if (stats.telegramMiniAppVisits) {
+            const tgSummary = document.getElementById('telegramAppSummaryCard');
+            if (tgSummary) {
+              tgSummary.innerHTML = `
+                <div style="font-weight: 700; color: #10b981; margin-bottom: 8px; font-size: 14px;">🤖 TELEGRAM BOT & MINI APP TASHRIFLARI:</div>
+                <div style="font-size: 13px; color: #e2e8f0; display: flex; gap: 14px; flex-wrap: wrap;">
+                  <span><b>1 Kunda:</b> <span style="color: #10b981; font-weight: 700;">${stats.telegramMiniAppVisits.daily}</span> kishi</span>
+                  <span><b>1 Haftada:</b> <span style="color: #10b981; font-weight: 700;">${stats.telegramMiniAppVisits.weekly}</span> kishi</span>
+                  <span><b>1 Oyda:</b> <span style="color: #10b981; font-weight: 700;">${stats.telegramMiniAppVisits.monthly}</span> kishi</span>
+                  <span><b>1 Yilda:</b> <span style="color: #10b981; font-weight: 700;">${stats.telegramMiniAppVisits.yearly}</span> kishi</span>
+                </div>
+              `;
+            }
+          }
+
+          // Render Real Traffic Referral Table
+          if (stats.referralsTable && Array.isArray(stats.referralsTable)) {
+            const tbody = document.getElementById('referralTableBody');
+            if (tbody) {
+              let rowsHtml = '';
+              stats.referralsTable.forEach(row => {
+                rowsHtml += `
+                  <tr>
+                    <td><b>${row.name}</b></td>
+                    <td><b>${row.daily} kishi</b></td>
+                    <td><b>${row.weekly} kishi</b></td>
+                    <td><b>${row.monthly} kishi</b></td>
+                    <td><b>${row.yearly} kishi</b></td>
+                    <td>${row.ordersCount} ta buyurtma</td>
+                    <td><b style="color: #10b981;">${row.conversionRate}</b></td>
+                  </tr>
+                `;
+              });
+              tbody.innerHTML = rowsHtml;
+            }
+          }
         }
       } catch (err) {
         console.error('Stats loading error:', err);

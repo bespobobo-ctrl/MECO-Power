@@ -38,7 +38,13 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
   if (!req.path.startsWith('/api') && !req.path.includes('.')) {
     const ref = (req.query.ref as string) || (req.headers.referer as string);
-    AnalyticsService.recordVisit(ref, req.ip || '127.0.0.1');
+    const analyticsService = new AnalyticsService();
+    analyticsService.recordVisitPing({
+      visitorId: `v-ssr-${Math.random().toString(36).substring(2, 8)}`,
+      source: ref || 'direct_web',
+      ref,
+      ip: req.ip || '127.0.0.1'
+    }).catch(() => {});
   }
   next();
 });
