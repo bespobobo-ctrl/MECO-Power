@@ -1459,12 +1459,29 @@
       gap: 24px;
     }
 
-    /* NATIVE TELEGRAM MINI APP MOBILE RESPONSIVE STYLING */
-    .mobile-bottom-nav-wrapper {
-      display: none;
+    /* GLOBAL DEFAULT HIDDEN STYLES FOR MOBILE DOCKS ON DESKTOP (>768px) */
+    .mobile-bottom-nav-wrapper,
+    .admin-mobile-bottom-dock {
+      display: none !important;
+    }
+
+    body.admin-mode-active .mobile-bottom-nav-wrapper {
+      display: none !important;
     }
 
     @media (max-width: 768px) {
+      /* Show mobile nav dock on mobile screens */
+      .mobile-bottom-nav-wrapper {
+        display: block !important;
+      }
+
+      body.admin-mode-active .mobile-bottom-nav-wrapper {
+        display: none !important;
+      }
+
+      body.admin-mode-active .admin-mobile-bottom-dock {
+        display: flex !important;
+      }
       body {
         padding-bottom: 85px;
       }
@@ -1607,24 +1624,6 @@
         gap: 18px;
       }
 
-      .product-detail-grid {
-        grid-template-columns: 1fr;
-      }
-
-    /* DEFAULT HIDDEN ON DESKTOP & LARGE SCREENS */
-    .admin-mobile-bottom-dock {
-      display: none !important;
-    }
-
-    body.admin-mode-active .mobile-bottom-nav-wrapper {
-      display: none !important;
-    }
-
-    /* NATIVE TELEGRAM MINI APP MOBILE RESPONSIVE STYLING */
-    .mobile-bottom-nav-wrapper {
-      display: none;
-    }
-
     @media (max-width: 768px) {
       body {
         padding-bottom: 85px;
@@ -1712,7 +1711,7 @@
       }
 
       /* MOBILE DEDICATED ADMIN SUB-NAV DOCK STYLING */
-      .admin-mobile-bottom-dock {
+      body.admin-mode-active .admin-mobile-bottom-dock {
         display: flex !important;
         position: fixed;
         bottom: 14px;
