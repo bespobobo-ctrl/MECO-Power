@@ -28,14 +28,31 @@ export interface Order {
 
 export class OrdersService {
   private static isInitialized = false;
-
   private static defaultOrders: Order[] = [];
-
   private static orders: Order[] = [];
 
-  private static initPersistence() {
+  private static async initPersistence() {
     if (this.isInitialized && this.orders.length > 0) return;
 
+    // 1. Try loading from Supabase Storage bucket (meco-assets/orders_config.json)
+    try {
+      const { data: downData } = await supabase.storage.from('meco-assets').download('orders_config.json');
+      if (downData) {
+        const text = await downData.text();
+        const parsed = JSON.parse(text);
+        if (Array.isArray(parsed)) {
+          this.orders = parsed;
+          this.isInitialized = true;
+          this.saveLocalDiskOnly();
+          logger.info(`📦 Loaded ${parsed.length} orders from Supabase Storage cloud!`);
+          return;
+        }
+      }
+    } catch (sbErr: any) {
+      logger.warn(`Supabase orders storage load note: ${sbErr.message}`);
+    }
+
+    // 2. Try loading from local disk file (data/orders.json)
     try {
       if (!fs.existsSync(DATA_DIR)) {
         fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -44,34 +61,49 @@ export class OrdersService {
       if (fs.existsSync(ORDERS_FILE)) {
         const fileContent = fs.readFileSync(ORDERS_FILE, 'utf-8');
         const parsed = JSON.parse(fileContent);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           this.orders = parsed;
           this.isInitialized = true;
+          logger.info(`📦 Loaded ${parsed.length} persisted orders from local disk (${ORDERS_FILE})`);
           return;
         }
       }
     } catch (err: any) {
-      logger.warn(`Orders load note: ${err.message}`);
+      logger.warn(`Orders file persistence load note: ${err.message}`);
     }
 
     this.orders = [...this.defaultOrders];
-    this.saveToDisk();
+    await this.saveToDisk();
     this.isInitialized = true;
   }
 
-  private static saveToDisk() {
+  private static saveLocalDiskOnly() {
     try {
       if (!fs.existsSync(DATA_DIR)) {
         fs.mkdirSync(DATA_DIR, { recursive: true });
       }
       fs.writeFileSync(ORDERS_FILE, JSON.stringify(this.orders, null, 2), 'utf-8');
+    } catch (e) {}
+  }
+
+  private static async saveToDisk() {
+    this.saveLocalDiskOnly();
+
+    // Sync cloud storage (meco-assets/orders_config.json)
+    try {
+      const buffer = Buffer.from(JSON.stringify(this.orders, null, 2));
+      await supabase.storage.from('meco-assets').upload('orders_config.json', buffer, {
+        contentType: 'application/json',
+        upsert: true
+      });
+      logger.info(`💾 Orders list (${this.orders.length}) synced to Supabase cloud storage!`);
     } catch (err: any) {
-      logger.warn(`Orders save note: ${err.message}`);
+      logger.warn(`Orders cloud save note: ${err.message}`);
     }
   }
 
   async createOrder(orderData: Partial<Order>): Promise<Order> {
-    OrdersService.initPersistence();
+    await OrdersService.initPersistence();
 
     const lat = orderData.latitude ? Number(orderData.latitude) : null;
     const lng = orderData.longitude ? Number(orderData.longitude) : null;
@@ -95,29 +127,7 @@ export class OrdersService {
     };
 
     OrdersService.orders.unshift(newOrder);
-    OrdersService.saveToDisk();
-
-    // Save to Supabase PostgreSQL database if configured
-    try {
-      await supabase.from('orders').insert({
-        id: newOrder.id,
-        customer_name: newOrder.customerName,
-        customer_phone: newOrder.customerPhone,
-        address_notes: newOrder.addressNotes,
-        latitude: newOrder.latitude,
-        longitude: newOrder.longitude,
-        map_url: newOrder.mapUrl,
-        product_id: newOrder.productId,
-        product_name: newOrder.productName,
-        price_uzs: newOrder.priceUzS,
-        quantity: newOrder.quantity,
-        total_amount_uzs: newOrder.totalAmountUzS,
-        status: newOrder.status,
-        created_at: newOrder.createdAt
-      });
-    } catch (err: any) {
-      logger.warn(`Supabase order save note: stored in memory (${err.message})`);
-    }
+    await OrdersService.saveToDisk();
 
     // Send INSTANT notification to Admin Telegram Bot!
     try {
@@ -130,25 +140,25 @@ export class OrdersService {
   }
 
   async getAllOrders(): Promise<Order[]> {
-    OrdersService.initPersistence();
+    await OrdersService.initPersistence();
     return OrdersService.orders;
   }
 
   async updateOrderStatus(id: string, status: OrderStatus): Promise<Order | null> {
-    OrdersService.initPersistence();
+    await OrdersService.initPersistence();
     const order = OrdersService.orders.find(o => o.id === id);
     if (!order) return null;
     order.status = status;
-    OrdersService.saveToDisk();
+    await OrdersService.saveToDisk();
     return order;
   }
 
   async deleteOrder(id: string): Promise<boolean> {
-    OrdersService.initPersistence();
+    await OrdersService.initPersistence();
     const idx = OrdersService.orders.findIndex(o => o.id === id);
     if (idx !== -1) {
       OrdersService.orders.splice(idx, 1);
-      OrdersService.saveToDisk();
+      await OrdersService.saveToDisk();
       return true;
     }
     return false;

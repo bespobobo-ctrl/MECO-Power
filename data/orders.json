@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "ORD-225423",
+    "customerName": "Iskandarbek Olimov",
+    "customerPhone": "+998943993997",
+    "addressNotes": "Qo'qon shaxar A.Navoiy ko'chasi",
+    "latitude": 40.5286,
+    "longitude": 70.9425,
+    "mapUrl": "https://maps.google.com/?q=40.5286,70.9425",
+    "productId": "prod-2kwh",
+    "productName": "Meco 2kWh Solar Generator",
+    "priceUzS": 16800000,
+    "quantity": 1,
+    "totalAmountUzS": 16800000,
+    "status": "Yangi",
+    "createdAt": "2026-08-25T13:30:04.112Z"
+  }
+]

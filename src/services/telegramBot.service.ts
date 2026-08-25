@@ -262,8 +262,34 @@ export class TelegramBotService {
     }
   }
 
-  // Load user database from local disk & Supabase
+  // Load user database from local disk & Supabase Storage
   private static async loadRegisteredUsers() {
+    // Default admin chat ID
+    const defaultAdmin: BotUser = { chatId: 2134273896, firstName: 'Admin', registeredAt: new Date().toISOString() };
+    this.registeredUsers.set(defaultAdmin.chatId, defaultAdmin);
+    this.authenticatedChatIds.add(defaultAdmin.chatId);
+
+    // 1. Load from Supabase Storage
+    try {
+      const { data: downData } = await supabase.storage.from('meco-assets').download('bot_users_config.json');
+      if (downData) {
+        const text = await downData.text();
+        const parsed = JSON.parse(text);
+        if (Array.isArray(parsed)) {
+          parsed.forEach((u: BotUser) => {
+            if (u.chatId) {
+              this.registeredUsers.set(u.chatId, u);
+              this.authenticatedChatIds.add(u.chatId);
+            }
+          });
+          logger.info(`👥 Loaded ${parsed.length} authenticated Telegram bot users from Supabase Storage cloud!`);
+        }
+      }
+    } catch (err: any) {
+      logger.warn(`Bot users cloud load note: ${err.message}`);
+    }
+
+    // 2. Load from local disk file
     try {
       if (!fs.existsSync(DATA_DIR)) {
         fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -273,33 +299,16 @@ export class TelegramBotService {
         const fileContent = fs.readFileSync(BOT_USERS_FILE, 'utf-8');
         const parsed = JSON.parse(fileContent);
         if (Array.isArray(parsed)) {
-          parsed.forEach(u => {
-            this.registeredUsers.set(u.chatId, u);
-            this.authenticatedChatIds.add(u.chatId);
+          parsed.forEach((u: BotUser) => {
+            if (u.chatId) {
+              this.registeredUsers.set(u.chatId, u);
+              this.authenticatedChatIds.add(u.chatId);
+            }
           });
-          logger.info(`👥 Loaded ${parsed.length} authenticated Telegram bot users from disk.`);
         }
       }
     } catch (err: any) {
       logger.warn(`Bot users disk load note: ${err.message}`);
-    }
-
-    try {
-      const { data } = await supabase.from('bot_users').select('*');
-      if (data && Array.isArray(data)) {
-        data.forEach(u => {
-          this.registeredUsers.set(u.chat_id, {
-            chatId: u.chat_id,
-            firstName: u.first_name,
-            lastName: u.last_name,
-            username: u.username,
-            registeredAt: u.registered_at
-          });
-          this.authenticatedChatIds.add(u.chat_id);
-        });
-      }
-    } catch (err) {
-      logger.warn('Bot users Supabase load note: Memory cache active');
     }
   }
 
@@ -315,14 +324,13 @@ export class TelegramBotService {
       const userList = Array.from(this.registeredUsers.values());
       fs.writeFileSync(BOT_USERS_FILE, JSON.stringify(userList, null, 2), 'utf-8');
 
-      // Save to Supabase
-      await supabase.from('bot_users').upsert({
-        chat_id: user.chatId,
-        first_name: user.firstName,
-        last_name: user.lastName,
-        username: user.username,
-        registered_at: user.registeredAt
+      // Upload to Supabase Storage cloud
+      const buffer = Buffer.from(JSON.stringify(userList, null, 2));
+      await supabase.storage.from('meco-assets').upload('bot_users_config.json', buffer, {
+        contentType: 'application/json',
+        upsert: true
       });
+      logger.info(`✅ Bot user ${user.chatId} saved and synced to Supabase cloud!`);
     } catch (err: any) {
       logger.warn(`Bot user save note: ${err.message}`);
     }
