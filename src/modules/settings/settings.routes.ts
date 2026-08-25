@@ -15,5 +15,6 @@ router.post('/upload-slide-image', controller.uploadSlideImage);
 
 router.get('/instagram', controller.getInstagram);
 router.post('/instagram', controller.saveInstagram);
+router.post('/instagram/fetch-insights', controller.fetchInstagramInsights);
 
 export default router;

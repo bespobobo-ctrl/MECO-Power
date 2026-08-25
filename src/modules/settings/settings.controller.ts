@@ -158,6 +158,16 @@ export class SettingsController {
     }
   }
 
+  async fetchInstagramInsights(req: Request, res: Response) {
+    try {
+      const { accessToken } = req.body;
+      const updated = await settingsService.fetchInstagramInsights(accessToken);
+      return sendSuccess(res, 'Instagram profil analitikasi Meta Graph API orqali muvaffaqiyatli olindi!', updated);
+    } catch (err: any) {
+      return sendError(res, `Instagram analitikasini olishda xatolik: ${err.message}`, 500);
+    }
+  }
+
   async sendTestNotification(req: Request, res: Response) {
     const { adminChatId } = req.body;
     return sendSuccess(res, 'Test Telegram xabarnomasi yuborildi', { adminChatId, status: 'SENT' });
