@@ -1,5 +1,6 @@
 import { logger } from '../config/logger';
 import { supabase } from '../config/supabase';
+const { Bot } = require('node-telegram-bot-api');
 
 export interface BotUser {
   chatId: number;
@@ -10,69 +11,38 @@ export interface BotUser {
 }
 
 export class TelegramBotService {
+  private static botInstance: any = null;
   private static botToken: string = '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA';
   private static registeredUsers: Map<number, BotUser> = new Map();
-  private static isPolling: boolean = false;
 
   static async initBot(token: string = '8886522625:AAEMOf4SKXVYhdZwML4qfzYQwFQz02USzFA', webAppUrl: string = 'http://localhost:5000') {
     if (!token) return;
 
     try {
+      if (this.botInstance && typeof this.botInstance.stop === 'function') {
+        try {
+          this.botInstance.stop();
+        } catch (e) {}
+      }
+
       this.botToken = token;
-      logger.info(`🚀 MECO Power Telegram Bot initialized with Token (${token.slice(0, 10)}...)`);
+      this.botInstance = new Bot(token);
+
+      logger.info(`🚀 MECO Power Telegram Bot listener starting for Token (${token.slice(0, 10)}...)...`);
 
       // Load registered users from Supabase / cache
       await this.loadRegisteredUsers();
 
-      // Start custom long polling loop
-      if (!this.isPolling) {
-        this.isPolling = true;
-        this.startLongPolling(webAppUrl);
-      }
-
-    } catch (err: any) {
-      logger.error(`Telegram Bot Startup Error: ${err.message}`);
-    }
-  }
-
-  // Robust Telegram Polling Loop that handles updates reliably
-  private static async startLongPolling(webAppUrl: string) {
-    let offset = 0;
-    logger.info('🚀 Telegram Bot custom polling listener active and listening for /start...');
-
-    while (this.isPolling) {
-      try {
-        const url = `https://api.telegram.org/bot${this.botToken}/getUpdates?offset=${offset}&timeout=20`;
-        const res = await fetch(url);
-        const data = await res.json();
-
-        if (data.ok && Array.isArray(data.result)) {
-          for (const update of data.result) {
-            offset = update.update_id + 1;
-            await this.handleTelegramUpdate(update, webAppUrl);
-          }
-        }
-      } catch (err: any) {
-        await new Promise(r => setTimeout(r, 3000));
-      }
-    }
-  }
-
-  // Handle incoming Telegram message updates
-  private static async handleTelegramUpdate(update: any, webAppUrl: string) {
-    if (update.message && update.message.text) {
-      const msg = update.message;
-      const chatId = msg.chat.id;
-      const text = msg.text.trim();
-
-      if (text.startsWith('/start')) {
-        const userName = msg.from?.first_name || 'Hurmatli Mijoz';
+      // Handle /start command
+      this.botInstance.command('start', async (ctx: any) => {
+        const chatId = ctx.chat?.id || ctx.from?.id;
+        const userName = ctx.from?.first_name || 'Hurmatli Mijoz';
 
         const user: BotUser = {
           chatId,
-          firstName: msg.from?.first_name,
-          lastName: msg.from?.last_name,
-          username: msg.from?.username,
+          firstName: ctx.from?.first_name,
+          lastName: ctx.from?.last_name,
+          username: ctx.from?.username,
           registeredAt: new Date().toISOString(),
         };
 
@@ -97,7 +67,7 @@ export class TelegramBotService {
           [
             isHttps 
               ? { text: '🚀 MECO Power Uzbekistan Mini App', web_app: { url: webAppUrl } }
-              : { text: '🌐 MECO Uzbekistan Portalini Ochish', url: webAppUrl }
+              : { text: '🌐 MECO Uzbekistan Portalini Ochish', url: 'https://www.mecopower.com' }
           ],
           [
             { text: '📦 Mahsulotlar Narxlari Katologi', callback_data: 'ACTION_CATALOG' },
@@ -105,62 +75,69 @@ export class TelegramBotService {
           ]
         ];
 
-        await this.sendTelegramApiMessage(chatId, welcomeText, inlineKeyboard);
-      }
-    } else if (update.callback_query) {
-      const query = update.callback_query;
-      const chatId = query.message.chat.id;
-
-      if (query.data === 'ACTION_CATALOG') {
-        const catalogMsg = 
-          `📦 *MECO POWER UZBEKISTAN BARCHA MAHSULOTLARI VA NARXLARI:*\n\n` +
-          `1. 🔋 *Meco 300Wh Solar Power Bank* — 3,200,000 UZS\n` +
-          `2. ⚡ *Meco 1kWh Solar Generator* — 8,900,000 UZS\n` +
-          `3. ⚡ *Meco 1kWh Pro Solar Generator* — 10,500,000 UZS\n` +
-          `4. ⚡ *Meco 1.8kWh Solar Generator* — 14,200,000 UZS\n` +
-          `5. ⚡ *Meco 2kWh Solar Generator* — 16,800,000 UZS\n` +
-          `6. ⚡ *Meco 3.6kWh Solar Generator* — 21,000,000 UZS\n` +
-          `7. ⚡ *Meco 3.6kWh Pro Solar Generator* — 24,500,000 UZS\n` +
-          `8. ⚡ *Meco 5.4kWh Heavy Duty Generator* — 38,000,000 UZS\n` +
-          `9. ☀️ *Meco F200W Solar Panel* — 2,100,000 UZS\n` +
-          `10. ☀️ *Meco 580W Solar Panel* — 2,800,000 UZS\n` +
-          `11. ☀️ *Meco 620W Solar Panel* — 3,100,000 UZS\n\n` +
-          `🇺🇿 MECO Uzbekistan portali: ${webAppUrl}`;
-
-        await this.sendTelegramApiMessage(chatId, catalogMsg);
-      } else if (query.data === 'ACTION_CONTACT') {
-        const contactMsg = 
-          `🏢 *MECO POWER UZBEKISTAN BOSH SHOURUMI:*\n\n` +
-          `📍 Manzil: Toshkent markaziy shourum, Chilonzor tumani, Bunyodkor shox ko'chasi 42, Toshkent, O'zbekiston\n` +
-          `📞 Telefon: +998 71 200 00 00\n` +
-          `✉️ Email: uzbekistan@mecopower.com\n` +
-          `🇺🇿 Portal: ${webAppUrl}`;
-
-        await this.sendTelegramApiMessage(chatId, contactMsg);
-      }
-    }
-  }
-
-  // Send message via Telegram Bot HTTP REST API
-  private static async sendTelegramApiMessage(chatId: number, text: string, inlineKeyboard?: any[]) {
-    try {
-      const payload: any = {
-        chat_id: chatId,
-        text,
-        parse_mode: 'Markdown',
-      };
-
-      if (inlineKeyboard) {
-        payload.reply_markup = { inline_keyboard: inlineKeyboard };
-      }
-
-      await fetch(`https://api.telegram.org/bot${this.botToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        try {
+          await ctx.reply(welcomeText, {
+            parse_mode: 'Markdown',
+            reply_markup: { inline_keyboard: inlineKeyboard }
+          });
+        } catch (sendErr: any) {
+          logger.warn(`Reply error fallback: ${sendErr.message}`);
+          await ctx.reply(`Assalomu aleykum, ${userName}!\nMECO Power Uzbekistan rasmiy botiga xush kelibsiz!\nRasmiy sayt: https://www.mecopower.com`);
+        }
       });
+
+      // Handle Callback queries
+      this.botInstance.on('callback_query', async (ctx: any) => {
+        const queryData = ctx.callbackQuery?.data || ctx.data;
+
+        if (queryData === 'ACTION_CATALOG') {
+          const catalogMsg = 
+            `📦 *MECO POWER UZBEKISTAN BARCHA MAHSULOTLARI VA NARXLARI:*\n\n` +
+            `1. 🔋 *Meco 300Wh Solar Power Bank* — 3,200,000 UZS\n` +
+            `2. ⚡ *Meco 1kWh Solar Generator* — 8,900,000 UZS\n` +
+            `3. ⚡ *Meco 1kWh Pro Solar Generator* — 10,500,000 UZS\n` +
+            `4. ⚡ *Meco 1.8kWh Solar Generator* — 14,200,000 UZS\n` +
+            `5. ⚡ *Meco 2kWh Solar Generator* — 16,800,000 UZS\n` +
+            `6. ⚡ *Meco 3.6kWh Solar Generator* — 21,000,000 UZS\n` +
+            `7. ⚡ *Meco 3.6kWh Pro Solar Generator* — 24,500,000 UZS\n` +
+            `8. ⚡ *Meco 5.4kWh Heavy Duty Generator* — 38,000,000 UZS\n` +
+            `9. ☀️ *Meco F200W Solar Panel* — 2,100,000 UZS\n` +
+            `10. ☀️ *Meco 580W Solar Panel* — 2,800,000 UZS\n` +
+            `11. ☀️ *Meco 620W Solar Panel* — 3,100,000 UZS\n\n` +
+            `🌐 Rasmiy portal: www.mecopower.com`;
+
+          try {
+            await ctx.reply(catalogMsg, { parse_mode: 'Markdown' });
+          } catch (e) {
+            await ctx.reply(catalogMsg);
+          }
+        } else if (queryData === 'ACTION_CONTACT') {
+          const contactMsg = 
+            `🏢 *MECO POWER UZBEKISTAN BOSH SHOURUMI:*\n\n` +
+            `📍 Manzil: Toshkent markaziy shourum, Chilonzor tumani, Bunyodkor shox ko'chasi 42, Toshkent, O'zbekiston\n` +
+            `📞 Telefon: +998 71 200 00 00\n` +
+            `✉️ Email: uzbekistan@mecopower.com\n` +
+            `🌐 Sayt: www.mecopower.com`;
+
+          try {
+            await ctx.reply(contactMsg, { parse_mode: 'Markdown' });
+          } catch (e) {
+            await ctx.reply(contactMsg);
+          }
+        }
+      });
+
+      // Catch any unhandled errors
+      this.botInstance.catch((err: any) => {
+        logger.warn(`Telegram Bot Handler Note: ${err.message || err}`);
+      });
+
+      // Start Polling
+      this.botInstance.startPolling();
+      logger.info('🚀 MECO Power Telegram Bot polling listener started successfully!');
+
     } catch (err: any) {
-      logger.error(`Send message error: ${err.message}`);
+      logger.error(`Telegram Bot Startup Error: ${err.message}`);
     }
   }
 
@@ -218,7 +195,15 @@ export class TelegramBotService {
             })
           });
         } else {
-          await this.sendTelegramApiMessage(user.chatId, messageText);
+          await fetch(`https://api.telegram.org/bot${this.botToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: user.chatId,
+              text: messageText,
+              parse_mode: 'Markdown'
+            })
+          });
         }
         successCount++;
       } catch (err) {
