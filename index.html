@@ -1611,6 +1611,11 @@
         padding-bottom: 10px;
       }
 
+    /* HIDE MAIN SITE MOBILE BOTTOM NAV WHEN ADMIN MODAL IS ACTIVE */
+    body.admin-mode-active .mobile-bottom-nav-wrapper {
+      display: none !important;
+    }
+
     /* MOBILE DEDICATED ADMIN SUB-NAV DOCK STYLING */
     .admin-mobile-bottom-dock {
       display: none;
@@ -3165,6 +3170,7 @@
 
     function closeAdminModal() {
       document.getElementById('adminModal').classList.remove('active');
+      document.body.classList.remove('admin-mode-active');
     }
 
     // Handle Admin Login (123 / 123)
@@ -3185,6 +3191,7 @@
         if (data.success) {
           closeLoginModal();
           document.getElementById('adminModal').classList.add('active');
+          document.body.classList.add('admin-mode-active');
           loadDashboardStats();
           loadTelegramBotSettings();
           renderAdminSliderEditor();
