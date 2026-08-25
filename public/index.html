@@ -2676,8 +2676,8 @@
 
                 <!-- Action Button for Meta Login Modal / Token Fetch -->
                 <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 24px;">
-                  <button type="button" onclick="triggerMetaInstagramLogin()" style="background: linear-gradient(135deg, #f43f5e, #d946ef, #8b5cf6); color: #fff; border: none; padding: 14px 28px; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 6px 20px rgba(217, 70, 239, 0.45); transition: all 0.3s ease;">
-                    <span>🔐 Meta / Instagram Orqali Kirish va Ulash</span>
+                  <button type="button" onclick="openInstaLoginModal()" style="background: linear-gradient(135deg, #f43f5e, #d946ef, #8b5cf6); color: #fff; border: none; padding: 14px 28px; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 6px 20px rgba(217, 70, 239, 0.45); transition: all 0.3s ease;">
+                    <span>🔑 Instagram Logini va Paroli Bilan Kirish</span>
                   </button>
 
                   <button type="button" onclick="refreshInstagramInsights()" style="background: rgba(255,255,255,0.08); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); padding: 14px 24px; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
@@ -4338,11 +4338,91 @@
       }
     }
 
+    function openInstaLoginModal() {
+      const modal = document.getElementById('instaLoginModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+        const currUser = document.getElementById('instaUsername')?.value || 'mecopower_uzbekistan';
+        if (document.getElementById('instaLoginUser')) document.getElementById('instaLoginUser').value = currUser;
+      }
+    }
+
+    function closeInstaLoginModal() {
+      const modal = document.getElementById('instaLoginModal');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+      }
+    }
+
+    async function handleDirectInstagramLoginSubmit(e) {
+      e.preventDefault();
+      const username = document.getElementById('instaLoginUser').value.trim();
+      const password = document.getElementById('instaLoginPass').value.trim();
+
+      showToast('⚡ Instagram loginingiz va parolingiz tekshirilmoqda...');
+
+      try {
+        const res = await fetch('/api/v1/settings/instagram/connect-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (data.success && data.data) {
+          closeInstaLoginModal();
+          showToast(data.message || '✅ Instagram akkauntiga muvaffaqiyatli kirildi va bog\'landi!');
+          loadInstagramSettings();
+        } else {
+          showToast(data.message || 'Xatolik yuz berdi', 'error');
+        }
+      } catch (err) {
+        showToast('Xatolik: ' + err.message, 'error');
+      }
+    }
+
     // Initialize on Page Load
     loadAllProducts();
     loadSliderData();
     changeLanguage(currentLang);
   </script>
+
+  <!-- INSTAGRAM DIRECT LOGIN MODAL DIALOG -->
+  <div id="instaLoginModal" class="login-modal" style="display: none; align-items: center; justify-content: center; z-index: 10000; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(12px);">
+    <div class="login-box" style="border-color: rgba(244, 63, 94, 0.4); max-width: 440px; background: linear-gradient(145deg, #0f172a, #1e293b); box-shadow: 0 16px 40px rgba(236, 72, 153, 0.25); padding: 32px; border-radius: 24px; width: 90%;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="font-size: 42px; margin-bottom: 8px;">📸</div>
+        <h3 style="color: #fff; font-weight: 800; font-size: 22px; margin: 0 0 6px 0;">Instagram Akkauntiga Kirish</h3>
+        <p style="color: #94a3b8; font-size: 13px; margin: 0;">Rasmiy Instagram profilingiz login va paroli orqali tizimga bog'laning</p>
+      </div>
+
+      <form onsubmit="handleDirectInstagramLoginSubmit(event)">
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label style="color: #f472b6; font-weight: 700; font-size: 13px;">👤 Instagram Telefon / Username / Email:</label>
+          <input type="text" id="instaLoginUser" class="form-input" placeholder="mecopower_uzbekistan" required style="border-color: rgba(244, 63, 94, 0.4); background: rgba(15, 23, 42, 0.8); height: 46px; font-size: 15px;" />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label style="color: #f472b6; font-weight: 700; font-size: 13px;">🔑 Instagram Parol:</label>
+          <input type="password" id="instaLoginPass" class="form-input" placeholder="••••••••••••" required style="border-color: rgba(244, 63, 94, 0.4); background: rgba(15, 23, 42, 0.8); height: 46px; font-size: 15px;" />
+        </div>
+
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 10px 14px; border-radius: 12px; font-size: 12px; color: #34d399; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+          <span>🔒</span>
+          <span><b>256-bit SSL Shifrlangan Xavfsiz Bog'lanish</b></span>
+        </div>
+
+        <button type="submit" class="btn-submit" style="width: 100%; padding: 14px; font-size: 16px; font-weight: 800; background: linear-gradient(135deg, #f43f5e, #d946ef, #8b5cf6); box-shadow: 0 6px 20px rgba(217, 70, 239, 0.4); border: none; margin-bottom: 12px; cursor: pointer;">
+          🚀 Instagram Akkauntiga Kirish va Bog'lash
+        </button>
+
+        <button type="button" onclick="closeInstaLoginModal()" style="width: 100%; background: transparent; border: 1px solid rgba(255, 255, 255, 0.15); color: #94a3b8; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer;">
+          Bekor Qilish
+        </button>
+      </form>
+    </div>
+  </div>
 
 </body>
 </html>

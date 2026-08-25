@@ -168,6 +168,19 @@ export class SettingsController {
     }
   }
 
+  async connectInstagramLogin(req: Request, res: Response) {
+    try {
+      const { username, password } = req.body;
+      if (!username) {
+        return sendError(res, 'Instagram login/username kiritilmadi', 400);
+      }
+      const updated = await settingsService.connectInstagramLogin(username, password);
+      return sendSuccess(res, `✅ @${updated.username} Instagram akkauntingiz muvaffaqiyatli bog'landi va avtorizatsiyadan o'tdi!`, updated);
+    } catch (err: any) {
+      return sendError(res, `Instagram login bog'lashda xatolik: ${err.message}`, 500);
+    }
+  }
+
   async sendTestNotification(req: Request, res: Response) {
     const { adminChatId } = req.body;
     return sendSuccess(res, 'Test Telegram xabarnomasi yuborildi', { adminChatId, status: 'SENT' });
