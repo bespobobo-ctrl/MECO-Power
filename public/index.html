@@ -2498,6 +2498,45 @@
                 </form>
               </div>
 
+              <!-- Instagram Integration Box -->
+              <div class="bot-box" style="grid-column: span 2; border-color: rgba(236, 72, 153, 0.4); background: rgba(236, 72, 153, 0.04);">
+                <h4 style="color: #f472b6; display: flex; align-items: center; gap: 8px;">
+                  <span>📸 Instagram Rasmiy Akkaunti Integratsiyasi</span>
+                  <span id="instaStatusBadge" style="background: #10b981; color: #fff; font-size: 11px; font-weight: 800; padding: 2px 10px; border-radius: 12px;">● ULANDI</span>
+                </h4>
+                <p style="color: #94a3b8; font-size: 13px; margin-bottom: 18px;">MECO Power Uzbekistan rasmiy Instagram sahifangizni ulashingiz bilan mijozlar to'g'ridan-to'g'ri profilingiz va DM sahifangizga yo'naltiriladi:</p>
+
+                <form onsubmit="saveInstagramSettings(event)">
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <div class="form-group">
+                      <label style="color: #cbd5e1; font-weight: 600;">Instagram Akkaunt Usernami:</label>
+                      <input type="text" id="instaUsername" class="form-input" placeholder="mecopower_uzbekistan" value="mecopower_uzbekistan" required />
+                    </div>
+
+                    <div class="form-group">
+                      <label style="color: #cbd5e1; font-weight: 600;">Instagram Profil Havolasi (URL):</label>
+                      <input type="text" id="instaProfileUrl" class="form-input" placeholder="https://www.instagram.com/mecopower_uzbekistan" value="https://www.instagram.com/mecopower_uzbekistan" required />
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
+                      <label style="color: #cbd5e1; font-weight: 600;">Instagram DM (Direct Message) Aloqa Havolasi:</label>
+                      <input type="text" id="instaDmUrl" class="form-input" placeholder="https://ig.me/m/mecopower_uzbekistan" value="https://ig.me/m/mecopower_uzbekistan" required />
+                    </div>
+                  </div>
+
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; flex-wrap: wrap; gap: 12px;">
+                    <label style="display: flex; align-items: center; gap: 8px; color: #fff; cursor: pointer; font-size: 14px;">
+                      <input type="checkbox" id="instaShowWebsite" checked style="width: 18px; height: 18px; accent-color: #ec4899;" />
+                      <span>Sayt footer va aloqa bo'limida Instagram tugmasini ko'rsatish</span>
+                    </label>
+
+                    <button type="submit" class="btn-submit" style="width: auto; padding: 12px 36px; font-size: 15px; background: linear-gradient(135deg, #ec4899, #8b5cf6); margin: 0;">
+                      📸 Instagram Akkauntini Ulash va Saqlash
+                    </button>
+                  </div>
+                </form>
+              </div>
+
               <!-- Broadcast Messaging Box -->
               <div class="bot-box" style="grid-column: span 2;">
                 <h4>📢 Admin Ommaviy Xabarnoma Yuborish (Daily Broadcast)</h4>
@@ -3875,6 +3914,61 @@
         }
       } catch (err) {
         console.error('Telegram config error:', err);
+      }
+      loadInstagramSettings();
+    }
+
+    // Load Instagram Account Config
+    async function loadInstagramSettings() {
+      try {
+        const res = await fetch('/api/v1/settings/instagram');
+        const data = await res.json();
+        if (data.success && data.data) {
+          const config = data.data;
+          if (document.getElementById('instaUsername')) document.getElementById('instaUsername').value = config.username || 'mecopower_uzbekistan';
+          if (document.getElementById('instaProfileUrl')) document.getElementById('instaProfileUrl').value = config.profileUrl || 'https://www.instagram.com/mecopower_uzbekistan';
+          if (document.getElementById('instaDmUrl')) document.getElementById('instaDmUrl').value = config.dmUrl || 'https://ig.me/m/mecopower_uzbekistan';
+          if (document.getElementById('instaShowWebsite')) document.getElementById('instaShowWebsite').checked = config.showOnWebsite !== false;
+
+          const badge = document.getElementById('instaStatusBadge');
+          if (badge) {
+            badge.innerText = config.status === 'CONNECTED' ? '● ULANDI' : '● ULANGAN';
+          }
+        }
+      } catch (err) {
+        console.error('Instagram config error:', err);
+      }
+    }
+
+    // Save Instagram Settings
+    async function saveInstagramSettings(e) {
+      e.preventDefault();
+      const username = document.getElementById('instaUsername').value.trim();
+      const profileUrl = document.getElementById('instaProfileUrl').value.trim();
+      const dmUrl = document.getElementById('instaDmUrl').value.trim();
+      const showOnWebsite = document.getElementById('instaShowWebsite').checked;
+
+      try {
+        const res = await fetch('/api/v1/settings/instagram', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username,
+            profileUrl,
+            dmUrl,
+            showOnWebsite
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          showToast('📸 Instagram akkaunti muvaffaqiyatli ulandi va saqlandi!');
+          loadInstagramSettings();
+        } else {
+          showToast(data.message || 'Xatolik yuz berdi', 'error');
+        }
+      } catch (err) {
+        showToast(`Saqlashda xatolik: ${err.message}`, 'error');
       }
     }
 

@@ -1,9 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { logger } from '../../config/logger';
+import { supabase } from '../../config/supabase';
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const SLIDES_FILE = path.join(DATA_DIR, 'slides.json');
+const INSTAGRAM_FILE = path.join(DATA_DIR, 'instagram_config.json');
 
 export interface HeroSlide {
   id: number;
@@ -30,8 +32,27 @@ export interface TelegramBotConfig {
   };
 }
 
+export interface InstagramConfig {
+  username: string;
+  profileUrl: string;
+  dmUrl: string;
+  accessToken?: string;
+  showOnWebsite: boolean;
+  status: 'CONNECTED' | 'DISCONNECTED';
+  updatedAt?: string;
+}
+
 export class SettingsService {
   private static isInitialized = false;
+
+  private static instagramSettings: InstagramConfig = {
+    username: 'mecopower_uzbekistan',
+    profileUrl: 'https://www.instagram.com/mecopower_uzbekistan',
+    dmUrl: 'https://ig.me/m/mecopower_uzbekistan',
+    accessToken: '',
+    showOnWebsite: true,
+    status: 'CONNECTED',
+  };
 
   private static botSettings: TelegramBotConfig = {
     miniAppBot: {
@@ -78,9 +99,20 @@ export class SettingsService {
 
   private static slides: HeroSlide[] = [];
 
-  private static initPersistence() {
-    if (this.isInitialized && this.slides.length > 0) return;
+  private static async syncFromCloudStorage() {
+    // 1. Instagram settings sync
+    try {
+      const { data: downData } = await supabase.storage.from('meco-assets').download('instagram_config.json');
+      if (downData) {
+        const text = await downData.text();
+        const parsed = JSON.parse(text);
+        if (parsed && typeof parsed === 'object') {
+          this.instagramSettings = { ...this.instagramSettings, ...parsed };
+        }
+      }
+    } catch (e) {}
 
+    // 2. Slides sync
     try {
       if (!fs.existsSync(DATA_DIR)) {
         fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -100,8 +132,25 @@ export class SettingsService {
     }
 
     this.slides = [...this.defaultSlides];
-    this.saveToDisk();
     this.isInitialized = true;
+  }
+
+  private static async saveInstagramToDisk() {
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+      fs.writeFileSync(INSTAGRAM_FILE, JSON.stringify(this.instagramSettings, null, 2), 'utf-8');
+
+      const buffer = Buffer.from(JSON.stringify(this.instagramSettings, null, 2));
+      await supabase.storage.from('meco-assets').upload('instagram_config.json', buffer, {
+        contentType: 'application/json',
+        upsert: true
+      });
+      logger.info(`📸 Instagram account config updated and synced to Supabase Cloud!`);
+    } catch (err: any) {
+      logger.warn(`Instagram save note: ${err.message}`);
+    }
   }
 
   private static saveToDisk() {
@@ -137,13 +186,32 @@ export class SettingsService {
     return SettingsService.botSettings;
   }
 
+  async getInstagramSettings(): Promise<InstagramConfig> {
+    await SettingsService.syncFromCloudStorage();
+    return SettingsService.instagramSettings;
+  }
+
+  async saveInstagramSettings(newSettings: Partial<InstagramConfig>): Promise<InstagramConfig> {
+    await SettingsService.syncFromCloudStorage();
+
+    SettingsService.instagramSettings = {
+      ...SettingsService.instagramSettings,
+      ...newSettings,
+      status: 'CONNECTED',
+      updatedAt: new Date().toISOString()
+    };
+
+    await SettingsService.saveInstagramToDisk();
+    return SettingsService.instagramSettings;
+  }
+
   async getSliders() {
-    SettingsService.initPersistence();
+    await SettingsService.syncFromCloudStorage();
     return SettingsService.slides;
   }
 
   async updateSliders(newSlides: HeroSlide[]) {
-    SettingsService.initPersistence();
+    await SettingsService.syncFromCloudStorage();
     SettingsService.slides = newSlides;
     SettingsService.saveToDisk();
     return SettingsService.slides;

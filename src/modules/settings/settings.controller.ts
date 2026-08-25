@@ -133,6 +133,31 @@ export class SettingsController {
     }
   }
 
+  async getInstagram(req: Request, res: Response) {
+    try {
+      const settings = await settingsService.getInstagramSettings();
+      return sendSuccess(res, 'Instagram settings retrieved', settings);
+    } catch (err: any) {
+      return sendError(res, `Instagram settings error: ${err.message}`, 500);
+    }
+  }
+
+  async saveInstagram(req: Request, res: Response) {
+    try {
+      const { username, profileUrl, dmUrl, accessToken, showOnWebsite } = req.body;
+      const updated = await settingsService.saveInstagramSettings({
+        username,
+        profileUrl,
+        dmUrl,
+        accessToken,
+        showOnWebsite: showOnWebsite !== undefined ? Boolean(showOnWebsite) : true
+      });
+      return sendSuccess(res, 'Instagram akkaunt sozlamalari muvaffaqiyatli ulandi va saqlandi!', updated);
+    } catch (err: any) {
+      return sendError(res, `Instagram saqlashda xatolik: ${err.message}`, 500);
+    }
+  }
+
   async sendTestNotification(req: Request, res: Response) {
     const { adminChatId } = req.body;
     return sendSuccess(res, 'Test Telegram xabarnomasi yuborildi', { adminChatId, status: 'SENT' });

@@ -13,4 +13,7 @@ router.get('/sliders', controller.getSliders);
 router.post('/sliders', controller.saveSliders);
 router.post('/upload-slide-image', controller.uploadSlideImage);
 
+router.get('/instagram', controller.getInstagram);
+router.post('/instagram', controller.saveInstagram);
+
 export default router;

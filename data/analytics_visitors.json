@@ -1,0 +1,9 @@
+[
+  {
+    "visitorId": "v-test-tg-123",
+    "source": "telegram_mini_app",
+    "timestamp": "2026-08-25T14:00:46.482Z",
+    "ip": "::1",
+    "ref": "telegram"
+  }
+]
