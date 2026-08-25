@@ -2264,7 +2264,6 @@
             <div class="sidebar-brand-icon">⚡</div>
             <div class="sidebar-brand-text">
               <h4>MECO Control</h4>
-              <p><span class="live-dot"></span> LIVE ONLINE</p>
             </div>
           </div>
 
@@ -2272,6 +2271,11 @@
             <li>
               <button class="sidebar-nav-btn active" onclick="switchTab('dashboardTab', this)">
                 <span>📊</span> Dashboard & Sotuvlar
+              </button>
+            </li>
+            <li>
+              <button class="sidebar-nav-btn" onclick="switchTab('ordersManageTab', this)">
+                <span>🛍️</span> Buyurtmalar Boshqaruvi
               </button>
             </li>
             <li>
@@ -2317,7 +2321,7 @@
         <div class="admin-top-header">
           <div>
             <h3>⚡ MECO Power Admin Dashboard</h3>
-            <p>Sotuvlar analitikasi, Mahsulotlar narxlari hamda Telegram Botlar boshqaruvi</p>
+            <p>Sotuvlar analitikasi, Buyurtmalar boshqaruvi hamda Telegram Botlar boshqaruvi</p>
           </div>
 
           <div class="header-badge-status">
@@ -2370,15 +2374,15 @@
               </div>
             </div>
 
-            <!-- REAL-TIME CUSTOMER ORDERS TABLE -->
-            <div class="traffic-table-wrapper" style="border-color: rgba(16, 185, 129, 0.35); background: #0b1320; margin-bottom: 24px;">
+            <!-- REAL-TIME CUSTOMER ORDERS SUMMARY TABLE IN DASHBOARD -->
+            <div class="traffic-table-wrapper" style="border-color: rgba(16, 185, 129, 0.35); background: #0b1320;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
                 <h4 style="margin: 0; color: #fff; display: flex; align-items: center; gap: 8px;">
-                  <span>🛍️ Xaridorlardan Kelib Tushgan Yangi Buyurtmalar</span>
-                  <span style="background: #10b981; color: #fff; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 10px;">LIVE REAL-TIME</span>
+                  <span>🛍️ Xaridorlardan Kelib Tushgan Oxirgi Buyurtmalar</span>
+                  <span style="background: #10b981; color: #fff; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 10px;">LIVE STREAM</span>
                 </h4>
-                <button onclick="loadAdminOrdersData()" style="background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">
-                  🔄 Yangilash
+                <button onclick="switchTab('ordersManageTab', document.getElementById('dockBtnOrders'))" style="background: #10b981; color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">
+                  🛍️ Barcha Buyurtmalarni Boshqarish →
                 </button>
               </div>
 
@@ -2387,44 +2391,7 @@
                   <tr>
                     <th>ID</th>
                     <th>Xaridor / Telefon</th>
-                    <th>Mahsulot</th>
-                    <th>Narxi</th>
-                    <th>Manzil / Mo'ljal & Geolokatsiya</th>
-                    <th>Holati</th>
-                    <th>Vaqti</th>
-                  </tr>
-                </thead>
-                <tbody id="adminOrderTableBody">
-                  <!-- Live Orders Loaded via JavaScript -->
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Recent Sales & Inventory Status Summary Table -->
-            <div class="traffic-table-wrapper">
-              <h4>📊 Mahsulotlar Bo'yicha Omborxona Zaxirasi Xulosasi</h4>
-              <table>
-                <thead>
-                  <tr>
                     <th>Mahsulot Nomi</th>
-                    <th>Kategoriya</th>
-                    <th>Sotilgan Soni</th>
-                    <th>Jami Tushum</th>
-                    <th>Ombor Holati</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><b>Meco 3.6kWh Pro Solar Generator</b></td>
-                    <td>Solar Generator</td>
-                    <td>12 dona</td>
-                    <td><b style="color: #10b981;">294,000,000 UZS</b></td>
-                    <td><span style="background: rgba(16,185,129,0.15); color:#10b981; padding:3px 10px; border-radius:12px; font-weight:700; font-size:12px;">● Omborxonada Mavjud</span></td>
-                  </tr>
-                  <tr>
-                    <td><b>Meco 1kWh Solar Generator</b></td>
-                    <td>Solar Generator</td>
-                    <td>18 dona</td>
                     <td><b style="color: #10b981;">160,200,000 UZS</b></td>
                     <td><span style="background: rgba(16,185,129,0.15); color:#10b981; padding:3px 10px; border-radius:12px; font-weight:700; font-size:12px;">● Omborxonada Mavjud</span></td>
                   </tr>
@@ -2570,6 +2537,41 @@
             </div>
           </div>
 
+          <!-- Tab 6: DEDICATED ORDERS MANAGEMENT SECTION -->
+          <div id="ordersManageTab" class="tab-content">
+            <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h4 style="font-size: 20px; color: #fff; font-weight: 800; margin: 0;">🛍️ Buyurtmalar Boshqaruvi va Holatlari</h4>
+                <p style="font-size: 13px; color: #94a3b8; margin: 4px 0 0 0;">Xaridorlardan tushgan barcha buyurtmalar ro'yxati. Holatlarini o'zgartiring yoki bajarilgach buyurtmani yoping!</p>
+              </div>
+
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="text" id="orderSearchInput" class="form-input" placeholder="🔍 Qidirish (Ism, Telefon, ID)..." style="width: 220px; padding: 8px 12px; font-size: 12px;" oninput="filterAdminOrdersList(this.value)" />
+                <button onclick="loadAdminOrdersData()" style="background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;">
+                  🔄 Yangilash
+                </button>
+              </div>
+            </div>
+
+            <div class="traffic-table-wrapper" style="border-color: rgba(16, 185, 129, 0.35); background: #0b1320;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID & Vaqti</th>
+                    <th>Xaridor / Telefon</th>
+                    <th>Mahsulot va Summasi</th>
+                    <th>Manzil / Mo'ljal & Geolokatsiya</th>
+                    <th>Buyurtma Holati</th>
+                    <th>Boshqaruv Amallari</th>
+                  </tr>
+                </thead>
+                <tbody id="adminOrderTableBody">
+                  <!-- Live Orders Loaded via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -2579,6 +2581,11 @@
         <button class="admin-dock-btn active" onclick="switchTab('dashboardTab', this)" id="dockBtnDashboard">
           <div class="dock-icon">📊</div>
           <span>Sotuvlar</span>
+        </button>
+
+        <button class="admin-dock-btn" onclick="switchTab('ordersManageTab', this)" id="dockBtnOrders">
+          <div class="dock-icon">🛍️</div>
+          <span>Buyurtmalar</span>
         </button>
 
         <button class="admin-dock-btn" onclick="switchTab('productsManageTab', this)" id="dockBtnProducts">
@@ -3292,51 +3299,173 @@
     }
 
     // LOAD & RENDER ADMIN REAL-TIME ORDERS TABLE
+    let rawAdminOrdersList = [];
+
     async function loadAdminOrdersData() {
       try {
         const res = await fetch('/api/v1/orders/all');
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
-          renderAdminOrdersTable(data.data);
+          rawAdminOrdersList = data.data;
+          renderAdminOrdersTable(rawAdminOrdersList);
         }
       } catch (err) {
         console.error('Fetch orders error:', err);
       }
     }
 
+    function filterAdminOrdersList(query) {
+      if (!query || !query.trim()) {
+        renderAdminOrdersTable(rawAdminOrdersList);
+        return;
+      }
+      const q = query.toLowerCase().trim();
+      const filtered = rawAdminOrdersList.filter(o => 
+        o.id.toLowerCase().includes(q) || 
+        o.customerName.toLowerCase().includes(q) || 
+        o.customerPhone.toLowerCase().includes(q) ||
+        o.productName.toLowerCase().includes(q)
+      );
+      renderAdminOrdersTable(filtered);
+    }
+
+    function getStatusColor(status) {
+      if (status === 'Yangi') return '#34d399';
+      if (status === 'Jarayonda' || status === 'Yetkazilmoqda') return '#facc15';
+      if (status === 'Bajarildi va Yopildi' || status === 'Qabul qilindi') return '#10b981';
+      if (status === 'Bekor qilindi') return '#ef4444';
+      return '#34d399';
+    }
+
+    function getStatusBg(status) {
+      if (status === 'Yangi') return 'rgba(16, 185, 129, 0.2)';
+      if (status === 'Jarayonda' || status === 'Yetkazilmoqda') return 'rgba(234, 179, 8, 0.2)';
+      if (status === 'Bajarildi va Yopildi' || status === 'Qabul qilindi') return 'rgba(16, 185, 129, 0.25)';
+      if (status === 'Bekor qilindi') return 'rgba(239, 68, 68, 0.2)';
+      return 'rgba(16, 185, 129, 0.2)';
+    }
+
     function renderAdminOrdersTable(ordersList) {
       const tbody = document.getElementById('adminOrderTableBody');
+      const dashTbody = document.getElementById('dashOrderTableBody');
       if (!tbody) return;
 
-      if (ordersList.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #94a3b8;">Hozircha yangi buyurtmalar yo\'q</td></tr>';
+      if (!ordersList || ordersList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 24px;">Hozircha kelib tushgan buyurtmalar yo\'q</td></tr>';
+        if (dashTbody) dashTbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 16px;">Hozircha buyurtmalar yo\'q</td></tr>';
         return;
       }
 
       let html = '';
+      let dashHtml = '';
+
       ordersList.forEach(o => {
         const mapButton = o.mapUrl
-          ? `<a href="${o.mapUrl}" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 700;">📍 Maps Link</a>`
-          : `<span style="color: #64748b;">Kiritilmagan</span>`;
+          ? `<a href="${o.mapUrl}" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px;">📍 Google Maps Link</a>`
+          : `<span style="color: #64748b; font-size: 11px;">(Koordinata yo'q)</span>`;
 
-        const statusBadge = o.status === 'Yangi'
-          ? `<span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 4px 10px; border-radius: 10px; font-weight: 800; font-size: 11px;">🟢 Yangi</span>`
-          : `<span style="background: rgba(234, 179, 8, 0.2); color: #facc15; padding: 4px 10px; border-radius: 10px; font-weight: 800; font-size: 11px;">⏳ ${o.status}</span>`;
+        const isClosed = o.status === 'Bajarildi va Yopildi';
+        const isCancelled = o.status === 'Bekor qilindi';
 
+        // Dedicated Tab Table Row with Action Select & Close Order Button!
         html += `
+          <tr style="${isClosed ? 'opacity: 0.75; background: rgba(15, 23, 42, 0.4);' : ''}">
+            <td>
+              <b style="color: #38bdf8; font-size: 13px;">#${o.id}</b><br>
+              <small style="color: #94a3b8; font-size: 11px;">${new Date(o.createdAt).toLocaleString('uz-UZ', { dateStyle: 'short', timeStyle: 'short' })}</small>
+            </td>
+            <td>
+              <b style="color: #fff; font-size: 14px;">${o.customerName}</b><br>
+              <a href="tel:${o.customerPhone}" style="color: #10b981; font-weight: 800; text-decoration: none; font-size: 12px;">📞 ${o.customerPhone}</a>
+            </td>
+            <td>
+              <div style="font-weight: 700; color: #f1f5f9;">${o.productName}</div>
+              <b style="color: #10b981; font-size: 13px;">${(o.totalAmountUzS || o.priceUzS).toLocaleString('uz-UZ')} UZS</b>
+            </td>
+            <td style="max-width: 200px;">
+              <div style="font-size: 12px; color: #cbd5e1;">${o.addressNotes || 'Mo\'ljal yozilmagan'}</div>
+              ${mapButton}
+            </td>
+            <td>
+              <select class="form-input" style="padding: 6px 10px; font-weight: 800; border-radius: 10px; font-size: 12px; background: #0f172a; width: 100%; color: ${getStatusColor(o.status)}; border-color: ${getStatusColor(o.status)};" onchange="updateOrderStatus('${o.id}', this.value)">
+                <option value="Yangi" ${o.status === 'Yangi' ? 'selected' : ''}>🟢 Yangi (New)</option>
+                <option value="Jarayonda" ${o.status === 'Jarayonda' ? 'selected' : ''}>⏳ Jarayonda (In Progress)</option>
+                <option value="Qabul qilindi" ${o.status === 'Qabul qilindi' ? 'selected' : ''}>✅ Qabul qilindi (Accepted)</option>
+                <option value="Yetkazilmoqda" ${o.status === 'Yetkazilmoqda' ? 'selected' : ''}>🚚 Yetkazilmoqda (Delivering)</option>
+                <option value="Bajarildi va Yopildi" ${isClosed ? 'selected' : ''}>🎉 Bajarildi va Yopildi (Closed)</option>
+                <option value="Bekor qilindi" ${isCancelled ? 'selected' : ''}>❌ Bekor qilindi (Cancelled)</option>
+              </select>
+            </td>
+            <td>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                ${!isClosed ? `
+                  <button onclick="closeCustomerOrder('${o.id}')" style="background: #10b981; color: #fff; border: none; padding: 6px 10px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                    ✅ Yopish
+                  </button>
+                ` : `
+                  <span style="color: #10b981; font-weight: 800; font-size: 11px; padding: 4px 8px; background: rgba(16,185,129,0.15); border-radius: 8px;">🎉 Yopilgan</span>
+                `}
+                <button onclick="deleteCustomerOrder('${o.id}')" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239,68,68,0.4); padding: 6px 8px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer;">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+
+        // Clean Summary Row in Dashboard Tab
+        dashHtml += `
           <tr>
             <td><b>#${o.id}</b></td>
             <td><b>${o.customerName}</b><br><small style="color: #38bdf8;">${o.customerPhone}</small></td>
             <td>${o.productName}</td>
             <td><b style="color: #10b981;">${(o.totalAmountUzS || o.priceUzS).toLocaleString('uz-UZ')} UZS</b></td>
-            <td>${o.addressNotes || '-'}<br>${mapButton}</td>
-            <td>${statusBadge}</td>
-            <td>${new Date(o.createdAt).toLocaleString('uz-UZ', { dateStyle: 'short', timeStyle: 'short' })}</td>
+            <td><span style="background: ${getStatusBg(o.status)}; color: ${getStatusColor(o.status)}; padding: 3px 8px; border-radius: 8px; font-weight: 800; font-size: 11px;">${o.status}</span></td>
           </tr>
         `;
       });
 
       tbody.innerHTML = html;
+      if (dashTbody) dashTbody.innerHTML = dashHtml;
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+      try {
+        const res = await fetch('/api/v1/orders/update-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: orderId, status: newStatus })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✅ Buyurtma #${orderId} holati: "${newStatus}" ga o'zgartirildi!`);
+          loadAdminOrdersData();
+        }
+      } catch (err) {
+        showToast('Xatolik: ' + err.message, 'error');
+      }
+    }
+
+    async function closeCustomerOrder(orderId) {
+      await updateOrderStatus(orderId, 'Bajarildi va Yopildi');
+    }
+
+    async function deleteCustomerOrder(orderId) {
+      if (!confirm(`Buyurtma #${orderId} ni haqiqatan ham o'chirmoqchimisiz?`)) return;
+      try {
+        const res = await fetch('/api/v1/orders/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: orderId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`🗑️ Buyurtma #${orderId} muvaffaqiyatli o'chirildi!`);
+          loadAdminOrdersData();
+        }
+      } catch (err) {
+        showToast('Xatolik: ' + err.message, 'error');
+      }
     }
 
     // Fetch and render Hero Slides

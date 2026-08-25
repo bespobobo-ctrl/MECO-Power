@@ -1,6 +1,13 @@
+import fs from 'fs';
+import path from 'path';
 import { logger } from '../../config/logger';
 import { supabase } from '../../config/supabase';
 import { TelegramBotService } from '../../services/telegramBot.service';
+
+const DATA_DIR = path.join(process.cwd(), 'data');
+const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
+
+export type OrderStatus = 'Yangi' | 'Jarayonda' | 'Qabul qilindi' | 'Yetkazilmoqda' | 'Bajarildi va Yopildi' | 'Bekor qilindi';
 
 export interface Order {
   id: string;
@@ -15,12 +22,14 @@ export interface Order {
   priceUzS: number;
   quantity: number;
   totalAmountUzS: number;
-  status: 'Yangi' | 'Jarayonda' | 'Yetkazildi' | 'Bekor qilindi';
+  status: OrderStatus;
   createdAt: string;
 }
 
 export class OrdersService {
-  private static orders: Order[] = [
+  private static isInitialized = false;
+
+  private static defaultOrders: Order[] = [
     {
       id: 'ORD-984201',
       customerName: 'Abdurahmon Karimov',
@@ -55,7 +64,48 @@ export class OrdersService {
     }
   ];
 
+  private static orders: Order[] = [];
+
+  private static initPersistence() {
+    if (this.isInitialized && this.orders.length > 0) return;
+
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+
+      if (fs.existsSync(ORDERS_FILE)) {
+        const fileContent = fs.readFileSync(ORDERS_FILE, 'utf-8');
+        const parsed = JSON.parse(fileContent);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.orders = parsed;
+          this.isInitialized = true;
+          return;
+        }
+      }
+    } catch (err: any) {
+      logger.warn(`Orders load note: ${err.message}`);
+    }
+
+    this.orders = [...this.defaultOrders];
+    this.saveToDisk();
+    this.isInitialized = true;
+  }
+
+  private static saveToDisk() {
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+      fs.writeFileSync(ORDERS_FILE, JSON.stringify(this.orders, null, 2), 'utf-8');
+    } catch (err: any) {
+      logger.warn(`Orders save note: ${err.message}`);
+    }
+  }
+
   async createOrder(orderData: Partial<Order>): Promise<Order> {
+    OrdersService.initPersistence();
+
     const lat = orderData.latitude ? Number(orderData.latitude) : null;
     const lng = orderData.longitude ? Number(orderData.longitude) : null;
     const generatedMapUrl = orderData.mapUrl || (lat && lng ? `https://maps.google.com/?q=${lat},${lng}` : '');
@@ -77,8 +127,8 @@ export class OrdersService {
       createdAt: new Date().toISOString()
     };
 
-    // Save to memory cache
     OrdersService.orders.unshift(newOrder);
+    OrdersService.saveToDisk();
 
     // Save to Supabase PostgreSQL database if configured
     try {
@@ -113,14 +163,28 @@ export class OrdersService {
   }
 
   async getAllOrders(): Promise<Order[]> {
+    OrdersService.initPersistence();
     return OrdersService.orders;
   }
 
-  async updateOrderStatus(id: string, status: Order['status']): Promise<Order | null> {
+  async updateOrderStatus(id: string, status: OrderStatus): Promise<Order | null> {
+    OrdersService.initPersistence();
     const order = OrdersService.orders.find(o => o.id === id);
     if (!order) return null;
     order.status = status;
+    OrdersService.saveToDisk();
     return order;
+  }
+
+  async deleteOrder(id: string): Promise<boolean> {
+    OrdersService.initPersistence();
+    const idx = OrdersService.orders.findIndex(o => o.id === id);
+    if (idx !== -1) {
+      OrdersService.orders.splice(idx, 1);
+      OrdersService.saveToDisk();
+      return true;
+    }
+    return false;
   }
 
   async createQuoteRequest(data: any) {

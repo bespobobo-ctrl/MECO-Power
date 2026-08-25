@@ -28,6 +28,15 @@ export class OrdersController {
     return sendSuccess(res, 'Buyurtma holati yangilandi', updated);
   }
 
+  async deleteOrder(req: Request, res: Response) {
+    const { id } = req.body;
+    const deleted = await ordersService.deleteOrder(id);
+    if (!deleted) {
+      return sendError(res, 'Buyurtma topilmadi', 404);
+    }
+    return sendSuccess(res, 'Buyurtma o\'chirildi', { id });
+  }
+
   async requestQuote(req: Request, res: Response) {
     const result = await ordersService.createQuoteRequest(req.body);
     return sendSuccess(res, 'Quote request submitted successfully to MECO Uzbekistan sales team', result, 201);
