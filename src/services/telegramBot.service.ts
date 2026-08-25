@@ -241,6 +241,26 @@ export class TelegramBotService {
     };
   }
 
+  // Send Instant Admin Notification for New Order
+  static async sendAdminOrderNotification(order: any) {
+    const locText = order.mapUrl 
+      ? `[📍 Google Maps Manzilni Ochish](${order.mapUrl})`
+      : `Koordinata kiritilmagan`;
+
+    const msg = 
+      `🚨 *YANGI BUYURTMA KELIB TUSHDI!*\n\n` +
+      `🆔 *Buyurtma ID:* \`${order.id}\`\n` +
+      `👤 *Mijoz Nomi:* *${order.customerName}*\n` +
+      `📞 *Telefon:* \`${order.customerPhone}\`\n` +
+      `📦 *Mahsulot:* *${order.productName}*\n` +
+      `💰 *Jami Summa:* *${(order.totalAmountUzS || order.priceUzS || 0).toLocaleString('uz-UZ')} UZS*\n` +
+      `🏠 *Qo'shimcha Manzil:* ${order.addressNotes || 'Ko\'rsatilmadi'}\n` +
+      `🗺️ *Geolokatsiya:* ${locText}\n\n` +
+      `⏰ *Vaqti:* ${new Date(order.createdAt || Date.now()).toLocaleString('uz-UZ')}`;
+
+    return this.sendBroadcastMessage(msg);
+  }
+
   static getRegisteredUsersCount(): number {
     return this.registeredUsers.size;
   }

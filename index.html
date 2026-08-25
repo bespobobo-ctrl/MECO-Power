@@ -2162,7 +2162,7 @@
 
           <div style="font-size: 26px; font-weight: 800; color: #10b981; margin-bottom: 18px;" id="detailPrice"></div>
 
-          <button onclick="requestProductQuote()" class="btn-submit" style="margin: 0; background: linear-gradient(135deg, #059669, #047857); padding: 14px; font-size: 16px; box-shadow: 0 4px 15px rgba(5,150,105,0.3);" data-i18n="btnSubmitQuote">🛒 Ushbu Mahsulotga Buyurtma Berish</button>
+          <button onclick="openCheckoutOrderModal()" class="btn-submit" style="margin: 0; background: linear-gradient(135deg, #059669, #047857); padding: 14px; font-size: 16px; box-shadow: 0 4px 15px rgba(5,150,105,0.3);" data-i18n="btnSubmitQuote">🛒 Ushbu Mahsulotga Buyurtma Berish</button>
         </div>
       </div>
 
@@ -2175,6 +2175,82 @@
           <!-- Dynamically Populated Appliance Grid -->
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- DEDICATED GEOLOCATION & CUSTOMER ORDER MODAL -->
+  <div class="modal-overlay" id="checkoutOrderModal">
+    <div class="product-detail-modal" style="max-width: 520px; border-color: rgba(16, 185, 129, 0.4);">
+      <button class="close-modal" onclick="closeCheckoutOrderModal()">✕</button>
+      
+      <div style="text-align: center; margin-bottom: 18px;">
+        <div style="font-size: 36px; margin-bottom: 4px;">🛒</div>
+        <h3 style="font-size: 20px; color: #fff; font-weight: 800; margin-bottom: 4px;">Mahsulotni Buyurtma Qilish</h3>
+        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 6px;" id="checkoutModalProdName">Meco Solar Generator</p>
+        <div style="display: inline-block; background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 800; font-size: 17px; padding: 4px 16px; border-radius: 12px;" id="checkoutModalProdPrice">8,900,000 UZS</div>
+      </div>
+
+      <form onsubmit="submitCustomerOrder(event)">
+        <!-- Customer Name -->
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="font-weight: 700; color: #f1f5f9; display: block; margin-bottom: 6px; font-size: 13px;">👤 Ismingiz va Familiyangiz:</label>
+          <input type="text" id="orderCustName" class="form-input" placeholder="Masalan: Jasurbek Rahimov" required />
+        </div>
+
+        <!-- Customer Phone Number -->
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="font-weight: 700; color: #f1f5f9; display: block; margin-bottom: 6px; font-size: 13px;">📞 Telefon Raqamingiz (Aloqa uchun):</label>
+          <input type="tel" id="orderCustPhone" class="form-input" value="+998 " placeholder="+998 90 123 45 67" required />
+        </div>
+
+        <!-- Additional Address / Notes -->
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="font-weight: 700; color: #f1f5f9; display: block; margin-bottom: 6px; font-size: 13px;">🏠 Qo'shimcha Manzil / Mo'ljal:</label>
+          <input type="text" id="orderCustAddress" class="form-input" placeholder="Masalan: Qo'qon Sh., Navoiy Mavzesi, 14-uy (Mo'ljal: Rayon kasxona)" required />
+        </div>
+
+        <!-- GEOLOCATION AUTO DETECTION BOX -->
+        <div class="form-group" style="background: #0b1320; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 14px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <label style="font-weight: 800; color: #34d399; margin: 0; font-size: 13px;">📍 Aniq Geolokatsiya (Auto-Location):</label>
+            <span id="geoStatusBadge" style="font-size: 11px; padding: 2px 8px; border-radius: 8px; background: rgba(148, 163, 184, 0.2); color: #cbd5e1;">Aniqlanmagan</span>
+          </div>
+
+          <button type="button" id="btnDetectGeo" onclick="detectCustomerLocation()" style="width: 100%; background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.15)); border: 1px solid rgba(16, 185, 129, 0.4); color: #fff; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            📡 Hozirgi Geolokatsiyamni Avto-Aniqlash
+          </button>
+
+          <div id="geoResultBox" style="display: none; margin-top: 10px; font-size: 12px; color: #94a3b8; background: #1e293b; padding: 8px 12px; border-radius: 8px;">
+            <div id="geoResultCoords"></div>
+            <a id="geoResultMapLink" href="#" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 700; display: inline-block; margin-top: 4px;">🗺️ Google Maps-da Ochish</a>
+          </div>
+
+          <input type="hidden" id="orderCustLat" value="" />
+          <input type="hidden" id="orderCustLng" value="" />
+          <input type="hidden" id="orderCustMapUrl" value="" />
+        </div>
+
+        <button type="submit" class="btn-submit" style="margin-top: 14px; background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);">
+          🚀 Buyurtmani Tasdiqlash
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ORDER SUCCESS CONFIRMATION MODAL -->
+  <div class="modal-overlay" id="orderSuccessModal">
+    <div class="product-detail-modal" style="max-width: 440px; text-align: center; border-color: #10b981;">
+      <div style="font-size: 54px; margin-bottom: 12px;">🎉</div>
+      <h3 style="font-size: 22px; color: #fff; font-weight: 800; margin-bottom: 8px;">Buyurtmangiz Qabul Qilindi!</h3>
+      <p style="font-size: 14px; color: #cbd5e1; line-height: 1.5; margin-bottom: 16px;">
+        Katta rahmat! Mutaxassislarimiz tez orada siz ko'rsatgan telefon raqamga bog'lanishadi va mahsulotni yetkazib berish vaqtini kelishib olishadi.
+      </p>
+      <div style="background: #0b1320; padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); font-size: 13px; color: #34d399; font-weight: 800; margin-bottom: 20px;" id="successOrderCode">
+        Buyurtma ID: #ORD-000000
+      </div>
+      <button class="btn-submit" onclick="closeOrderSuccessModal()">
+        ✅ Tushunarli, Rahmat!
+      </button>
     </div>
   </div>
 
@@ -2295,9 +2371,39 @@
               </div>
             </div>
 
-            <!-- Recent Sales & Inventory Status Table -->
+            <!-- REAL-TIME CUSTOMER ORDERS TABLE -->
+            <div class="traffic-table-wrapper" style="border-color: rgba(16, 185, 129, 0.35); background: #0b1320; margin-bottom: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+                <h4 style="margin: 0; color: #fff; display: flex; align-items: center; gap: 8px;">
+                  <span>🛍️ Xaridorlardan Kelib Tushgan Yangi Buyurtmalar</span>
+                  <span style="background: #10b981; color: #fff; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 10px;">LIVE REAL-TIME</span>
+                </h4>
+                <button onclick="loadAdminOrdersData()" style="background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">
+                  🔄 Yangilash
+                </button>
+              </div>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Xaridor / Telefon</th>
+                    <th>Mahsulot</th>
+                    <th>Narxi</th>
+                    <th>Manzil / Mo'ljal & Geolokatsiya</th>
+                    <th>Holati</th>
+                    <th>Vaqti</th>
+                  </tr>
+                </thead>
+                <tbody id="adminOrderTableBody">
+                  <!-- Live Orders Loaded via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Recent Sales & Inventory Status Summary Table -->
             <div class="traffic-table-wrapper">
-              <h4>📊 Mahsulotlar Bo'yicha Sotuvlar va Omborxona Zaxirasi Xulosasi</h4>
+              <h4>📊 Mahsulotlar Bo'yicha Omborxona Zaxirasi Xulosasi</h4>
               <table>
                 <thead>
                   <tr>
@@ -3032,23 +3138,206 @@
       document.getElementById('productDetailModal').classList.remove('active');
     }
 
-    async function requestProductQuote() {
+    // DEDICATED CUSTOMER ORDER CHECKOUT & GEOLOCATION LOGIC
+    let currentCustomerLat = null;
+    let currentCustomerLng = null;
+
+    function openCheckoutOrderModal(productId) {
+      if (productId) {
+        const prod = allProductsData.find(p => p.id === productId);
+        if (prod) selectedProductForDetail = prod;
+      }
       if (!selectedProductForDetail) return;
+
+      document.getElementById('checkoutModalProdName').innerText = selectedProductForDetail.name;
+      document.getElementById('checkoutModalProdPrice').innerText = `${selectedProductForDetail.priceUzS.toLocaleString('uz-UZ')} UZS`;
+
+      // Reset form & geo state
+      document.getElementById('orderCustName').value = '';
+      document.getElementById('orderCustPhone').value = '+998 ';
+      document.getElementById('orderCustAddress').value = '';
+      document.getElementById('orderCustLat').value = '';
+      document.getElementById('orderCustLng').value = '';
+      document.getElementById('orderCustMapUrl').value = '';
+
+      document.getElementById('geoStatusBadge').innerText = 'Aniqlanmagan';
+      document.getElementById('geoStatusBadge').style.background = 'rgba(148, 163, 184, 0.2)';
+      document.getElementById('geoStatusBadge').style.color = '#cbd5e1';
+
+      document.getElementById('btnDetectGeo').innerText = '📡 Hozirgi Geolokatsiyamni Avto-Aniqlash';
+      document.getElementById('btnDetectGeo').style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.15))';
+      document.getElementById('btnDetectGeo').style.borderColor = 'rgba(16, 185, 129, 0.4)';
+      document.getElementById('btnDetectGeo').disabled = false;
+
+      document.getElementById('geoResultBox').style.display = 'none';
+
+      document.getElementById('checkoutOrderModal').classList.add('active');
+
+      // Auto trigger geolocation attempt for seamless experience!
+      detectCustomerLocation();
+    }
+
+    function closeCheckoutOrderModal() {
+      document.getElementById('checkoutOrderModal').classList.remove('active');
+    }
+
+    function closeOrderSuccessModal() {
+      document.getElementById('orderSuccessModal').classList.remove('active');
+    }
+
+    function detectCustomerLocation() {
+      const btn = document.getElementById('btnDetectGeo');
+      const badge = document.getElementById('geoStatusBadge');
+      const box = document.getElementById('geoResultBox');
+      const coords = document.getElementById('geoResultCoords');
+      const mapLink = document.getElementById('geoResultMapLink');
+
+      if (!navigator.geolocation) {
+        badge.innerText = '⚠️ Brauzer geolokatsiyani qo\'llamaydi';
+        badge.style.color = '#ef4444';
+        return;
+      }
+
+      btn.innerText = '⏳ Joylashuv aniqlanmoqda...';
+      btn.disabled = true;
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          currentCustomerLat = position.coords.latitude;
+          currentCustomerLng = position.coords.longitude;
+          const mapUrl = `https://maps.google.com/?q=${currentCustomerLat},${currentCustomerLng}`;
+
+          document.getElementById('orderCustLat').value = currentCustomerLat;
+          document.getElementById('orderCustLng').value = currentCustomerLng;
+          document.getElementById('orderCustMapUrl').value = mapUrl;
+
+          btn.innerText = '✅ Joylashuv Muvaffaqiyatli Aniqlandi!';
+          btn.style.background = 'rgba(16, 185, 129, 0.2)';
+          btn.style.borderColor = '#10b981';
+
+          badge.innerText = '🟢 Aniqlangan';
+          badge.style.background = 'rgba(16, 185, 129, 0.25)';
+          badge.style.color = '#34d399';
+
+          box.style.display = 'block';
+          coords.innerHTML = `<b>📍 Koordinatalar:</b> ${currentCustomerLat.toFixed(5)}, ${currentCustomerLng.toFixed(5)}`;
+          mapLink.href = mapUrl;
+
+          showToast('📍 Hozirgi joylashuvingiz muvaffaqiyatli aniqlandi!');
+        },
+        (error) => {
+          btn.innerText = '📡 Qayta Aniqlashga Urinish';
+          btn.disabled = false;
+          badge.innerText = '⚠️ Ruxsat berilmadi';
+          badge.style.background = 'rgba(239, 68, 68, 0.2)';
+          badge.style.color = '#ef4444';
+          showToast('⚠️ Joylashuv ruxsati berilmadi. Iltimos manzilni matn shaklida kiriting.', 'error');
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
+    async function submitCustomerOrder(e) {
+      e.preventDefault();
+      if (!selectedProductForDetail) return;
+
+      const customerName = document.getElementById('orderCustName').value.trim();
+      const customerPhone = document.getElementById('orderCustPhone').value.trim();
+      const addressNotes = document.getElementById('orderCustAddress').value.trim();
+      const lat = document.getElementById('orderCustLat').value;
+      const lng = document.getElementById('orderCustLng').value;
+      const mapUrl = document.getElementById('orderCustMapUrl').value;
+
+      if (!customerName || !customerPhone || !addressNotes) {
+        showToast('Iltimos, barcha maydonlarni to\'ldiring', 'error');
+        return;
+      }
+
       try {
-        const res = await fetch('/api/v1/orders/quote', {
+        const res = await fetch('/api/v1/orders/create', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            customerName: 'Xaridor',
-            items: [{ productId: selectedProductForDetail.id, name: selectedProductForDetail.name }]
+            customerName,
+            customerPhone,
+            addressNotes,
+            latitude: lat || null,
+            longitude: lng || null,
+            mapUrl: mapUrl || null,
+            productId: selectedProductForDetail.id,
+            productName: selectedProductForDetail.name,
+            priceUzS: selectedProductForDetail.priceUzS,
+            quantity: 1
           })
         });
+
         const data = await res.json();
-        showToast(`✅ Buyurtma kodi: ${data.data.quoteId}. Tez orada bog'lanamiz!`);
-        closeProductDetailModal();
+
+        if (data.success && data.data) {
+          closeCheckoutOrderModal();
+          closeProductDetailModal();
+
+          document.getElementById('successOrderCode').innerText = `Buyurtma ID: #${data.data.id}`;
+          document.getElementById('orderSuccessModal').classList.add('active');
+
+          // Auto refresh admin orders table if open
+          loadAdminOrdersData();
+
+          showToast(`🚀 Buyurtma #${data.data.id} muvaffaqiyatli topshirildi!`);
+        } else {
+          showToast('Buyurtma saqlashda xatolik: ' + data.message, 'error');
+        }
       } catch (err) {
         showToast('Xatolik yuz berdi: ' + err.message, 'error');
       }
+    }
+
+    // LOAD & RENDER ADMIN REAL-TIME ORDERS TABLE
+    async function loadAdminOrdersData() {
+      try {
+        const res = await fetch('/api/v1/orders/all');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          renderAdminOrdersTable(data.data);
+        }
+      } catch (err) {
+        console.error('Fetch orders error:', err);
+      }
+    }
+
+    function renderAdminOrdersTable(ordersList) {
+      const tbody = document.getElementById('adminOrderTableBody');
+      if (!tbody) return;
+
+      if (ordersList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #94a3b8;">Hozircha yangi buyurtmalar yo\'q</td></tr>';
+        return;
+      }
+
+      let html = '';
+      ordersList.forEach(o => {
+        const mapButton = o.mapUrl
+          ? `<a href="${o.mapUrl}" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 700;">📍 Maps Link</a>`
+          : `<span style="color: #64748b;">Kiritilmagan</span>`;
+
+        const statusBadge = o.status === 'Yangi'
+          ? `<span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 4px 10px; border-radius: 10px; font-weight: 800; font-size: 11px;">🟢 Yangi</span>`
+          : `<span style="background: rgba(234, 179, 8, 0.2); color: #facc15; padding: 4px 10px; border-radius: 10px; font-weight: 800; font-size: 11px;">⏳ ${o.status}</span>`;
+
+        html += `
+          <tr>
+            <td><b>#${o.id}</b></td>
+            <td><b>${o.customerName}</b><br><small style="color: #38bdf8;">${o.customerPhone}</small></td>
+            <td>${o.productName}</td>
+            <td><b style="color: #10b981;">${(o.totalAmountUzS || o.priceUzS).toLocaleString('uz-UZ')} UZS</b></td>
+            <td>${o.addressNotes || '-'}<br>${mapButton}</td>
+            <td>${statusBadge}</td>
+            <td>${new Date(o.createdAt).toLocaleString('uz-UZ', { dateStyle: 'short', timeStyle: 'short' })}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
     }
 
     // Fetch and render Hero Slides
@@ -3297,6 +3586,7 @@
           document.getElementById('adminModal').classList.add('active');
           document.body.classList.add('admin-mode-active');
           loadDashboardStats();
+          loadAdminOrdersData();
           loadTelegramBotSettings();
           renderAdminSliderEditor();
           renderAdminProductsEditor();
