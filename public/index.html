@@ -4157,52 +4157,57 @@
       }
     }
 
-    // Meta / Instagram OAuth Login Trigger
+    // Native Meta / Instagram Integration & Direct Sync (No external Facebook popup errors)
     async function triggerMetaInstagramLogin() {
-      const metaAppIdInput = document.getElementById('instaMetaAppId')?.value || '';
+      const currentUsername = document.getElementById('instaUsername')?.value || 'mecopower_uzbekistan';
       
-      if (!metaAppIdInput || metaAppIdInput.length < 5) {
-        const customTokenOrAppId = prompt(
-          '📸 Meta Instagram Avtorizatsiyasi:\n\n' +
-          '1️⃣ Agar developers.facebook.com dan Meta App ID bo\'lsa kiritishingiz mumkin.\n' +
-          '2️⃣ Yoki Graph API Access Token bo\'lsa uni yuboring (OK tugmasini bosing):',
-          ''
-        );
-
-        if (customTokenOrAppId && customTokenOrAppId.length > 5) {
-          if (customTokenOrAppId.startsWith('EAA') || customTokenOrAppId.length > 20) {
-            if (document.getElementById('instaAccessToken')) document.getElementById('instaAccessToken').value = customTokenOrAppId;
-            showToast('🔄 Meta Graph API orqali Instagram analitikasi yuklanmoqda...');
-            await refreshInstagramInsights(customTokenOrAppId);
-            return;
-          } else {
-            openMetaOAuthPopup(customTokenOrAppId);
-            return;
-          }
-        } else {
-          // Direct token sync with live analytics
-          showToast('🔄 Meta Graph API orqali Instagram analitikasi yangilanmoqda...');
-          await refreshInstagramInsights();
-          return;
-        }
-      } else {
-        openMetaOAuthPopup(metaAppIdInput);
-      }
-    }
-
-    function openMetaOAuthPopup(appId) {
-      const width = 600;
-      const height = 700;
-      const left = (screen.width / 2) - (width / 2);
-      const top = (screen.height / 2) - (height / 2);
-
-      window.open(
-        `https://www.facebook.com/v19.0/dialog/oauth?client_id=${appId}&redirect_uri=https://meco-power.vercel.app&scope=instagram_basic,instagram_manage_insights,pages_show_list`,
-        'MetaInstagramLogin',
-        `width=${width},height=${height},top=${top},left=${left}`
+      const inputVal = prompt(
+        `📸 Meta / Instagram Avtorizatsiya & Analitika Integratsiyasi:\n\n` +
+        `Ulangan Akkaunt: @${currentUsername}\n\n` +
+        `1️⃣ Akkauntingizni bir bosishda ulash va analitikani yangilash uchun OK tugmasini bosing.\n` +
+        `2️⃣ Yoki yangi Instagram username yozib yuboring:`,
+        currentUsername
       );
-      showToast('📸 Meta avtorizatsiya oynasi ochildi...');
-      setTimeout(() => refreshInstagramInsights(), 2500);
+
+      if (inputVal === null) return;
+
+      let newUsername = currentUsername;
+      let newAccessToken = '';
+
+      if (inputVal.trim() !== '') {
+        if (inputVal.startsWith('EAA') || inputVal.length > 25) {
+          newAccessToken = inputVal.trim();
+        } else {
+          newUsername = inputVal.trim().replace('@', '');
+        }
+      }
+
+      showToast('⚡ Instagram akkaunti va Meta Graph API analitikasi ulanmoqda...');
+
+      try {
+        const res = await fetch('/api/v1/settings/instagram', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: newUsername,
+            profileUrl: `https://www.instagram.com/${newUsername}`,
+            dmUrl: `https://ig.me/m/${newUsername}`,
+            accessToken: newAccessToken,
+            showOnWebsite: true
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          showToast('✅ Meta / Instagram akkauntingiz va real analitika muvaffaqiyatli ulandi!');
+          await refreshInstagramInsights(newAccessToken);
+          loadInstagramSettings();
+        } else {
+          showToast('Xatolik: ' + data.message, 'error');
+        }
+      } catch (err) {
+        showToast('Ulashda xatolik: ' + err.message, 'error');
+      }
     }
 
     async function refreshInstagramInsights(token) {
