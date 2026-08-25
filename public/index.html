@@ -155,7 +155,8 @@
     .top-bar-right {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
+      flex-wrap: wrap;
     }
 
     .lang-switcher-group {
@@ -194,24 +195,68 @@
       box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4);
     }
 
-    .email-pill {
-      color: var(--accent-gold);
-      text-decoration: none;
-      font-weight: 600;
+    /* TELEGRAM, INSTAGRAM, AND PHONE CONTACT PILLS */
+    .social-contact-pills {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .social-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(245, 158, 11, 0.1);
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      padding: 5px 14px;
+      padding: 5px 13px;
       border-radius: 20px;
-      transition: all 0.2s;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
     }
 
-    .email-pill:hover {
-      background: rgba(245, 158, 11, 0.2);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+    .social-pill:hover {
+      transform: translateY(-2px);
+    }
+
+    .telegram-pill {
+      background: rgba(30, 162, 230, 0.15);
+      border: 1px solid rgba(30, 162, 230, 0.35);
+      color: #38bdf8;
+    }
+
+    .telegram-pill:hover {
+      background: rgba(30, 162, 230, 0.3);
+      border-color: #38bdf8;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+      color: #ffffff;
+    }
+
+    .instagram-pill {
+      background: rgba(225, 48, 108, 0.15);
+      border: 1px solid rgba(225, 48, 108, 0.35);
+      color: #f472b6;
+    }
+
+    .instagram-pill:hover {
+      background: linear-gradient(135deg, rgba(225, 48, 108, 0.35), rgba(253, 29, 29, 0.35));
+      border-color: #f472b6;
+      box-shadow: 0 4px 14px rgba(244, 114, 182, 0.3);
+      color: #ffffff;
+    }
+
+    .phone-pill {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+    }
+
+    .phone-pill:hover {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.35));
+      border-color: #34d399;
+      box-shadow: 0 4px 14px rgba(52, 211, 153, 0.3);
+      color: #ffffff;
     }
 
     .live-dot {
@@ -1561,10 +1606,24 @@
           </button>
         </div>
 
-        <a href="mailto:sales@mecopower.com" class="email-pill">
-          <span class="live-dot"></span>
-          <span>✉️ sales@mecopower.com</span>
-        </a>
+        <!-- TELEGRAM, INSTAGRAM, AND PHONE CONTACT PILLS -->
+        <div class="social-contact-pills">
+          <a href="https://t.me/Meco_Power_Uzbot" target="_blank" class="social-pill telegram-pill" title="Telegram Bot & Kanal">
+            <span class="pill-icon">✈️</span>
+            <span class="pill-text">Telegram</span>
+          </a>
+
+          <a href="https://instagram.com" target="_blank" class="social-pill instagram-pill" title="Instagram Sahifamiz">
+            <span class="pill-icon">📸</span>
+            <span class="pill-text">Instagram</span>
+          </a>
+
+          <a href="tel:+998943993997" class="social-pill phone-pill" title="Qo'ng'iroq qilish">
+            <span class="live-dot"></span>
+            <span class="pill-icon">📞</span>
+            <span class="pill-text">+998 94 399 39 97</span>
+          </a>
+        </div>
       </div>
 
     </div>
@@ -2632,7 +2691,7 @@
             <div class="slide-overlay"></div>
             <div class="slide-content-card">
               <span class="slide-badge">${slide.badgeText}</span>
-              <h2>${slide.title}</h2>
+              Hey <h2>${slide.title}</h2>
               <p>${slide.subtitle}</p>
               <a href="#products" class="btn-slide-action">${slide.buttonText}</a>
             </div>
