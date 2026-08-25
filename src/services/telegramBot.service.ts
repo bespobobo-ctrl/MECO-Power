@@ -59,12 +59,15 @@ export class TelegramBotService {
       await this.loadRegisteredUsers();
 
       // Handle text messages and password verification
-      this.botInstance.on('message', async (msg: any) => {
-        const chatId = msg.chat?.id || msg.from?.id;
+      this.botInstance.on('message', async (ctx: any) => {
+        const chatId = ctx.chatId || ctx.message?.chat?.id || ctx.chat?.id || ctx.from?.id;
         if (!chatId) return;
 
-        const text = (msg.text || '').trim();
-        const userName = msg.from?.first_name || 'Foydalanuvchi';
+        const rawText = ctx.message?.text || ctx.text || '';
+        const text = rawText.trim();
+        const userName = ctx.from?.first_name || ctx.message?.from?.first_name || 'Foydalanuvchi';
+
+        logger.info(`📱 Telegram Bot message from ${chatId} (${userName}): "${text}"`);
 
         // 1. Check if user enters the correct password code "meco3997"
         if (text.toLowerCase() === this.SECRET_CODE.toLowerCase()) {
@@ -72,9 +75,9 @@ export class TelegramBotService {
 
           const user: BotUser = {
             chatId,
-            firstName: msg.from?.first_name,
-            lastName: msg.from?.last_name,
-            username: msg.from?.username,
+            firstName: ctx.from?.first_name || ctx.message?.from?.first_name,
+            lastName: ctx.from?.last_name || ctx.message?.from?.last_name,
+            username: ctx.from?.username || ctx.message?.from?.username,
             registeredAt: new Date().toISOString(),
           };
           this.registeredUsers.set(chatId, user);
@@ -142,13 +145,13 @@ export class TelegramBotService {
       });
 
       // Handle Callback queries (Protected by password)
-      this.botInstance.on('callback_query', async (msg: any) => {
-        const chatId = msg.chat?.id || msg.from?.id;
+      this.botInstance.on('callback_query', async (ctx: any) => {
+        const chatId = ctx.chatId || ctx.callbackQuery?.message?.chat?.id || ctx.from?.id;
         if (chatId && !this.authenticatedChatIds.has(chatId)) {
           return this.replyMessage(chatId, '🔒 Maxsus kirish kodi kiritilmagan. Iltimos parolni yozib yuboring.');
         }
 
-        const queryData = msg.callbackQuery?.data || msg.data;
+        const queryData = ctx.callbackQuery?.data || ctx.data;
 
         if (queryData === 'ACTION_CATALOG') {
           const catalogMsg = 
