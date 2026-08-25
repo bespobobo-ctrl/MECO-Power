@@ -1642,11 +1642,21 @@
         background: transparent;
         border: 1px solid transparent;
         border-radius: 20px;
-        padding: 6px 14px;
+        padding: 6px 8px;
         cursor: pointer;
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         flex: 1;
         max-width: 90px;
+        text-align: center;
+      }
+
+      .mobile-nav-item span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        font-size: 10.5px;
+        line-height: 1.1;
       }
 
       .mobile-nav-icon-box {
@@ -1870,7 +1880,7 @@
         <div class="mobile-nav-icon-box">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
         </div>
-        <span data-i18n="whyUsTitle">Afzalliklar</span>
+        <span data-i18n="navAbout">Afzalliklar</span>
       </button>
 
       <button onclick="openLoginModal(); setActiveMobileNav(this)" class="mobile-nav-item" id="mobNavAdmin">
